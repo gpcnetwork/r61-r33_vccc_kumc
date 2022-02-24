@@ -77,6 +77,8 @@ where (pe.DEPARTMENT_NAME like '%FAMILY%CL%' or
       and pcp.START_DT is not null and pe.EFFECTIVE_DATE_DTTM >= pcp.START_DT
 -- age at visit >= 65
       and round((trunc(pe.EFFECTIVE_DATE_DTTM) - trunc(pt.BIRTH_DATE))/365.25) >= 65
+-- PCP provider ID is the same as attending physician ID
+      and pcp.prov_id = pe.AT_PROV_ID
 ;
 
 /*collect summary statistics (no cell-size suppression)*/

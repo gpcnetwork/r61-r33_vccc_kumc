@@ -1,6 +1,7 @@
 # Remote Monitoring and Virtual Collaborative Care for Hypertension Control to Prevent Cognitive Decline (VCCC)
 
 This repository is to document and share computational resources among collaborators participating in the VCCC studies. 
+[More things will be added...]
 
 
 ## Study Description
