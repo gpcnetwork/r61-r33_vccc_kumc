@@ -10,3 +10,12 @@ This study tests a hypertension program integrating a virtual Collaborative Care
 clinicaltrial.gov sites: 
 1. [VCC Phase I](https://clinicaltrials.gov/ct2/show/NCT04585880?term=Remote+Monitoring+and+Virtual+Collaborative+Care+for+Hypertension+Control+to+Prevent+Cognitive+Decline&draw=2&rank=2)
 2. [VCCC Phase II](https://clinicaltrials.gov/ct2/show/NCT05138601?term=Remote+Monitoring+and+Virtual+Collaborative+Care+for+Hypertension+Control+to+Prevent+Cognitive+Decline&draw=2&rank=1)
+
+
+
+******************************************************************************
+Copyright (c) 2021 The Curators of University of Missouri
+
+Share and Enjoy according to the terms of the MIT Open Source License
+
+Repo structure style follows GitHub Repository Structure Best Practices (Ghanem, 2021)
