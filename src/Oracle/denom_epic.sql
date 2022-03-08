@@ -37,12 +37,13 @@ select vccc_npi.npi
       ,vccc_npi.last
       ,vccc_npi.first
       ,vccc_npi.start_dt
-      ,cs.prov_name                -- keep to verify if they are the same provider     
+      ,cs.prov_name                -- keep to verify if they are the same provider   
+      ,cs.PROV_ID
 --      ,cs.prov_start_date        -- could add more provide-level information to this table for downstream analysis
 --      ,doctors_degree         
 from vccc_npi 
-join clarity.clarity_ser2 cs2 on vccc_npi.npi = cs2.npi
-join clarity.clarity_ser cs on cs2.npi = cs.npi
+join clarity.clarity_ser_2 cs2 on vccc_npi.npi = cs2.npi
+join clarity.clarity_ser cs on cs2.PROV_ID = cs.PROV_ID
 ;
 
 -- collect patients who have at least 1 PCP visit within the enrolling time period
@@ -53,7 +54,7 @@ select dense_rank() over (order by pe.pat_id) PATID -- de-identification
       ,pcp.npi
 --      ,pcp.doctors_degree
 --      ,pcp.prov_start_date
-      ,round((trunc(pe.EFFECTIVE_DATE_DTTM) - trunc(pt.BIRTH_DATE))/365.25) AGE_AT_VIS
+      ,round((trunc(pe.CONTACT_DATE) - trunc(pt.BIRTH_DATE))/365.25) AGE_AT_VIS
       ,case when pt.SEX_C = 1 then 'F'
             when pt.SEX_C = 2 then 'M'
             else 'NI'
@@ -63,22 +64,26 @@ select dense_rank() over (order by pe.pat_id) PATID -- de-identification
          else lower(czpr.abbr)
         end RACE
       ,pe.BP_SYSTOLIC
-      ,pe.EFFECTIVE_DATE_DTTM
+      ,pe.CONTACT_DATE
+      , enc.disp_enc_type_c
 from clarity.pat_enc pe 
 join vccc_pcp pcp on pcp.prov_id = pe.PCP_PROV_ID
 left join clarity.patient pt on pe.PAT_ID = pt.PAT_ID
 left join clarity.patient_race ptr on ptr.PAT_ID = pe.PAT_ID
 left join clarity.zc_patient_race czpr on ptr.patient_race_c = czpr.patient_race_c
+left join clarity.CLARITY_DEP dep on dep.DEPARTMENT_ID = pe.DEPARTMENT_ID
+left join clarity.ZC_DISP_ENC_TYPE enc on pe.enc_type_c = enc.disp_enc_type_c
 -- increase specifity, given that a PCP_PROV_ID may be documented even for a non-PCP visit
-where (pe.DEPARTMENT_NAME like '%FAMILY%CL%' or
-       pe.DEPARTMENT_NAME like '%IM%CL%'
+where (dep.DEPARTMENT_NAME like '%FAMILY%' or
+       dep.DEPARTMENT_NAME like '%IM%CL%'
       )
 -- only patients seen by the vCCC PCP within the study period can be counted towards the denominator
-      and pcp.START_DT is not null and pe.EFFECTIVE_DATE_DTTM >= pcp.START_DT
+      and pcp.START_DT is not null and pe.CONTACT_DATE >= pcp.START_DT
 -- age at visit >= 65
-      and round((trunc(pe.EFFECTIVE_DATE_DTTM) - trunc(pt.BIRTH_DATE))/365.25) >= 65
+      and round((trunc(pe.CONTACT_DATE) - trunc(pt.BIRTH_DATE))/365.25) >= 65
 -- PCP provider ID is the same as attending physician ID
-      and pcp.prov_id = pe.AT_PROV_ID
+      and pe.visit_prov_id = pe.PCP_PROV_ID 
+      and enc.disp_enc_type_c = 101 -- only include Office Visit
 ;
 
 /*collect summary statistics (no cell-size suppression)*/
@@ -91,19 +96,19 @@ create table stats_tbl (
 ;
 -- all 
 insert into stats_tbl
-select 'all', 'all', count(distinct patient_num) from vccc_ref;
+select 'all', 'all', count(distinct PATID) from vccc_ref;
 
 -- breakdown by PCP provider
 insert into stats_tbl
-select 'by provider', PROV_NAME, count(distinct patient_num) from vccc_ref
-group by PROV_NAME;
+select 'by provider', PROV_NAME, count(distinct PATID) from vccc_ref
+group by PROV_NAME, 'by provider';
 
 -- demographic breakdown
 insert into stats_tbl
-select 'by sex', SEX, count(distinct patient_num) from vccc_ref
+select 'by sex', SEX, count(distinct PATID) from vccc_ref
 group by SEX
 union
-select 'by race', RACE, count(distinct patient_num) from vccc_ref
+select 'by race', RACE, count(distinct PATID) from vccc_ref
 group by RACE
 
 -- could add more as needed
