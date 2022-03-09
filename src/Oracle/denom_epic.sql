@@ -83,7 +83,7 @@ where (dep.DEPARTMENT_NAME like '%FAMILY%' or
       and round((trunc(pe.CONTACT_DATE) - trunc(pt.BIRTH_DATE))/365.25) >= 65
 -- PCP provider ID is the same as attending physician ID
       and pe.visit_prov_id = pe.PCP_PROV_ID 
-      and enc.disp_enc_type_c = 101 -- only include Office Visit
+      and enc.disp_enc_type_c in (101, 76) -- only include Office Visit (101) and Telemedicine (76)
 ;
 
 /*collect summary statistics (no cell-size suppression)*/
