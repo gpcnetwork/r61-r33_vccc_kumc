@@ -50,6 +50,7 @@ join clarity.clarity_ser cs on cs2.PROV_ID = cs.PROV_ID
 drop table vccc_ref purge;
 create table vccc_ref as
 select dense_rank() over (order by pe.pat_id) PATID -- de-identification
+      ,pd.patient_num   -- CDM patient_num
       ,pcp.prov_name
       ,pcp.npi
 --      ,pcp.doctors_degree
@@ -69,6 +70,7 @@ select dense_rank() over (order by pe.pat_id) PATID -- de-identification
 from clarity.pat_enc pe 
 join vccc_pcp pcp on pcp.prov_id = pe.PCP_PROV_ID
 left join clarity.patient pt on pe.PAT_ID = pt.PAT_ID
+join nightherondata.patient_dimension pd on lpad(pd.mrn,7,'0') = pt.PAT_MRN_ID 
 left join clarity.patient_race ptr on ptr.PAT_ID = pe.PAT_ID
 left join clarity.zc_patient_race czpr on ptr.patient_race_c = czpr.patient_race_c
 left join clarity.CLARITY_DEP dep on dep.DEPARTMENT_ID = pe.DEPARTMENT_ID
