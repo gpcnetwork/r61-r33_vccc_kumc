@@ -44,6 +44,7 @@ select vccc_npi.npi
 from vccc_npi 
 join clarity.clarity_ser_2 cs2 on vccc_npi.npi = cs2.npi
 join clarity.clarity_ser cs on cs2.PROV_ID = cs.PROV_ID
+where vccc_npi.start_dt is not null
 ;
 
 -- collect patients who have at least 1 PCP visit within the enrolling time period
