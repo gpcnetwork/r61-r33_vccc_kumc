@@ -1,7 +1,6 @@
 /* Identify vCCC Patient demographic per category 
 ** Dependencies: denom_epic.sql 
 */
-
 /*collect demographic information and classification*/
 drop table denom_dem;
 create table denom_dem as
@@ -41,6 +40,13 @@ select 'by hispanic',HISPANIC,  status, count(distinct PATID) from denom_dem
 group by HISPANIC, status;
 
 commit;
+
+select dem.sex, dem.race, dem.hispanic, cat.status, vref.prov_name, pat.record_id
+from PATIENT_CATEGORY cat 
+join PATIENT_SET_4_21_22 pat on lpad(pat.mrn,7,'0')  = lpad(cat.mrn,7,'0')
+join nightherondata.patient_dimension pd on lpad(pd.mrn,7,'0') = lpad(cat.mrn,7,'0')
+join vccc_ref vref on vref.patient_num  = pd.patient_num
+join pcornet_cdm.demographic dem on dem.patid = pd.patient_num;
 
 
 /*eyeball the results*/

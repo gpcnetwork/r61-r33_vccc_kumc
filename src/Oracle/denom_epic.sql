@@ -17,10 +17,13 @@ External file:
     -- NPI: NPI number
     -- START_DT: start date 
 */ 
-
 select count(distinct NPI) from VCCC_NPI;
 
+update VCCC.VCCC_NPI 
+set start_dt = '16-NOV-21'
+where start_dt = '14-OCT-21';
 
+commit;
 --clarity key table refresh date
 select max(last_analyzed) from all_tab_columns
 where owner = 'CLARITY' and table_name = 'PATIENT';
