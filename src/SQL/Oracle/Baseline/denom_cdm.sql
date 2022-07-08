@@ -5,10 +5,7 @@ Key CDM tables:
 3. PROVIDER
 
 Auxillary tables: 
-1. PROVIDERID to NPI mapping
-
-Key checks on CDM QC:
-1. 
+1. NPPES data and metadata
 */ 
 
---TODO
+
