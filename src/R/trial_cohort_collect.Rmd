@@ -1,0 +1,95 @@
+---
+title: "Trial Cohort Collection (Utah)"
+author: "Xing Song"
+date: '2022-07-12'
+output: html_document
+---
+
+**Note: run the data collection markdown file chunk by chunk, instead of knitting the report all at once, due to delayed in response as a result of MFA requirement.** 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warnings = FALSE,
+                      fig.width = 8,
+                      fig.height = 6)
+pacman::p_load(tidyverse,
+               DBI,
+               odbc)
+```
+
+
+```{r connect_to_sf}
+# make database connection
+myconn <- DBI::dbConnect(drv = odbc::odbc(),
+                         dsn = Sys.getenv("ODBC_DSN_NAME"),
+                         uid = Sys.getenv("SNOWFLAKE_USER"),
+                         pwd = Sys.getenv("SNOWFLAKE_PWD"))
+```
+
+
+```{sql, connection = myconn, output.var = "eligible_pat"}
+select count(distinct patid) as pat_cnt from HTN_Cohort
+```
+
+
+```{sql, connection = myconn, output.var = "utah_pcp_orig"}
+select count(*) as pcp_cnt from PCP_UTAH
+```
+
+
+```{sql, connection = myconn, output.var = "utah_pcp_match"}
+select count(distinct NPI) as pcp_cnt from PCP_UTAH_NPI
+```
+
+
+```{sql, connection = myconn, output.var = "eligible_pcp_sub_mth"}
+with cte as (
+select patid, provider_npi, extract(year from htn_onset::date) onset_yr,
+       date_part(month, htn_onset::date) onset_mth
+from HTN_Cohort_PCP
+)
+select cte.onset_yr, cte.onset_mth, cte.provider_npi, p.practice, count(distinct cte.patid) pat_cnt
+from cte join PCP_UTAH_NPI p on cte.provider_npi = p.npi
+group by cte.onset_yr, cte.onset_mth, cte.provider_npi, p.practice
+```
+
+
+```{sql, connection=myconn, output.var="eligible_pcp"}
+select b.provider_npi, b.provider_sex, b.medicare_provider_type_description, b.provider_specialty_primary,
+       case when p.last is not null then 1 else 0 end as enrolled_pcp, p.last, p.first,
+       count(distinct a.patid) as pat_cnt 
+from HTN_Cohort a
+join BP_ENC_OFFICE_PROVIDER b on a.patid = b.patid
+left join PCP_UTAH_NPI p on p.npi = b.provider_npi
+group by b.provider_npi, b.provider_sex, b.medicare_provider_type_description, b.provider_specialty_primary,p.last, p.first
+order by pat_cnt desc
+```
+
+
+```{r}
+saveRDS(eligible_pcp,file="C:/projects/r61-r33-vccc-kumc/data/potential_pcp.rda")
+saveRDS(eligible_pcp_sub_mth, file="C:/projects/r61-r33-vccc-kumc/data/current_pcp_accrual.rda")
+```
+
+
+```{sql, connection=myconn, output.var="eligible_pat_pcp"}
+select count(distinct patid) as pat_cnt from HTN_Cohort_PCP
+```
+
+
+```{r}
+out<-data.frame(pat_type=as.character(),
+                cnt=as.numeric(),
+                stringsAsFactors = F) %>%
+  add_row(pat_type="eligible_pat",cnt=eligible_pat$PAT_CNT) %>%
+  add_row(pat_type="enrolled_pcp_orig",cnt=utah_pcp_orig$PCP_CNT) %>%
+  add_row(pat_type="enrolled_pcp_match",cnt=utah_pcp_match$PCP_CNT) %>%
+  add_row(pat_type="eligible_pat_enrolled_pcp",cnt=eligible_pat_pcp$PAT_CNT) %>%
+  add_row(pat_type="potential_pcp",cnt=length(eligible_pcp$PROVIDER_NPI[eligible_pcp$ENROLLED_PCP==0]))
+
+write.csv(out,file="C:/projects/r61-r33-vccc-kumc/data/utah_elig_pat.csv",
+          row.names = FALSE)
+```
+
+
