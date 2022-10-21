@@ -1,0 +1,66 @@
+---
+title: "Trial Cohort Analysis (Utah)"
+author: "Xing Song"
+date: '2022-07-12'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warnings = FALSE,
+                      fig.width = 10,
+                      fig.height = 6)
+pacman::p_load(tidyverse, devtools)
+```
+
+This trial cohort analysis is to identify eligible patients for VCCC recruitment from University of Utah site, potential patient pool based on number of enrolled primary-care physicians (PCPs), project enrollment rates, and make suggestions on recruitment strategies in order to reach the enrollment target.  
+
+```{r connect_to_sf}
+dat<-read.csv("C:/projects/r61-r33-vccc-kumc/data/utah_elig_pat.csv",stringsAsFactors = F)
+elig_pat<-dat$cnt[dat$pat_type=="eligible_pat"]
+elig_pat_sub<-dat$cnt[dat$pat_type=="eligible_pat_enrolled_pcp"]
+elig_pcp_tgt<-ceiling(24*elig_pat_sub/400)
+pot_pcp<-dat$cnt[dat$pat_type=="potential_pcp"]
+cur_pcp<-dat$cnt[dat$pat_type=="enrolled_pcp_orig"]
+cur_pcp_match<-dat$cnt[dat$pat_type=="enrolled_pcp_match"]
+```
+
+Following the broader inclusion criteria of patients with at least one of the following BP elevation events observed during a PCP visit within the more recent year (2020-10-01 to 2021-09-30, censored at CDM refresh date): 
+
+* BP elevation events: 
+    * at least 2 records of SBP > 140 observed at different PCP visit 
+    * at least 1 record of SBP > 140 and historic diagnosis code of HTN
+    * at least 1 record of SBP > 160 at current visit
+    
+* Office visit: 
+    * Encounter type to be 'AV'
+    * At least one of the following CPT codes suggesting an office visit: '99203','99204','99201','99215','99205','99214','99213','99202','99212'
+
+We are able to identify **`r elig_pat`** eligible patients. We were then provided with a list of `r cur_pcp` enrolled PCPs. Among them, we were able to re-identify `r cur_pcp_match` NPIs based on their name and practice matching with NPPES registry data. We then took a further look into the eligible patients who were seen by these `r cur_pcp_match` PCPs by matching on the provider NPI responsible for the corresponding office visit, and we were able to identify `r elig_pat_sub` eligible patients who can potentially be enrolled in the study
+
+We referenced the known enrollment rates from KUMC data, such that: 
+
+* **50%** eligible patients may be excluded after pre-screening (due to reasons like condition severity, lack of smart phone access, or language barrier); 
+* out of patients passed pre-screening, only **10-12%** will finally consent and enroll in the trial. 
+
+Also considering only `r cur_pcp_match` enrolled PCP (out of `r cur_pcp`) were used in the calculation, we projected that at current rate: 
+
+* Only **`r floor(elig_pat_sub/cur_pcp_match*cur_pcp*0.5*0.1)` to `r floor(elig_pat_sub/cur_pcp_match*cur_pcp*0.5*0.12)`** can recruited per year with all `r cur_pcp` PCPs
+* To reach the goal of recruiting **400 patients/year** we will need to increase the PCP enrollment to **at least `r elig_pcp_tgt`** PCPs
+* By looking broadly, current number of potential PCPs with **at least one eligible patient is around `r pot_pcp`**
+* We can further provide a list of PCPs and departments with relatively higher chance of enrolling more eligible patients (upon request).
+
+
+The following figure shows eligible patients accrual of current `r cur_pcp_match` enrolled pcps: 
+
+```{r}
+ggplot(readRDS("C:/projects/r61-r33-vccc-kumc/data/current_pcp_accrual.rda") %>%
+         mutate(ONSET_YR_MTH=sprintf("%d-%02d", ONSET_YR, ONSET_MTH)),
+       aes(x=ONSET_YR_MTH,y=PAT_CNT))+
+  geom_point(aes(y=PAT_CNT, color=PRACTICE))+
+  geom_smooth(aes(group=PRACTICE, color=PRACTICE),method = 'loess', formula='y ~ x')+
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+* eligible patients seem to be observed at a significantly higher rate within "Geriatric department"
