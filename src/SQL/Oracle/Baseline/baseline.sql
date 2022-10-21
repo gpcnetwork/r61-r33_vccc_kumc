@@ -474,8 +474,9 @@ select distinct
       ,round(d.DISPENSE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
       ,'Dispensing' DRUG_SOURCE_TABLE
 from pat_incld p
-join DISPENSING d on d.PATID = p.PATID
+join DISPENSING d on p.PATID = d.PATID 
 join CONCEPTSET_MED_ANTIHTN_NDC csn on d.NDC = csn.NDC 
+join CONCEPTSET_MED_ANTIHTN cs on csn.RXCUI = cs.RXCUI
 where d.DISPENSE_DATE <= p.INDEX_DATE
 ;
 
