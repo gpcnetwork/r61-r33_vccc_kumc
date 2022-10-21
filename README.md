@@ -12,9 +12,30 @@ clinicaltrial.gov sites:
 1. [VCC Phase I](https://clinicaltrials.gov/ct2/show/NCT04585880?term=Remote+Monitoring+and+Virtual+Collaborative+Care+for+Hypertension+Control+to+Prevent+Cognitive+Decline&draw=2&rank=2)
 2. [VCCC Phase II](https://clinicaltrials.gov/ct2/show/NCT05138601?term=Remote+Monitoring+and+Virtual+Collaborative+Care+for+Hypertension+Control+to+Prevent+Cognitive+Decline&draw=2&rank=1)
 
+## Study Team
+Principle Investigators:
+- [Jeff Burn]()
+- [Aditi Gupta]
+- Russ Waitman
+
+KUMC Study team: 
+- Diego Mazzoti
+- Cystal Burkhardt
+- Heidi Anderson
+- Sravani Chandaka
+- Noor Abu-el-rub
+- Kate Young
+- [Alexandra Dahlgren](mailto:adahlgren@kumc.edu)
+
+MU Study Team: 
+- [Xing Song](mailto:xsm7f@health.missouri.edu)
+
+UU Study Team: 
+- 
+
 
 
 ******************************************************************************
-*Copyright (c) 2021 The Curators of University of Missouri* </br>     
-*Share and Enjoy according to the terms of the MIT Open Source License* </br>   
-*Repo structure style follows GitHub Repository Structure Best Practices (Ghanem, 2021)*
+*Copyright (c) 2021 The Curators of University of Missouri*</br>     
+*Share and Enjoy according to the terms of the MIT Open Source License*</br>
+*Repo structure style follows GitHub Repository Structure Best Practices (Ghanem, 2021)*</br>
