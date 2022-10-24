@@ -517,11 +517,11 @@ union all
 select p.PATID
       ,oc.ENCOUNTERID
       ,'HT' as VITAL_TYPE
-      ,v.OBSCLIN_RESULT as VITAL_VAL
-      ,v.OBSCLIN_RESULT_UNIT as VITAL_UNIT -- could be "cm" or "in"
-      ,round(v.MEASURE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
+      ,oc.OBSCLIN_RESULT as VITAL_VAL
+      ,oc.OBSCLIN_RESULT_UNIT as VITAL_UNIT -- could be "cm" or "in"
+      ,round(oc.MEASURE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
 from pat_incld p
-join VITAL v on v.PATID = p.PATID and
+join OBS_CLIN oc on oc.PATID = p.PATID and
      oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '8302-2'
 union all
 ---- WEIGHT ----
@@ -562,22 +562,22 @@ where coalesce(v.HT,v.WT,v.ORIGINAL_BMI) is not null
 select p.PATID
       ,oc.ENCOUNTERID
       ,'BMI' as VITAL_TYPE
-      ,v.OBSCLIN_RESULT as VITAL_VAL
-      ,v.OBSCLIN_RESULT_UNIT as VITAL_UNIT 
-      ,round(v.MEASURE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
+      ,oc.OBSCLIN_RESULT as VITAL_VAL
+      ,oc.OBSCLIN_RESULT_UNIT as VITAL_UNIT 
+      ,round(oc.MEASURE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
 from pat_incld p
-join VITAL v on v.PATID = p.PATID and
+join OBS_CLIN oc on v.PATID = p.PATID and
      oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '39156-5'
 ---- HEART RATE ----
 -- from OBS_CLIN table
 select p.PATID
       ,oc.ENCOUNTERID
       ,'HR' as VITAL_TYPE
-      ,v.OBSCLIN_RESULT as VITAL_VAL
-      ,v.OBSCLIN_RESULT_UNIT as VITAL_UNIT 
-      ,round(v.MEASURE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
+      ,oc.OBSCLIN_RESULT as VITAL_VAL
+      ,oc.OBSCLIN_RESULT_UNIT as VITAL_UNIT 
+      ,round(oc.MEASURE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
 from pat_incld p
-join VITAL v on v.PATID = p.PATID and
+join OBS_CLIN oc on oc.PATID = p.PATID and
      oc.OBSCLIN_TYPE = 'LC' and 
      oc.OBSCLIN_CODE in ( '8889-8' -- general heart rate by Pulse oximetry
                          ,'8867-4' -- general heart rate by Palpation
