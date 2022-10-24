@@ -15,22 +15,22 @@ clinicaltrial.gov sites:
 ## Study Team
 Principle Investigators:
 - [Jeff Burn]()
-- [Aditi Gupta]
-- Russ Waitman
+- [Aditi Gupta]()
+- [Russ Waitman]()
 
-KUMC Study team: 
-- Diego Mazzoti
-- Cystal Burkhardt
-- Heidi Anderson
-- Sravani Chandaka
-- Noor Abu-el-rub
-- Kate Young
+KUMC Study Team Key Personnel: 
+- [Diego Mazzoti]
+- [Cystal Burkhardt]
+- [Heidi Anderson]
+- [Sravani Chandaka]
+- [Noor Abu-el-rub]
+- [Kate Young]
 - [Alexandra Dahlgren](mailto:adahlgren@kumc.edu)
 
-MU Study Team: 
+MU Study Team Key Personnel: 
 - [Xing Song](mailto:xsm7f@health.missouri.edu)
 
-UU Study Team: 
+UU Study Team Key Personnel: 
 - 
 
 

@@ -540,11 +540,11 @@ union all
 select p.PATID
       ,oc.ENCOUNTERID
       ,'WT' as VITAL_TYPE
-      ,v.OBSCLIN_RESULT as VITAL_VAL
-      ,v.OBSCLIN_RESULT_UNIT as VITAL_UNIT -- could be "lb" or "kg"
-      ,round(v.MEASURE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
+      ,oc.OBSCLIN_RESULT as VITAL_VAL
+      ,oc.OBSCLIN_RESULT_UNIT as VITAL_UNIT -- could be "lb" or "kg"
+      ,round(oc.MEASURE_DATE - p.INDEX_DATE) as DAYS_SINCE_ENROLL
 from pat_incld p
-join VITAL v on v.PATID = p.PATID and
+join OBS_CLIN oc on oc.PATID = p.PATID and
      oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '29463-7'
 union all
 ---- BMI ----
