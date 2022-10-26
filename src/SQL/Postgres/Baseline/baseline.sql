@@ -483,14 +483,26 @@ where d.DISPENSE_DATE <= p.INDEX_DATE
 ;
 
 /*baseline BMI: 1 patient-BMI record per row*/
+drop table vital_per_encounter;
+create table vital_per_encounter as
+select patid
+		,encounterid
+		,max(wt)::decimal as wt
+		,max(ht) as ht
+		,max(original_bmi) as original_bmi
+		,max(measure_date) as measure_date
+from vital
+group by patid, encounterid;
+
+drop table BL_BMI;
 create table BL_BMI as
 select p.PATID
       ,v.HT as HT
       ,v.WT as WT
-      ,coalesce(round(v.WT/(v.HT*v.HT)*703),v.ORIGINAL_BMI) as BMI -- BMI = (Weight in Pounds / (Height in inches) x (Height in inches)) x 703
+      ,coalesce(round(v.WT::decimal/(v.HT*v.HT)*703),v.ORIGINAL_BMI) as BMI -- BMI = (Weight in Pounds / (Height in inches) x (Height in inches)) x 703
       ,round(DATE_PART('day', v.MEASURE_DATE - p.INDEX_DATE)) as DAYS_SINCE_ENROLL
 from pat_incld p
-join VITAL v on v.PATID = p.PATID 
+join vital_per_encounter v on v.PATID = p.PATID 
 where coalesce(v.HT,v.WT,v.ORIGINAL_BMI) is not null
 ;
 
@@ -523,8 +535,7 @@ select p.PATID
       ,round(DATE_PART('day', oc.OBSCLIN_START_DATE - p.INDEX_DATE)) as DAYS_SINCE_ENROLL
 from pat_incld p
 join OBS_CLIN oc on oc.PATID = p.PATID 
-where
-     oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '8302-2'
+where oc.OBSCLIN_CODE = 'HT' and oc.OBSCLIN_RESULT_text is not null
 union all
 ---- WEIGHT ----
 -- from VITAL table
@@ -547,7 +558,7 @@ select p.PATID
       ,round(DATE_PART('day', oc.OBSCLIN_START_DATE - p.INDEX_DATE) ) as DAYS_SINCE_ENROLL
 from pat_incld p
 join OBS_CLIN oc on oc.PATID = p.PATID where
-     oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '29463-7'
+     oc.OBSCLIN_CODE = 'WT' and oc.OBSCLIN_RESULT_text is not null
 union all
 ---- BMI ----
 -- from VITAL table
@@ -570,7 +581,7 @@ select p.PATID
       ,round(DATE_PART('day', oc.OBSCLIN_START_DATE - p.INDEX_DATE)) as DAYS_SINCE_ENROLL
 from pat_incld p
 join OBS_CLIN oc on oc.PATID = p.PATID where
-     oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '39156-5'
+     oc.OBSCLIN_CODE = 'ORIGINAL_BMI' and oc.OBSCLIN_RESULT_text is not null
 union all
 ---- HEART RATE ----
 -- from OBS_CLIN table
