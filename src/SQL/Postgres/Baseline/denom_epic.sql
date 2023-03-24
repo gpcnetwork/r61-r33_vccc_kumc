@@ -99,7 +99,7 @@ WHERE (dep.DEPARTMENT_NAME LIKE '%FAMILY%'
       OR dep.DEPARTMENT_NAME LIKE '%IM%CL%')
 -- only patients seen by the vCCC PCP within the study period can be counted towards the denominator
 AND pcp.START_DT IS NOT NULL
-AND pe.CONTACT_DATE >= pcp.START_DT
+AND pe.CONTACT_DATE >= TO_TIMESTAMP( pcp.START_DT,'YYYY-MM-DD')
 -- age at visit >= 65
 AND round(DATE_PART('day', pe.CONTACT_DATE - pt.BIRTH_DATE) / 365.25) >= 65
 -- PCP provider ID is the same as attending physician ID
@@ -135,8 +135,7 @@ SELECT
 FROM
       vccc_ref
 GROUP BY
-      PROV_NAME,
-      'by provider';
+      PROV_NAME;
 
 -- demographic breakdown
 INSERT INTO stats_tbl
