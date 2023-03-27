@@ -84,7 +84,8 @@ SELECT
       END RACE,
       pe.BP_SYSTOLIC,
       pe.CONTACT_DATE,
-      enc.disp_enc_type_c
+      enc.disp_enc_type_c,
+      dem.hispanic 
 FROM
       fh_clarity_etl_src.pat_enc pe
       JOIN vccc_pcp pcp ON pcp.prov_id = pe.PCP_PROV_ID
@@ -94,6 +95,7 @@ FROM
       LEFT JOIN fh_clarity_etl_src.zc_patient_race czpr ON ptr.patient_race_c = czpr.patient_race_c
       LEFT JOIN fh_clarity_etl_src.CLARITY_DEP dep ON dep.DEPARTMENT_ID = pe.DEPARTMENT_ID
       LEFT JOIN fh_clarity_etl_src.ZC_DISP_ENC_TYPE enc ON pe.enc_type_c = enc.disp_enc_type_c
+      left join cdm60_deid_dataset.demographic dem on dem.patid = svp.pat_deid 
       -- increase specifity, given that a PCP_PROV_ID may be documented even for a non-PCP visit
 WHERE (dep.DEPARTMENT_NAME LIKE '%FAMILY%'
       OR dep.DEPARTMENT_NAME LIKE '%IM%CL%')
@@ -156,6 +158,15 @@ FROM
       vccc_ref
 GROUP BY
       RACE
+UNION
+SELECT
+      'by ethnicity',
+      hispanic,
+      count(DISTINCT PATID)
+FROM
+      vccc_ref
+GROUP BY
+      hispanic
       -- could add more as needed
 ;
 
