@@ -1,26 +1,65 @@
 ----------------------------------------------------
 ----------------------- Pcornet Trial --------------
 ----------------------------------------------------
+DROP TABLE IF EXISTS vccc_map_mrn_studyid;
 
-create table vccc_map_mrn_studyid
-as select study_id, max(mrn) as mrn
-from vccc_enrollment_status ves 
-group by study_id  ; -- vccc_enrollment_status is a redcap report
+CREATE TABLE vccc_map_mrn_studyid AS
+SELECT
+    study_id,
+    max(mrn) AS mrn
+FROM
+    vccc_enrollment_status ves
+GROUP BY
+    study_id;
 
-drop table if exists  vccc_pcornet_trial;
+-- vccc_enrollment_status is a redcap report
+DROP TABLE IF EXISTS vccc_pcornet_trial;
 
-create table vccc_pcornet_trial as select *
-from cdm60_deid_dataset.pcornet_trial pt
-where 1=0;
+CREATE TABLE vccc_pcornet_trial AS
+SELECT
+    *
+FROM
+    cdm60_deid_dataset.pcornet_trial pt
+WHERE
+    1 = 0;
 
-insert into vccc_pcornet_trial
-select svp.pat_deid_short as patid, 'VCCC' as trialid, mms.study_id ,'D6' as trial_siteid,es1.disp_date::date as trial_enroll_date, 
-null as trial_end_date, es2.disp_date::date as trial_withdraw_date , null trial_invite_code
-from vccc_map_mrn_studyid mms
-join fh_clarity_etl_src.patient p on p.pat_mrn_id  = lpad(mms.mrn::varchar,7,'0') 
-join pat_inclusion.static_valid_patients svp on svp.pat_id = p.pat_id
-join (select * from vccc_enrollment_status  where disp_status = 1 and study_id not in 
-(select study_id  from vccc_enrollment_status where disp_status >2 )) es1 on es1.study_id = mms.study_id 
-left join (select * from vccc_enrollment_status  where disp_status = 2) es2 on es2.study_id = mms.study_id ;
+INSERT INTO vccc_pcornet_trial
+SELECT
+    svp.pat_deid_short AS patid,
+    'VCCC' AS trialid,
+    mms.study_id,
+    'D6' AS trial_siteid,
+    es1.disp_date::date AS trial_enroll_date,
+    NULL AS trial_end_date,
+    es2.disp_date::date AS trial_withdraw_date,
+    NULL trial_invite_code
+FROM
+    vccc_map_mrn_studyid mms
+    JOIN fh_clarity_etl_src.patient p ON p.pat_mrn_id = lpad(mms.mrn::varchar, 7, '0')
+    JOIN pat_inclusion.static_valid_patients svp ON svp.pat_id = p.pat_id
+    JOIN (
+        SELECT
+            *
+        FROM
+            vccc_enrollment_status
+        WHERE
+            disp_status = 1
+            AND study_id NOT IN (
+                SELECT
+                    study_id
+                FROM
+                    vccc_enrollment_status
+                WHERE
+                    disp_status > 2)) es1 ON es1.study_id = mms.study_id
+    LEFT JOIN (
+        SELECT
+            *
+        FROM
+            vccc_enrollment_status
+        WHERE
+            disp_status = 2) es2 ON es2.study_id = mms.study_id
+WHERE
+    mms.study_id LIKE 'KU-%';
 
-commit;
+COMMIT;
+
