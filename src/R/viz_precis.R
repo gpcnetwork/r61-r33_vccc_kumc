@@ -26,7 +26,7 @@ dat2<-dat %>% mutate(id = 'vccc') %>%
 
 color = "#E7B800"
 png('./res/vccc_precis.png',
-    height = 600, width = 600)
+    height = 1000, width = 1000)
 radarchart(
   df = dat2,
   axistype = 1,
@@ -42,6 +42,9 @@ radarchart(
   # Customize the axis
   axislabcol = "black",
   # Variable labels
-  caxislabels = 1:5
+  caxislabels = 1:5,
+  calcex = 2,
+  vlcex = 2,
+  palcex = 2
 )
 dev.off()
