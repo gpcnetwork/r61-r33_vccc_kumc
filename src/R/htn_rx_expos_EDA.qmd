@@ -1,0 +1,61 @@
+---
+title: "EDA for HTN medication exposure pattern"
+author: "Xing Song"
+format: html
+editor: visual
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+#| label: load-pkg
+
+pacman::p_load(
+  tidyverse,
+  magrittr,
+  stringr,
+  broom
+)
+root_dir<-file.path(
+  'C:',"repos","r61-r33-vccc-kumc"
+)
+```
+
+
+```{r}
+#| label: load-data
+
+dat<-read.csv(file.path(root_dir,"private","medications.csv"), stringsAsFactors = F) %>%
+  tidyr::replace_na(list(rx_refills=0)) %>%
+  mutate(raw_rx_med_name2=raw_rx_med_name) %>%
+  separate(raw_rx_med_name2, sep=' ', c('gnn','other'),extra='merge',fill='right') %>%
+  select(-other) %>%
+  mutate(rx_freq_num = case_when(
+    rx_frequency %in% c('01','05','06','10') ~ 1,
+    rx_frequency == '02' ~ 2,
+    rx_frequency %in% c('03','07','08') ~ 3,
+    rx_frequency == '04' ~ 4,
+    TRUE ~ 0
+  )) %>%
+  mutate(rx_start_date_imp = coalesce(rx_start_date,rx_order_date)) %>%
+  mutate(rx_days_calc = (rx_refills+1) * (rx_quantity/pmax(rx_freq_num,1))) %>%
+  mutate(rx_end_date_calc = as_date(ymd_hms(rx_start_date_imp))+days(rx_days_calc))
+```
+
+
+```{r}
+#| label: missing data analysis
+
+
+
+```
+
+
+```{r}
+#| label: case-study
+
+
+
+```
