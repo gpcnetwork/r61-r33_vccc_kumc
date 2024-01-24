@@ -9,53 +9,241 @@ execute:
   warning: false
 ---
 
+## load packages
+
 ```{r}
 #| label: load-pkg
-
 pacman::p_load(
   tidyverse,
   magrittr,
   stringr,
-  broom
+  broom,
+  cowplot,
+  ggrepel,
+  kableExtra,
+  # gtsummary,
+  devtools
 )
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/analysis_util.R")
 root_dir<-file.path(
   'C:',"repos","r61-r33-vccc-kumc"
 )
 ```
 
+# Data Availability & Coverage
 
 ```{r}
-#| label: load-data
+#| label: data-avail
+#| warning: false
 
-dat<-read.csv(file.path(root_dir,"private","medications.csv"), stringsAsFactors = F) %>%
-  tidyr::replace_na(list(rx_refills=0)) %>%
-  mutate(raw_rx_med_name2=raw_rx_med_name) %>%
-  separate(raw_rx_med_name2, sep=' ', c('gnn','other'),extra='merge',fill='right') %>%
-  select(-other) %>%
-  mutate(rx_freq_num = case_when(
-    rx_frequency %in% c('01','05','06','10') ~ 1,
-    rx_frequency == '02' ~ 2,
-    rx_frequency %in% c('03','07','08') ~ 3,
-    rx_frequency == '04' ~ 4,
-    TRUE ~ 0
+bp_long<-readRDS(file.path(root_dir,"private","bp_long.rda"))
+
+id<-unique(bp_long$study_id) #634
+id_ku<-id[grepl("^(KU)+",id)] #527
+id_ut<-id[grepl("^(UT)+",id)] #105
+
+bp_ku<-bp_long %>% 
+  filter(bp_type=="sbp") %>%
+  filter(grepl("^(KU)+",study_id)) %>%
+  group_by(study_id,type) %>%
+  mutate(days_since_index_lag1 = lag(days_since_index,n=1L)) %>%
+  ungroup %>%
+  mutate(days_since_last = days_since_index - days_since_index_lag1)
+
+bp_ku %>% 
+  group_by(study_id,type) %>%
+  summarize(
+    cnt = length(unique(days_since_index)),
+    delta_m = mean(days_since_last,na.rm=T),
+    delta_sd = sd(days_since_last,na.rm=T),
+    .groups = 'drop') %>%
+  mutate(prop = round(cnt/length(id_ku),3)) %>%
+  group_by(type) %>%
+  summarize(
+    cnt_m = round(mean(cnt)),
+    cnt_sd = round(sd(cnt),1),
+    cnt_med = round(median(cnt)),
+    cnt_q1 = round(quantile(cnt,prob =0.25)),
+    cnt_q3 = round(quantile(cnt,prob =0.75)),
+    delta_m_m = round(mean(delta_m,na.rm=T)),
+    delta_m_sd = round(sd(delta_m,na.rm=T),1), 
+    delta_m_med = round(median(delta_m,na.rm=T)),
+    delta_m_q1 = round(quantile(delta_m,prob =0.25,na.rm=T)),
+    delta_m_q3 = round(quantile(delta_m,prob =0.75,na.rm=T)),
+    .groups = 'drop'
+  )
+
+```
+
+-   `visit`: BP extracts from Qardio at follow up visits (e.g., v1, v4, v7...)
+-   `baseline`: BP extracts from Qardio at baseline visit
+-   `visit`: Qardio extracts for each follow visits
+-   `elig`: BP collected at two adjacent visits when eligibility criteria was satisfied
+-   `clinic`: BP collected at visits which got tranformed into CDM VITAL table\
+
+## Samples of BP Trajectory
+
+```{r}
+#| label: plot-bp
+#| fig-width: 12
+#| fig-height: 10
+
+k<-2
+id_sample<-sample(id_ku,k)
+  
+# individual plots of a random sample of size k
+ggplot(
+  bp_long %>% filter(study_id %in% id_sample),
+  aes(x = days_since_index,
+      y = bp_val,
+      color = bp_type)
+)+
+  geom_line(aes(group = bp_type))+
+  geom_point(aes(shape = type),size=3,alpha=0.6)+
+  geom_vline(xintercept = 0,linetype=2) +
+  facet_wrap(~study_id,scales = "free",ncol=1)
+```
+
+## Clinic BP vs. Home BP at Baseline
+
+```{r}
+#| label: bp-baseline-plot
+#| warning: false
+
+baseline_gap<-bp_long %>% 
+  filter(grepl("^(KU)+",study_id)) %>%
+  filter(type %in% c("elig","baseline")) %>%
+  group_by(study_id,bp_type) %>%
+  mutate(
+    gap = bp_val[type=="baseline"] - median(bp_val[type=="elig"]),
+    elig_since_index = max(days_since_index[type=="elig"],na.rm=T)
+  ) %>%
+  mutate(gap_sign = sign(gap)) %>%
+  mutate(gap_sign = case_when(bp_type=="sbp"&bp_val[type=="baseline"]<130 ~ -2,
+                              TRUE ~ gap_sign)) %>%
+  mutate(gap_sign = recode(
+    gap_sign,
+    '-2' = '1.decrease-to-uneligible',
+    '-1' = '2.decrease-but-eligible',
+    '0' = '3.no-change',
+    '1' = '4.increase'
   )) %>%
-  mutate(rx_start_date_imp = coalesce(rx_start_date,rx_order_date)) %>%
-  mutate(rx_days_calc = (rx_refills+1) * (rx_quantity/pmax(rx_freq_num,1))) %>%
-  mutate(rx_end_date_calc = as_date(ymd_hms(rx_start_date_imp))+days(rx_days_calc))
+  ungroup %>%
+  filter(!is.na(gap)) %>%
+  select(study_id, bp_type, gap, elig_since_index, gap_sign) %>% 
+  unique
+
+ggplot(
+  baseline_gap,
+  aes(x = elig_since_index,
+      y = gap,
+      color = gap_sign)
+)+
+  # geom_line(aes(group = study_id))+
+  geom_hline(yintercept = 0, linetype = 2)+
+  geom_vline(xintercept = 0, linetype = 2)+
+  geom_point()+
+  facet_wrap(~bp_type)
+
+baseline_gap %>%
+  filter(bp_type == 'sbp') %>%
+  group_by(gap_sign) %>%
+  summarise(cnt = length(unique(study_id)),.groups='drop') %>%
+  mutate(
+    N = length(id_ku),
+    prop = round(cnt/N,3)
+  )
+```
+
+## Investigation I: How much of the eligibility discrepancies can be explained by anti-hypertensive medication use during the pre-enrollment period?
+
+We collected all prescription data from CDM PRESCRIBING table provided by KUMC team, using VA classifications, we identified the following medication classes as anti-HTN medications, and they are:
+
+-   CV100: beta blockers/related
+
+-   CV150: alpha blockers/related
+
+-   CV200: calcium channel blockers
+
+-   CV400: anti-hypertensive combinations
+
+-   CV490: antihypertensive, others
+
+-   CV701: thiazides/related diuretics
+
+-   CV702: loop diuretics
+
+-   CV703: carbonic anhydrase inhibitor diuretics
+
+-   CV704: potassium sparing/combinations diretics
+
+-   CV709: diuretics, other
+
+-   CV800: ACE inhibitors
+
+-   CV805: angiotensin II inhibitor
+
+-   CV806: direct renin inhibitor
+
+### Q1: How likely is the clinic-home bp gap caused by anti-hypertensive medication prescrition?
+
+```{r}
+#| label: calc-med-runin
+#| warning: false
+
+med<-readRDS(file.path(root_dir,"private","med_long.rda"))
+med_runin<-baseline_gap %>%
+  select(study_id,elig_since_index,gap, gap_sign) %>% 
+  group_by(study_id) %>% arrange(gap_sign) %>% slice(1:1) %>% ungroup %>%
+  inner_join(
+    med %>% select(study_id,VA_CLS,AntiHTN_ind,in_or_name_s,rx_start_since_index),
+    by="study_id") %>%
+  filter(
+    rx_start_since_index<=0 & rx_start_since_index>=elig_since_index & 
+    AntiHTN_ind==1)
+
+freq_2by2<-baseline_gap %>% 
+  group_by(study_id) %>% arrange(gap_sign) %>% slice(1:1) %>% ungroup %>%
+  mutate(decrease_ind = case_when(gap<0 ~ 1, TRUE ~ 0)) %>%
+  left_join(
+    med_runin %>% select(study_id,AntiHTN_ind) %>% unique,
+    by = "study_id"
+  ) %>% 
+  replace_na(list(AntiHTN_ind=0))
 ```
 
 
+
 ```{r}
-#| label: missing data analysis
-
-
-
+#| label: risk-ratio
+#| warning: false
+ 
+var_lst<-c("gap_sign","decrease_ind")
+facvar_lst<-c("gap_sign","decrease_ind")
+cohort_summ<-univar_analysis_mixed(
+  df = freq_2by2,
+  id_col ="study_id",
+  var_lst = var_lst,
+  grp = freq_2by2$AntiHTN_ind,
+  facvar_lst  = facvar_lst,
+  pretty = T
+)
+cohort_summ %>% kable_paper(bootstrap_options = "striped", full_width = F)
 ```
 
 
+
 ```{r}
-#| label: case-study
-
-
-
+var_lst<-c("gap_sign","decrease_ind")
+facvar_lst<-c("gap_sign","decrease_ind")
+cohort_summ<-univar_analysis_mixed(
+  df = freq_2by2,
+  id_col ="study_id",
+  var_lst = var_lst,
+  grp = freq_2by2$,
+  facvar_lst  = facvar_lst,
+  pretty = T
+)
+cohort_summ %>% kable_paper(bootstrap_options = "striped", full_width = F)
+     
 ```

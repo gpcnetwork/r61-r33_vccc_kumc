@@ -8,6 +8,9 @@ Auxillary tables:
 1. NPPES data and metadata
 */ 
 
+set 
+
+
 /*collect all patients with at least 1 SBP record and calculate age at measurement*/
 create or replace table BP_Cohort as
 -- SBP and DBP from VITAL table
