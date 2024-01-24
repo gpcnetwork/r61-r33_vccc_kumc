@@ -10,6 +10,9 @@ root_dir<-file.path(
   'C:',"repos","r61-r33-vccc-kumc"
 )
 
+enc_excld<-read.csv(file.path(root_dir,"private","CDM","encounter_limited.csv"), stringsAsFactors = F) %>%
+  filter(enc_type %in% c("IP","EI","ED","IS"))
+
 bp<-read.csv(file.path(root_dir,"private","REDCap","BloodPressure.csv"), stringsAsFactors = F) %>%
   select(study_id,redcap_event_name,avg_calculated_sbp,avg_calculated_dbp,visit_bp_datetime_m1) %>%
   filter(!is.na(avg_calculated_sbp)) %>%
@@ -58,6 +61,7 @@ bp<-read.csv(file.path(root_dir,"private","REDCap","BloodPressure.csv"), strings
   mutate(idx = as.integer(idx)) %>%
   bind_rows(
     read.csv(file.path(root_dir,"private","CDM","vital_limited.csv"), stringsAsFactors = F) %>%
+      anti_join(enc_excld, by=c("patid","encounterid")) %>%
       select(participantid,systolic,diastolic,measure_date) %>%
       rename(
         study_id = participantid,
@@ -93,8 +97,19 @@ bp_long<-bp %>%
 
 saveRDS(bp_long,file=file.path(root_dir,"private","bp_long.rda"))
 
+part_ind<-bp %>% select(study_id) %>% unique %>%
+  left_join(
+    read.csv(file.path(root_dir,"private","REDCap","qardio_data.csv"),stringsAsFactors = F) %>%
+      select(study_id) %>% unique %>%
+      mutate(intx_ind = 1),
+    by="study_id"
+  ) %>%
+  replace_na(list(intx_ind=0))
+
+saveRDS(part_ind,file=file.path(root_dir,"private","part_ind.rda"))
 
 med_sel<-read.csv(file.path(root_dir,"private","CDM","prescribing_limited.csv")) %>%
+  # filter(!enc_type %in% c("IP","ED","EI","IS")) %>%
   select(participantid,patid,prescribingid,medication_class) %>%
   rename(study_id = participantid)
 
@@ -125,6 +140,7 @@ med_ref<-read.csv(file.path(root_dir,"ref","med_rxcui_ref.csv"), stringsAsFactor
   )
 
 med<-read.csv(file.path(root_dir,"private","CDM","prescribing.csv"),stringsAsFactors = F) %>%
+  # filter(!enc_type %in% c("IP","ED","EI","IS")) %>%
   select(patid,participantid,prescribingid,rxnorm_cui,raw_rx_med_name,rx_order_date,rx_start_date,rx_end_date,rx_dose_ordered,rx_dose_ordered_unit,rx_quantity,rx_dose_form,rx_route,rx_frequency,rx_refills) %>%
   mutate(
     rx_order_date = as.Date(rx_order_date),

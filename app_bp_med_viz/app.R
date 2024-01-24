@@ -23,7 +23,7 @@ ui<-dashboardPage(
         selectInput(
           "id", 
           h4("Patient ID (random)"), 
-          choices = c(1:100),
+          choices = c(1:150),
           selected = 1
         )
       ),
@@ -135,7 +135,7 @@ server <- function(input, output, session) {
     # individual plot of Non-AH use
     med_sample_nhtn<-datainput1() %>% filter(AntiHTN_ind==0)
     if(nrow(med_sample_nhtn)==0){
-      med_htn_plt<-ggplot() +
+      med_nhtn_plt<-ggplot() +
         theme_void() +
         geom_text(aes(0,0,label='No Non-Antihypertive Medications')) +
         xlab(NULL)
@@ -187,6 +187,9 @@ server <- function(input, output, session) {
     )+
       geom_line(aes(group = bp_type)) +
       geom_point(aes(shape = type),size=3,alpha=0.8) +
+      geom_hline(yintercept = 130,linetype=2) + 
+      geom_hline(yintercept = 140,linetype=2) + 
+      geom_hline(yintercept = 160,linetype=2) + 
       geom_vline(xintercept = 0,linetype=2) + 
       geom_vline(xintercept = datainput2(),linetype=3) + 
       scale_x_continuous('days since enroll',breaks = seq(datainput4()[1], datainput4()[2], by=30),limits=c(datainput4()[1],datainput4()[2])) + 
@@ -197,7 +200,7 @@ server <- function(input, output, session) {
     
     # put everything together
     aligned_plots<-align_plots(bp_plt,med_htn_plt,med_nhtn_plt,align="v", axis="l")
-    plot_grid(aligned_plots[[1]], aligned_plots[[2]], aligned_plots[[3]], ncol = 1)
+    plot_grid(aligned_plots[[1]], aligned_plots[[2]], aligned_plots[[3]], ncol = 1, rel_heights = c(1,1,1.5))
   })
 }
 
