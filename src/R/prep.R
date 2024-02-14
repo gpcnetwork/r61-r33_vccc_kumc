@@ -23,7 +23,7 @@ bp<-read.csv(file.path(root_dir,"private","REDCap","BloodPressure.csv"), strings
     date = visit_bp_datetime_m1
   ) %>%
   bind_rows(
-    read.csv(file.path(root_dir,"private","REDCap","qardio_data.csv"),stringsAsFactors = F) %>% 
+    read.csv(file.path(root_dir,"private","REDCap","qardio_data_2024-02-12.csv"),stringsAsFactors = F) %>% 
       select(study_id,redcap_event_name,bp_date,sys,dia) %>%
       rename(
         event_name = redcap_event_name,
@@ -97,17 +97,6 @@ bp_long<-bp %>%
 
 saveRDS(bp_long,file=file.path(root_dir,"private","bp_long.rda"))
 
-part_ind<-bp %>% select(study_id) %>% unique %>%
-  left_join(
-    read.csv(file.path(root_dir,"private","REDCap","qardio_data.csv"),stringsAsFactors = F) %>%
-      select(study_id) %>% unique %>%
-      mutate(intx_ind = 1),
-    by="study_id"
-  ) %>%
-  replace_na(list(intx_ind=0))
-
-saveRDS(part_ind,file=file.path(root_dir,"private","part_ind.rda"))
-
 med_sel<-read.csv(file.path(root_dir,"private","CDM","prescribing_limited.csv")) %>%
   # filter(!enc_type %in% c("IP","ED","EI","IS")) %>%
   select(participantid,patid,prescribingid,medication_class) %>%
@@ -173,7 +162,7 @@ med<-read.csv(file.path(root_dir,"private","CDM","prescribing.csv"),stringsAsFac
   ) %>% 
   filter(rx_start_since_index>=-180) %>%
   left_join(med_ref,by=c("rxnorm_cui" = "RXNORM_CUI")) %>%
-  left_join(med_sel,by=c("study_id","patid","prescribingid")) %>%
+  left_join(med_sel,by=c("study_id","patid","prescribingid"),multiple = "all") %>%
   mutate(
     AntiHTN_ind = coalesce(AntiHTN_ind,as.numeric(!is.na(medication_class))),
     in_or_name = coalesce(IN,raw_rx_med_name),

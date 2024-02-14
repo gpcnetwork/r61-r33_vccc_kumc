@@ -53,14 +53,14 @@ bp_ku<-bp_long %>%
   mutate(days_since_last = days_since_index - days_since_index_lag1)
 
 bp_ku %>% 
-  group_by(study_id,type,intx_ind) %>%
+  group_by(study_id,type) %>%
   summarize(
     cnt = length(unique(days_since_index)),
     delta_m = mean(days_since_last,na.rm=T),
     delta_sd = sd(days_since_last,na.rm=T),
     .groups = 'drop') %>%
   mutate(prop = round(cnt/length(id_ku),3)) %>%
-  group_by(type,intx_ind) %>%
+  group_by(type) %>%
   summarize(
     pat_n = length(unique(study_id)),
     cnt_m = round(mean(cnt)),
@@ -83,7 +83,7 @@ bp_ku %>%
 -   `elig`: BP collected at two adjacent visits when eligibility criteria was satisfied
 -   `visit`: daily Qardio extracts for taken at home
 
-Let's take a look at a few BP trajectory examples: 
+Let's take a look at a few BP trajectory examples:
 
 ```{r}
 #| label: plot-bp
@@ -187,7 +187,6 @@ We collected all prescription data from CDM PRESCRIBING table provided by KUMC t
 
 -   CV806: direct renin inhibitor
 
-
 ### Analysis I: How strongly is the clinic-home bp gap associated with anti-hypertensive medication prescrition during the run-in period?
 
 ```{r}
@@ -267,7 +266,6 @@ cohort_summ<-univar_analysis_mixed(
 cohort_summ %>% kable_paper(bootstrap_options = "striped", full_width = F)
 ```
 
-
 ## Analysis II: multi-variable modeling to investigate how much of BP drop can be explained by BP meds during the run-in period
 
 ```{r}
@@ -308,6 +306,7 @@ var_sel<-cohort_summ %>%
 ```
 
 
+
 ```{r}
 # Specify a null model with no predictors
 null_model <- glm(decr_ind ~ 1, 
@@ -330,3 +329,4 @@ pROC::ggroc(pROC::roc(step_model$y, step_model$fitted))+
 
 ```
 
+## Analysis III: 
