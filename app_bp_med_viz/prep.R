@@ -6,7 +6,7 @@ root_dir<-file.path(
   'C:',"repos","r61-r33-vccc-kumc"
 )
 
-n<-150
+n<-200
 sample_df<-readRDS(file.path(root_dir,"private","bp_long.rda")) %>%
   select(study_id) %>% 
   unique %>% 
