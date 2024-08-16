@@ -127,16 +127,14 @@ if(!file.exists(path_to_file)){
     mutate(gap_sign = case_when(
       gap_sign==-1&bp_val[type=="baseline"]<130 ~ 'deltasbp1',
       gap_sign==-1&bp_val[type=="baseline"]>=130&bp_val[type=="baseline"]<140 ~ 'deltasbp2',
-      gap_sign==-1&bp_val[type=="baseline"]>=140 ~ 'deltasbp3',
-      TRUE ~ 'deltasbp4')
+      TRUE ~ 'deltasbp3')
     ) %>%
     mutate(
       gap_sign_label = recode(
         gap_sign,
         'deltasbp1' = '1.decrease-to-normal',
         'deltasbp2' = '2.decrease-to-uneligible',
-        'deltasbp3' = '3.decrease-but-eligible',
-        'deltasbp4' = '4.no-decrease'
+        'deltasbp3' = '3.decrease-but-eligible-or-same'
       )
     ) %>%
     mutate(
@@ -188,9 +186,9 @@ if(!file.exists(path_to_file)){
     group_by(RXNORM_CUI) %>%
     arrange(IN,VA_CLS) %>%
     summarise(
-      IN = paste0(unique(IN),collapse = ';'),
+      IN = paste0(unique(IN),collapse = '_'),
       STR = STR[1],
-      VA_CLS = paste0(unique(VA_CLS),collapse = ';'),
+      VA_CLS = paste0(unique(VA_CLS),collapse = '_'),
       VA_CLS_CD = paste0(unique(VA_CLS_CD),collapse = '_'),
       AntiHTN_ind = max(AntiHTN_ind),
       .groups = 'drop'
@@ -260,39 +258,37 @@ if(!file.exists(path_to_file)){
       rx_timing = case_when(
         rx_start_since_index<=elig_since_index ~ 'bef',
         rx_start_since_index>elig_since_index ~ 'runin'
+      ),
+      runin_cont = case_when(
+        rx_start_since_index<=elig_since_index&rx_end_since_index<=elig_since_index ~ 1,
+        TRUE ~ 0
       )
     )
   
   antihtn_t_dose<-antihtn %>%
-    group_by(study_id,in_or_name_s,rx_timing) %>%
+    group_by(study_id,in_or_name,rx_timing) %>%
     summarise(dose_mean = mean(rx_dose_ordered,na.rm=T),.groups = 'drop') %>%
     filter(!(dose_mean==-Inf)) %>%
-    group_by(study_id,in_or_name_s) %>%
+    group_by(study_id,in_or_name) %>%
     reframe(dose_inc = case_when(
       dose_mean[rx_timing=='runin']>dose_mean[rx_timing=='bef'] ~ 1
     )) %>%
     filter(!is.na(dose_inc)) %>%
     pivot_wider(
-      names_from = 'in_or_name_s',
+      names_from = 'in_or_name',
       values_from = 'dose_inc',
       values_fill = 0,
-      names_glue = "{in_or_name_s}_does_inc"
+      names_glue = "{in_or_name}_does_inc"
     ) %>%
     mutate(antihtn_dose_inc = 1)
   
   antihtn_t_stk<-antihtn %>%
-    select(study_id,rx_timing) %>%
-    unique %>% 
-    mutate(name="antihtn",ind=1) %>%
+    select(study_id,in_or_name,rx_timing) %>%
+    unique %>% mutate(ind=1) %>%
+    rename(name=in_or_name) %>%
     bind_rows(
       antihtn %>%
-        select(study_id,in_or_name_s,rx_timing) %>%
-        unique %>% mutate(ind=1) %>%
-        rename(name=in_or_name_s)
-    ) %>%
-    bind_rows(
-      antihtn %>%
-        select(study_id,VA_CLS_CD,rx_timing) %>%
+        select(study_id,VA_CLS_CD,rx_timing,runin_cont) %>%
         unique %>% mutate(ind=1) %>%
         rename(name=VA_CLS_CD)
     ) %>%
@@ -304,8 +300,9 @@ if(!file.exists(path_to_file)){
     mutate(
       use_cat = case_when(
         bef==1&runin==1 ~ 'maintain',
-        bef==0&runin==1 ~ 'runin_start',
-        bef==1&runin==0 ~ 'runin_stop'
+        bef==1&runin_cont==1 ~ 'maintain',
+        bef==1&(runin==0|runin_cont==0) ~ 'runin_stop',
+        bef==0&runin==1 ~ 'runin_start'
       ),
       ind=1
     ) %>%
@@ -316,8 +313,48 @@ if(!file.exists(path_to_file)){
       values_from = 'ind',
       values_fill = 0
     )
+  
+  antihtn_t_add_med<-bp %>%
+    select(study_id) %>% unique %>%
+    left_join(
+      antihtn %>%
+        filter(rx_start_since_index-elig_since_index >= -90) %>%
+        select(study_id,rx_timing,in_or_name,runin_cont) %>%
+        unique %>% 
+        group_by(study_id,rx_timing) %>%
+        summarise(
+          in_cnt = length(unique(in_or_name)),
+          runin_cont_cnt = length(unique(in_or_name[runin_cont==1])),
+          .groups = "drop"
+        ) %>%
+        pivot_wider(
+          names_from = 'rx_timing',
+          values_from = 'in_cnt',
+          values_fill = 0
+        ) %>%
+        mutate(
+          antihtn_delta_med = case_when(
+            bef == 0 & runin == 0 ~ 'untreated',
+            bef == 0 & runin > 0 ~ 'antihtn_runin',
+            runin_cont_cnt == 0 & runin > 0 ~ 'antihtn_add',
+            bef - runin_cont_cnt > 0 & runin < bef ~ 'antihtn_rm',
+            TRUE ~ 'antihtn_mt'
+          )
+        ),
+      by="study_id"
+    ) %>%
+    replace_na(list(antihtn_delta_med='untreated')) %>%
+    select(study_id,antihtn_delta_med) %>% 
+    unique %>% 
+    mutate(antihtn_delta_med2 = antihtn_delta_med, ind = 1) %>%
+    pivot_wider(
+      names_from = 'antihtn_delta_med2',
+      values_from = 'ind',
+      values_fill = 0
+    )
     
    antihtn_t<-bp %>% select(study_id) %>% unique %>%
+     left_join(antihtn_t_add_med,by="study_id") %>%
      left_join(antihtn_t_stk,by="study_id") %>%
      left_join(antihtn_t_dose,by="study_id") %>%
      replace(is.na(. ), 0)
@@ -355,7 +392,6 @@ if(!file.exists(path_to_file)){
     filter(!is.na(sex)&!is.na(age))
   # clean up column names
   colnm<-colnames(baseline_aset)
-  colnm<-gsub(";","",colnm)
   colnm<-gsub(" ","_",colnm)
   colnm<-gsub("/","_",colnm)
   colnm<-gsub("-","_",colnm)
@@ -366,3 +402,4 @@ if(!file.exists(path_to_file)){
 }else{
   baseline_aset<-readRDS(path_to_file)
 }
+

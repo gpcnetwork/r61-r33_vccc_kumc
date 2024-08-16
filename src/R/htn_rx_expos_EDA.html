@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Xing Song">
+
+<title>Exploring potential explanations for eligibility drift</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="htn_rx_expos_EDA_files/libs/clipboard/clipboard.min.js"></script>
+<script src="htn_rx_expos_EDA_files/libs/quarto-html/quarto.js"></script>
+<script src="htn_rx_expos_EDA_files/libs/quarto-html/popper.min.js"></script>
+<script src="htn_rx_expos_EDA_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="htn_rx_expos_EDA_files/libs/quarto-html/anchor.min.js"></script>
+<link href="htn_rx_expos_EDA_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="htn_rx_expos_EDA_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="htn_rx_expos_EDA_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="htn_rx_expos_EDA_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="htn_rx_expos_EDA_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="htn_rx_expos_EDA_files/libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="htn_rx_expos_EDA_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exploring potential explanations for eligibility drift</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Xing Song </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="data-availability-coverage" class="level1">
+<h1>Data Availability &amp; Coverage</h1>
+<ul>
+<li><code>baseline</code>: BP extracts from Qardio at baseline visit, serving as <em>index_date</em></li>
+<li><code>clinic</code>: BP collected at visits which got transformed into CDM VITAL table (excluding IP, ED, EI)</li>
+<li><code>elig</code>: BP collected at two adjacent visits when eligibility criteria was satisfied</li>
+<li><code>visit</code>: daily Qardio extracts for taken at home</li>
+</ul>
+<p>Let’s take a look at a few BP trajectory examples of these different types:</p>
+<section id="clinic-bp-vs.-home-bp-at-baseline" class="level2">
+<h2 class="anchored" data-anchor-id="clinic-bp-vs.-home-bp-at-baseline">Clinic BP vs.&nbsp;Home BP at Baseline</h2>
+<p>We define the following stratification groups: 1. based on eligibility sbp:</p>
+<ul>
+<li>esbp1: 140 - 150</li>
+<li>esbp2: 150 - 160</li>
+<li>esbp3: &gt; 160</li>
+</ul>
+<ol start="2" type="1">
+<li>based on baseline sbp:</li>
+</ol>
+<ul>
+<li>bsbp1: 140 - 150</li>
+<li>bsbp2: 150 - 160</li>
+<li>bsbp3: &gt; 160</li>
+</ul>
+<ol start="3" type="1">
+<li>based on change from eligibility to baseline sbp:</li>
+</ol>
+<ul>
+<li>deltasbp1: sbp decreased to below 130</li>
+<li>deltasbp2: sbp decreased to between 130 and 140</li>
+<li>deltasbp3: sbp decreased but remain above 140 or not decreased</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="htn_rx_expos_EDA_files/figure-html/bp-baseline-plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="htn_rx_expos_EDA_files/figure-html/bp-baseline-plot-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="htn_rx_expos_EDA_files/figure-html/bp-baseline-plot-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 4
+  gap_sign_label                    cnt     N  prop
+  &lt;chr&gt;                           &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+1 1.decrease-to-normal              183   516 0.355
+2 2.decrease-to-uneligible          123   516 0.238
+3 3.decrease-but-eligible-or-same   210   516 0.407</code></pre>
+</div>
+</div>
+<p>As shown above, the run-in period duration averaged around 35 (21.9) days, and we identified about 36% with significant eligibility drift (to below 130 at baseline).</p>
+</section>
+<section id="investigation-how-much-of-the-eligibility-drift-can-be-explained-by-anti-hypertensive-medication-use-during-the-run-in-period" class="level2">
+<h2 class="anchored" data-anchor-id="investigation-how-much-of-the-eligibility-drift-can-be-explained-by-anti-hypertensive-medication-use-during-the-run-in-period">Investigation: How much of the eligibility drift can be explained by anti-hypertensive medication use during the run-in period?</h2>
+<p>We set out to investigate what could be some legitimate reasons occured during the run-in period (i.e., the time period between eligibility and recruitment/randomization) to explain this eligibility drift. For this investigation, we also collected all prescription data from CDM PRESCRIBING table provided by KUMC team and identified the following anti-HTN medications (using VA classifications) as well as their timings (start before eligibility visit or during the run-in period):</p>
+<ul>
+<li><p>CV100: beta blockers/related</p></li>
+<li><p>CV150: alpha blockers/related</p></li>
+<li><p>CV200: calcium channel blockers</p></li>
+<li><p>CV400: anti-hypertensive combinations</p></li>
+<li><p>CV490: antihypertensive, others</p></li>
+<li><p>CV701: thiazides/related diuretics</p></li>
+<li><p>CV702: loop diuretics</p></li>
+<li><p>CV703: carbonic anhydrase inhibitor diuretics</p></li>
+<li><p>CV704: potassium sparing/combinations diretics</p></li>
+<li><p>CV709: diuretics, other</p></li>
+<li><p>CV800: ACE inhibitors</p></li>
+<li><p>CV805: angiotensin II inhibitor</p></li>
+<li><p>CV806: direct renin inhibitor</p></li>
+</ul>
+<section id="analysis-i-using-systematic-explanatory-feature-screening-to-investigate-what-are-the-explanatory-factors-for-significant-bp-drop" class="level3">
+<h3 class="anchored" data-anchor-id="analysis-i-using-systematic-explanatory-feature-screening-to-investigate-what-are-the-explanatory-factors-for-significant-bp-drop">Analysis I: Using systematic explanatory feature screening to investigate what are the explanatory factors for significant BP drop</h3>
+<p>Using prescription data, we included 160 factors that includes:</p>
+<ul>
+<li>41 anti-hyptertensive drug use pattern (generic name &amp; class) indicators suggesting a drug started before and continued during the run-in period;</li>
+<li>28 anti-hyptertensive drug use pattern (generic name &amp; class) indicators suggesting a drug started during the run-in period;</li>
+<li>65 anti-hyptertensive drug use pattern (generic name &amp; class) indicators suggesting a drug started before but no new prescription was observed during the run-in period;</li>
+<li>11 anti-hyptertensive drug use pattern indicators suggesting a dose increase of a generic drug</li>
+<li>age at baseline, sex, race, ethnicity, eligibility SBP</li>
+</ul>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                    Stratified by antihtn_delta_med
+                                     antihtn_add antihtn_mt antihtn_rm 
+  n                                  88          30         268        
+  gap_sign_label (%)                                                   
+     1.decrease-to-normal            39 (44.3)   12 (40.0)   93 (34.7) 
+     2.decrease-to-uneligible        20 (22.7)    7 (23.3)   60 (22.4) 
+     3.decrease-but-eligible-or-same 29 (33.0)   11 (36.7)  115 (42.9) 
+                                    Stratified by antihtn_delta_med
+                                     antihtn_runin untreated   p      test
+  n                                  54            102                    
+  gap_sign_label (%)                                            0.691     
+     1.decrease-to-normal            17 (31.5)      32 (31.4)             
+     2.decrease-to-uneligible        14 (25.9)      28 (27.5)             
+     3.decrease-but-eligible-or-same 23 (42.6)      42 (41.2)             </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                    Stratified by antihtn_dose_inc
+                                     0           1          p      test
+  n                                  508         34                    
+  gap_sign_label (%)                                         0.896     
+     1.decrease-to-normal            182 (35.8)  11 (32.4)             
+     2.decrease-to-uneligible        120 (23.6)   9 (26.5)             
+     3.decrease-but-eligible-or-same 206 (40.6)  14 (41.2)             </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: esbp_median 
+test variable: bsbp 
+test variable: elig_since_index 
+test variable: esbp_group 
+test variable: bsbp_group 
+test variable: antihtn_delta_med 
+test variable: untreated 
+test variable: antihtn_add 
+test variable: antihtn_rm 
+test variable: antihtn_runin 
+test variable: antihtn_mt 
+test variable: amlodipine_runin_stop 
+test variable: losartan_maintain 
+test variable: hydrochlorothiazide_runin_stop 
+test variable: lisinopril_runin_stop 
+test variable: tamsulosin_runin_stop 
+test variable: sildenafil_runin_stop 
+test variable: losartan_runin_start 
+test variable: metoprolol_runin_stop 
+test variable: losartan_runin_stop 
+test variable: hydrochlorothiazide_olmesartan_runin_stop 
+test variable: furosemide_runin_stop 
+test variable: hydralazine_runin_stop 
+test variable: doxazosin_runin_stop 
+test variable: labetalol_runin_stop 
+test variable: chlorthalidone_runin_stop 
+test variable: ramipril_runin_stop 
+test variable: spironolactone_runin_stop 
+test variable: irbesartan_runin_stop 
+test variable: valsartan_runin_stop 
+test variable: hydrochlorothiazide_losartan_runin_stop 
+test variable: propranolol_runin_stop 
+test variable: amlodipine_maintain 
+test variable: quinapril_runin_stop 
+test variable: nebivolol_runin_stop 
+test variable: benazepril_hydrochlorothiazide_maintain 
+test variable: carvedilol_runin_stop 
+test variable: sotalol_runin_stop 
+test variable: tadalafil_runin_stop 
+test variable: hydrochlorothiazide_lisinopril_runin_stop 
+test variable: felodipine_runin_stop 
+test variable: lisinopril_runin_start 
+test variable: diltiazem_runin_stop 
+test variable: benazepril_runin_stop 
+test variable: atenolol_runin_stop 
+test variable: metoprolol_maintain 
+test variable: verapamil_runin_stop 
+test variable: bumetanide_runin_stop 
+test variable: carvedilol_runin_start 
+test variable: hydrochlorothiazide_losartan_maintain 
+test variable: telmisartan_runin_stop 
+test variable: prazosin_maintain 
+test variable: carvedilol_maintain 
+test variable: spironolactone_runin_start 
+test variable: clonidine_runin_stop 
+test variable: felodipine_maintain 
+test variable: bisoprolol_hydrochlorothiazide_runin_start 
+test variable: furosemide_maintain 
+test variable: hydrochlorothiazide_maintain 
+test variable: nicardipine_runin_stop 
+test variable: atenolol_runin_start 
+test variable: hydrochlorothiazide_runin_start 
+test variable: bisoprolol_hydrochlorothiazide_runin_stop 
+test variable: eplerenone_maintain 
+test variable: hydrochlorothiazide_triamterene_runin_stop 
+test variable: lisinopril_maintain 
+test variable: olmesartan_runin_stop 
+test variable: amlodipine_runin_start 
+test variable: doxazosin_maintain 
+test variable: metoprolol_runin_start 
+test variable: candesartan_runin_stop 
+test variable: propranolol_maintain 
+test variable: hydrochlorothiazide_valsartan_runin_stop 
+test variable: hydrochlorothiazide_irbesartan_runin_stop 
+test variable: aliskiren_runin_stop 
+test variable: bisoprolol_runin_stop 
+test variable: olmesartan_maintain 
+test variable: hydralazine_maintain 
+test variable: enalapril_runin_start 
+test variable: hydrochlorothiazide_telmisartan_runin_stop 
+test variable: hydrochlorothiazide_triamterene_maintain 
+test variable: torsemide_runin_stop 
+test variable: amiloride_runin_stop 
+test variable: chlorothiazide_runin_stop 
+test variable: amlodipine_olmesartan_runin_stop 
+test variable: bumetanide_runin_start 
+test variable: torsemide_maintain 
+test variable: hydrochlorothiazide_lisinopril_maintain 
+test variable: tamsulosin_maintain 
+test variable: hydrochlorothiazide_spironolactone_maintain 
+test variable: valsartan_maintain 
+test variable: alfuzosin_runin_stop 
+test variable: hydrochlorothiazide_losartan_runin_start 
+test variable: telmisartan_runin_start 
+test variable: furosemide_runin_start 
+test variable: chlorthalidone_runin_start 
+test variable: tadalafil_maintain 
+test variable: verapamil_runin_start 
+test variable: irbesartan_maintain 
+test variable: nebivolol_maintain 
+test variable: bisoprolol_maintain 
+test variable: sildenafil_maintain 
+test variable: hydralazine_runin_start 
+test variable: perindopril_runin_stop 
+test variable: acetazolamide_runin_stop 
+test variable: prazosin_runin_stop 
+test variable: telmisartan_maintain 
+test variable: candesartan_hydrochlorothiazide_runin_stop 
+test variable: esmolol_runin_stop 
+test variable: spironolactone_maintain 
+test variable: CV200_runin_stop 
+test variable: CV805_maintain 
+test variable: CV701_maintain 
+test variable: CV800_maintain 
+test variable: CV800_runin_stop 
+test variable: CV150_maintain 
+test variable: CV200_maintain 
+test variable: CV490_GU900_maintain 
+test variable: CV701_runin_stop 
+test variable: CV805_runin_start 
+test variable: CV100_maintain 
+test variable: CV100_runin_stop 
+test variable: CV805_runin_stop 
+test variable: CV400_runin_stop 
+test variable: CV702_maintain 
+test variable: CV490_runin_stop 
+test variable: CV150_runin_stop 
+test variable: CV704_runin_stop 
+test variable: CV490_maintain 
+test variable: CV704_maintain 
+test variable: CV400_maintain 
+test variable: CV490_GU900_runin_stop 
+test variable: CV800_runin_start 
+test variable: CV702_runin_stop 
+test variable: CV200_runin_start 
+test variable: CV704_runin_start 
+test variable: CV400_runin_start 
+test variable: CV100_runin_start 
+test variable: CV701_runin_start 
+test variable: CV806_runin_stop 
+test variable: CV150_runin_start 
+test variable: CV702_runin_start 
+test variable: CV490_GU900_runin_start 
+test variable: CV490_runin_start 
+test variable: CV703_maintain 
+test variable: losartan_does_inc 
+test variable: amlodipine_does_inc 
+test variable: metoprolol_does_inc 
+test variable: doxazosin_does_inc 
+test variable: olmesartan_does_inc 
+test variable: carvedilol_does_inc 
+test variable: furosemide_does_inc 
+test variable: valsartan_does_inc 
+test variable: lisinopril_does_inc 
+test variable: hydrochlorothiazide_losartan_does_inc 
+test variable: hydrochlorothiazide_does_inc 
+test variable: antihtn_dose_inc 
+test variable: sex 
+test variable: race 
+test variable: ethnicity 
+test variable: age </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                        var1                       var2 odds_ratio    ci_lower
+1                        sex                       sex2  1.9558106 1.337776257
+2      tamsulosin_runin_stop      tamsulosin_runin_stop  0.2991453 0.120424534
+3             CV150_maintain             CV150_maintain  0.3291358 0.121971829
+4     hydralazine_runin_stop     hydralazine_runin_stop  2.0079099 1.040708653
+5        atenolol_runin_stop        atenolol_runin_stop  0.1159722 0.006388378
+6     propranolol_runin_stop     propranolol_runin_stop  9.2553191 1.478621928
+7     lisinopril_runin_start     lisinopril_runin_start  9.2553191 1.478621928
+8        amlodipine_maintain        amlodipine_maintain  2.0087395 1.006446694
+9           CV400_runin_stop           CV400_runin_stop  0.5121547 0.251449379
+10          CV150_runin_stop           CV150_runin_stop  0.4902420 0.225382300
+11            CV800_maintain             CV800_maintain  0.5744474 0.318267704
+12               antihtn_add                antihtn_add  1.5504903 0.972035259
+13         antihtn_delta_med antihtn_delta_meduntreated  0.5743590 0.315793140
+14       furosemide_maintain        furosemide_maintain  4.6143617 0.984313507
+15         CV100_runin_start          CV100_runin_start  2.2832723 0.928324539
+16                esbp_group            esbp_groupesbp2  0.7136583 0.482456453
+17 chlorthalidone_runin_stop  chlorthalidone_runin_stop  0.3891828 0.111191402
+      ci_upper     p_value
+1    2.8892468 0.000626310
+2    0.6425920 0.004134568
+3    0.7504711 0.014684187
+4    3.8872468 0.036782146
+5    0.5788565 0.037706375
+6  178.0160602 0.042926946
+7  178.0160602 0.042926946
+8    4.0259861 0.046814797
+9    0.9728452 0.050532629
+10   0.9776885 0.054306071
+11   0.9942297 0.055084157
+12   2.4611796 0.063545332
+13   1.0368698 0.066910735
+14  32.4346102 0.069201830
+15   5.7609506 0.071911886
+16   1.0512978 0.089210213
+17   1.0611318 0.092090760</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="lightable-material lightable-striped lightable-hover lightable-classic caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">var</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">cat</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">exposure=0</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">exposure=1</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">p.value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">var_lbl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">n</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">333</td>
+<td style="text-align: left;">183</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">n</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sex</td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">137 (41.1%) [0]</td>
+<td style="text-align: left;">48 (26.2%) [0]</td>
+<td style="text-align: left;">0.002</td>
+<td style="text-align: left;">sex</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">2,n(%) [miss]</td>
+<td style="text-align: left;">196 (58.9%) [0]</td>
+<td style="text-align: left;">135 (73.8%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tamsulosin_runin_stop</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">298 (89.5%) [0]</td>
+<td style="text-align: left;">176 (96.2%) [0]</td>
+<td style="text-align: left;">0.003</td>
+<td style="text-align: left;">tamsulosin_runin_stop</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">35 (10.5%) [0]</td>
+<td style="text-align: left;">7 (3.8%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CV150_maintain</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">304 (91.3%) [0]</td>
+<td style="text-align: left;">177 (96.7%) [0]</td>
+<td style="text-align: left;">0.0125</td>
+<td style="text-align: left;">CV150_maintain</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">29 (8.7%) [0]</td>
+<td style="text-align: left;">6 (3.3%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hydralazine_runin_stop</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">315 (94.6%) [0]</td>
+<td style="text-align: left;">168 (91.8%) [0]</td>
+<td style="text-align: left;">0.0415</td>
+<td style="text-align: left;">hydralazine_runin_stop</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">18 (5.4%) [0]</td>
+<td style="text-align: left;">15 (8.2%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">atenolol_runin_stop</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">321 (96.4%) [0]</td>
+<td style="text-align: left;">182 (99.4%) [0]</td>
+<td style="text-align: left;">0.012</td>
+<td style="text-align: left;">atenolol_runin_stop</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">12 (3.6%) [0]</td>
+<td style="text-align: left;">1 (0.5%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">propranolol_runin_stop</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">332 (99.7%) [0]</td>
+<td style="text-align: left;">178 (97.3%) [0]</td>
+<td style="text-align: left;">0.03</td>
+<td style="text-align: left;">propranolol_runin_stop</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">1 (0.3%) [0]</td>
+<td style="text-align: left;">5 (2.7%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lisinopril_runin_start</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">332 (99.7%) [0]</td>
+<td style="text-align: left;">179 (97.8%) [0]</td>
+<td style="text-align: left;">0.02</td>
+<td style="text-align: left;">lisinopril_runin_start</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">1 (0.3%) [0]</td>
+<td style="text-align: left;">4 (2.2%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">amlodipine_maintain</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">318 (95.5%) [0]</td>
+<td style="text-align: left;">170 (92.9%) [0]</td>
+<td style="text-align: left;">0.0415</td>
+<td style="text-align: left;">amlodipine_maintain</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">15 (4.5%) [0]</td>
+<td style="text-align: left;">13 (7.1%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CV400_runin_stop</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">295 (88.6%) [0]</td>
+<td style="text-align: left;">171 (93.4%) [0]</td>
+<td style="text-align: left;">0.0475</td>
+<td style="text-align: left;">CV400_runin_stop</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">38 (11.4%) [0]</td>
+<td style="text-align: left;">12 (6.6%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CV150_runin_stop</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">301 (90.4%) [0]</td>
+<td style="text-align: left;">173 (94.5%) [0]</td>
+<td style="text-align: left;">0.0475</td>
+<td style="text-align: left;">CV150_runin_stop</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">32 (9.6%) [0]</td>
+<td style="text-align: left;">10 (5.5%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CV800_maintain</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">285 (85.6%) [0]</td>
+<td style="text-align: left;">165 (90.2%) [0]</td>
+<td style="text-align: left;">0.0645</td>
+<td style="text-align: left;">CV800_maintain</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">48 (14.4%) [0]</td>
+<td style="text-align: left;">18 (9.8%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">antihtn_add</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">284 (85.3%) [0]</td>
+<td style="text-align: left;">144 (78.7%) [0]</td>
+<td style="text-align: left;">0.0655</td>
+<td style="text-align: left;">antihtn_add</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">49 (14.7%) [0]</td>
+<td style="text-align: left;">39 (21.3%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">antihtn_delta_med</td>
+<td style="text-align: left;">antihtn_add,n(%) [miss]</td>
+<td style="text-align: left;">49 (14.7%) [0]</td>
+<td style="text-align: left;">39 (21.3%) [0]</td>
+<td style="text-align: left;">0.3618</td>
+<td style="text-align: left;">antihtn_delta_med</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">antihtn_mt,n(%) [miss]</td>
+<td style="text-align: left;">18 (5.4%) [0]</td>
+<td style="text-align: left;">12 (6.6%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">antihtn_rm,n(%) [miss]</td>
+<td style="text-align: left;">175 (52.5%) [0]</td>
+<td style="text-align: left;">93 (50.8%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">antihtn_runin,n(%) [miss]</td>
+<td style="text-align: left;">37 (11.1%) [0]</td>
+<td style="text-align: left;">17 (9.3%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">untreated,n(%) [miss]</td>
+<td style="text-align: left;">70 (21%) [0]</td>
+<td style="text-align: left;">32 (17.5%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">furosemide_maintain</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">331 (99.4%) [0]</td>
+<td style="text-align: left;">179 (97.8%) [0]</td>
+<td style="text-align: left;">0.059</td>
+<td style="text-align: left;">furosemide_maintain</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">2 (0.6%) [0]</td>
+<td style="text-align: left;">4 (2.2%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CV100_runin_start</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">325 (97.6%) [0]</td>
+<td style="text-align: left;">174 (95.1%) [0]</td>
+<td style="text-align: left;">0.092</td>
+<td style="text-align: left;">CV100_runin_start</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">8 (2.4%) [0]</td>
+<td style="text-align: left;">9 (4.9%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">esbp_group</td>
+<td style="text-align: left;">esbp1,n(%) [miss]</td>
+<td style="text-align: left;">143 (42.9%) [0]</td>
+<td style="text-align: left;">97 (53%) [0]</td>
+<td style="text-align: left;">0.1829</td>
+<td style="text-align: left;">esbp_group</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">esbp2,n(%) [miss]</td>
+<td style="text-align: left;">131 (39.3%) [0]</td>
+<td style="text-align: left;">60 (32.8%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">esbp3,n(%) [miss]</td>
+<td style="text-align: left;">59 (17.7%) [0]</td>
+<td style="text-align: left;">26 (14.2%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">chlorthalidone_runin_stop</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">316 (94.9%) [0]</td>
+<td style="text-align: left;">179 (97.8%) [0]</td>
+<td style="text-align: left;">0.1174</td>
+<td style="text-align: left;">chlorthalidone_runin_stop</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">17 (5.1%) [0]</td>
+<td style="text-align: left;">4 (2.2%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Start:  AIC=707.83
+sig_decr_ind1 ~ 1
+
+                            Df Deviance    AIC
++ sex                        1   693.66 697.66
++ tamsulosin_runin_stop      1   695.51 699.51
++ atenolol_runin_stop        1   697.86 701.86
++ CV150_maintain             1   698.50 702.50
++ propranolol_runin_stop     1   699.96 703.96
++ lisinopril_runin_start     1   699.96 703.96
++ hydralazine_runin_stop     1   701.51 705.51
++ CV400_runin_stop           1   701.64 705.64
++ CV150_runin_stop           1   701.72 705.72
++ CV800_maintain             1   701.90 705.90
++ amlodipine_maintain        1   701.92 705.92
++ furosemide_maintain        1   702.07 706.07
++ antihtn_add                1   702.44 706.44
++ chlorthalidone_runin_stop  1   702.46 706.46
++ CV100_runin_start          1   702.59 706.59
+&lt;none&gt;                           705.83 707.83
++ esbp_group                 2   702.37 708.37
++ antihtn_delta_med          4   701.44 711.44
+
+Step:  AIC=697.66
+sig_decr_ind1 ~ sex
+
+                            Df Deviance    AIC
++ atenolol_runin_stop        1   687.47 693.47
++ lisinopril_runin_start     1   688.40 694.40
++ hydralazine_runin_stop     1   688.52 694.52
++ tamsulosin_runin_stop      1   688.93 694.93
++ propranolol_runin_stop     1   689.00 695.00
++ CV100_runin_start          1   689.18 695.18
++ CV400_runin_stop           1   689.61 695.61
++ CV800_maintain             1   690.02 696.02
++ furosemide_maintain        1   690.06 696.06
++ CV150_maintain             1   690.30 696.30
++ antihtn_add                1   690.41 696.41
++ amlodipine_maintain        1   690.42 696.42
++ chlorthalidone_runin_stop  1   690.48 696.48
+&lt;none&gt;                           693.66 697.66
++ CV150_runin_stop           1   692.95 698.95
++ esbp_group                 2   691.18 699.18
++ antihtn_delta_med          4   688.92 700.92
+- sex                        1   705.83 707.83
+
+Step:  AIC=693.47
+sig_decr_ind1 ~ sex + atenolol_runin_stop
+
+                            Df Deviance    AIC
++ hydralazine_runin_stop     1   682.28 690.28
++ lisinopril_runin_start     1   682.35 690.35
++ propranolol_runin_stop     1   682.90 690.90
++ CV400_runin_stop           1   683.18 691.18
++ tamsulosin_runin_stop      1   683.19 691.19
++ CV100_runin_start          1   683.38 691.38
++ antihtn_add                1   683.75 691.75
++ CV800_maintain             1   683.90 691.90
++ chlorthalidone_runin_stop  1   684.01 692.01
++ furosemide_maintain        1   684.02 692.02
++ amlodipine_maintain        1   684.07 692.07
++ CV150_maintain             1   684.10 692.10
+&lt;none&gt;                           687.47 693.47
++ CV150_runin_stop           1   687.06 695.06
++ esbp_group                 2   685.27 695.27
++ antihtn_delta_med          4   682.45 696.45
+- atenolol_runin_stop        1   693.66 697.66
+- sex                        1   697.86 701.86
+
+Step:  AIC=690.28
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop
+
+                            Df Deviance    AIC
++ propranolol_runin_stop     1   677.46 687.46
++ CV400_runin_stop           1   677.57 687.57
++ CV150_maintain             1   678.02 688.02
++ lisinopril_runin_start     1   678.06 688.06
++ tamsulosin_runin_stop      1   678.13 688.13
++ CV800_maintain             1   678.34 688.34
++ chlorthalidone_runin_stop  1   678.37 688.37
++ antihtn_add                1   678.68 688.68
++ CV100_runin_start          1   679.23 689.23
++ furosemide_maintain        1   679.50 689.50
++ amlodipine_maintain        1   679.87 689.87
+&lt;none&gt;                           682.28 690.28
++ esbp_group                 2   678.99 690.99
++ CV150_runin_stop           1   681.75 691.75
+- hydralazine_runin_stop     1   687.47 693.47
++ antihtn_delta_med          4   677.66 693.66
+- atenolol_runin_stop        1   688.52 694.52
+- sex                        1   693.56 699.56
+
+Step:  AIC=687.46
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop
+
+                            Df Deviance    AIC
++ CV150_maintain             1   672.29 684.29
++ chlorthalidone_runin_stop  1   672.66 684.66
++ CV400_runin_stop           1   673.06 685.06
++ lisinopril_runin_start     1   673.12 685.12
++ CV800_maintain             1   673.33 685.33
++ tamsulosin_runin_stop      1   673.36 685.36
++ antihtn_add                1   673.43 685.43
++ CV100_runin_start          1   674.32 686.32
++ furosemide_maintain        1   674.59 686.59
++ amlodipine_maintain        1   674.84 686.84
+&lt;none&gt;                           677.46 687.46
++ esbp_group                 2   673.68 687.68
++ CV150_runin_stop           1   676.64 688.64
+- propranolol_runin_stop     1   682.28 690.28
++ antihtn_delta_med          4   672.52 690.52
+- hydralazine_runin_stop     1   682.90 690.90
+- atenolol_runin_stop        1   683.59 691.59
+- sex                        1   687.60 695.60
+
+Step:  AIC=684.29
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop + CV150_maintain
+
+                            Df Deviance    AIC
++ antihtn_add                1   667.58 681.58
++ chlorthalidone_runin_stop  1   667.96 681.96
++ lisinopril_runin_start     1   668.21 682.21
++ CV800_maintain             1   668.49 682.49
++ CV400_runin_stop           1   668.51 682.51
++ furosemide_maintain        1   669.08 683.08
++ amlodipine_maintain        1   669.71 683.71
++ CV100_runin_start          1   669.85 683.85
++ esbp_group                 2   668.13 684.13
+&lt;none&gt;                           672.29 684.29
++ tamsulosin_runin_stop      1   671.61 685.61
++ antihtn_delta_med          4   666.27 686.27
++ CV150_runin_stop           1   672.28 686.28
+- CV150_maintain             1   677.46 687.46
+- propranolol_runin_stop     1   678.02 688.02
+- sex                        1   678.35 688.35
+- atenolol_runin_stop        1   678.49 688.49
+- hydralazine_runin_stop     1   678.80 688.80
+
+Step:  AIC=681.58
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop + CV150_maintain + antihtn_add
+
+                            Df Deviance    AIC
++ CV800_maintain             1   662.93 678.93
++ chlorthalidone_runin_stop  1   662.99 678.99
++ lisinopril_runin_start     1   663.52 679.52
++ CV400_runin_stop           1   664.33 680.33
++ esbp_group                 2   663.22 681.22
++ furosemide_maintain        1   665.25 681.25
+&lt;none&gt;                           667.58 681.58
++ CV100_runin_start          1   666.09 682.09
++ amlodipine_maintain        1   666.43 682.43
++ tamsulosin_runin_stop      1   667.09 683.09
++ CV150_runin_stop           1   667.45 683.45
+- antihtn_add                1   672.29 684.29
+- sex                        1   673.36 685.36
+- CV150_maintain             1   673.43 685.43
+- propranolol_runin_stop     1   673.87 685.87
+- hydralazine_runin_stop     1   674.06 686.06
++ antihtn_delta_med          3   666.27 686.27
+- atenolol_runin_stop        1   674.35 686.35
+
+Step:  AIC=678.93
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain
+
+                            Df Deviance    AIC
++ chlorthalidone_runin_stop  1   658.59 676.59
++ CV400_runin_stop           1   659.17 677.17
++ lisinopril_runin_start     1   659.23 677.23
++ furosemide_maintain        1   660.71 678.71
+&lt;none&gt;                           662.93 678.93
++ esbp_group                 2   659.32 679.32
++ CV100_runin_start          1   661.60 679.60
++ amlodipine_maintain        1   661.82 679.82
++ tamsulosin_runin_stop      1   662.44 680.44
++ CV150_runin_stop           1   662.79 680.79
+- CV800_maintain             1   667.58 681.58
+- CV150_maintain             1   668.45 682.45
+- antihtn_add                1   668.49 682.49
+- sex                        1   668.76 682.76
++ antihtn_delta_med          3   661.22 683.22
+- propranolol_runin_stop     1   669.46 683.46
+- atenolol_runin_stop        1   669.60 683.60
+- hydralazine_runin_stop     1   669.82 683.82
+
+Step:  AIC=676.59
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
+    chlorthalidone_runin_stop
+
+                            Df Deviance    AIC
++ CV400_runin_stop           1   654.80 674.80
++ lisinopril_runin_start     1   655.06 675.06
++ esbp_group                 2   654.49 676.49
++ furosemide_maintain        1   656.56 676.56
+&lt;none&gt;                           658.59 676.59
++ amlodipine_maintain        1   657.34 677.34
++ CV100_runin_start          1   657.49 677.49
++ tamsulosin_runin_stop      1   658.13 678.13
++ CV150_runin_stop           1   658.29 678.29
+- chlorthalidone_runin_stop  1   662.93 678.93
+- CV800_maintain             1   662.99 678.99
+- CV150_maintain             1   663.73 679.73
+- sex                        1   664.32 680.32
+- antihtn_add                1   664.45 680.45
++ antihtn_delta_med          3   656.76 680.76
+- atenolol_runin_stop        1   665.59 681.59
+- hydralazine_runin_stop     1   665.86 681.86
+- propranolol_runin_stop     1   666.05 682.05
+
+Step:  AIC=674.8
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
+    chlorthalidone_runin_stop + CV400_runin_stop
+
+                            Df Deviance    AIC
++ lisinopril_runin_start     1   651.54 673.54
++ esbp_group                 2   650.42 674.42
+&lt;none&gt;                           654.80 674.80
++ furosemide_maintain        1   652.95 674.95
++ amlodipine_maintain        1   653.52 675.52
++ CV100_runin_start          1   653.77 675.77
++ tamsulosin_runin_stop      1   654.38 676.38
++ CV150_runin_stop           1   654.54 676.54
+- CV400_runin_stop           1   658.59 676.59
+- chlorthalidone_runin_stop  1   659.17 677.17
+- CV150_maintain             1   659.19 677.19
+- CV800_maintain             1   659.66 677.66
+- antihtn_add                1   660.10 678.10
++ antihtn_delta_med          3   652.60 678.60
+- sex                        1   660.65 678.65
+- propranolol_runin_stop     1   661.81 679.81
+- atenolol_runin_stop        1   662.00 680.00
+- hydralazine_runin_stop     1   662.37 680.37
+
+Step:  AIC=673.54
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
+    chlorthalidone_runin_stop + CV400_runin_stop + lisinopril_runin_start
+
+                            Df Deviance    AIC
++ esbp_group                 2   646.63 672.63
+&lt;none&gt;                           651.54 673.54
++ furosemide_maintain        1   649.59 673.59
++ CV100_runin_start          1   650.37 674.37
++ amlodipine_maintain        1   650.52 674.52
+- lisinopril_runin_start     1   654.80 674.80
+- CV400_runin_stop           1   655.06 675.06
++ tamsulosin_runin_stop      1   651.14 675.14
++ CV150_runin_stop           1   651.26 675.26
+- chlorthalidone_runin_stop  1   655.75 675.75
+- CV150_maintain             1   655.77 675.77
+- CV800_maintain             1   656.04 676.04
++ antihtn_delta_med          3   648.65 676.65
+- antihtn_add                1   656.80 676.80
+- sex                        1   657.12 677.12
+- hydralazine_runin_stop     1   658.04 678.04
+- atenolol_runin_stop        1   658.58 678.58
+- propranolol_runin_stop     1   658.62 678.62
+
+Step:  AIC=672.63
+sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
+    chlorthalidone_runin_stop + CV400_runin_stop + lisinopril_runin_start + 
+    esbp_group
+
+                            Df Deviance    AIC
+&lt;none&gt;                           646.63 672.63
++ furosemide_maintain        1   644.75 672.75
++ CV100_runin_start          1   645.37 673.37
++ amlodipine_maintain        1   645.53 673.53
+- esbp_group                 2   651.54 673.54
++ CV150_runin_stop           1   646.23 674.23
+- CV800_maintain             1   650.30 674.30
++ tamsulosin_runin_stop      1   646.36 674.36
+- CV400_runin_stop           1   650.41 674.41
+- lisinopril_runin_start     1   650.42 674.42
+- CV150_maintain             1   651.17 675.17
+- sex                        1   651.20 675.20
+- chlorthalidone_runin_stop  1   651.32 675.32
++ antihtn_delta_med          3   644.04 676.04
+- antihtn_add                1   652.08 676.08
+- atenolol_runin_stop        1   653.44 677.44
+- hydralazine_runin_stop     1   654.27 678.27
+- propranolol_runin_stop     1   654.50 678.50</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
+    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
+    chlorthalidone_runin_stop + CV400_runin_stop + lisinopril_runin_start + 
+    esbp_group, family = binomial(), data = baseline_aset)
+
+Coefficients:
+                          Estimate Std. Error z value Pr(&gt;|z|)   
+(Intercept)                -0.6377     0.2168  -2.942  0.00326 **
+sex2                        0.4485     0.2118   2.117  0.03423 * 
+atenolol_runin_stop        -2.1237     1.0626  -1.999  0.04564 * 
+hydralazine_runin_stop      1.0312     0.3733   2.763  0.00573 **
+propranolol_runin_stop      2.6672     1.1397   2.340  0.01927 * 
+CV150_maintain             -0.9991     0.5054  -1.977  0.04808 * 
+antihtn_add                 0.5932     0.2530   2.345  0.01905 * 
+CV800_maintain             -0.5769     0.3101  -1.860  0.06285 . 
+chlorthalidone_runin_stop  -1.2048     0.6128  -1.966  0.04929 * 
+CV400_runin_stop           -0.6651     0.3561  -1.868  0.06181 . 
+lisinopril_runin_start      1.9026     1.1307   1.683  0.09243 . 
+esbp_groupesbp2            -0.4058     0.2124  -1.911  0.05603 . 
+esbp_groupesbp3            -0.4678     0.2811  -1.664  0.09613 . 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 705.83  on 541  degrees of freedom
+Residual deviance: 646.63  on 529  degrees of freedom
+AIC: 672.63
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="htn_rx_expos_EDA_files/figure-html/stepwise-reg-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="analysis-ii-profile-the-affected-cohort-with-reasonable-explanations" class="level3">
+<h3 class="anchored" data-anchor-id="analysis-ii-profile-the-affected-cohort-with-reasonable-explanations">Analysis II: Profile the affected cohort with reasonable explanations</h3>
+<div class="cell">
+<div class="cell-output-display">
+<table class="lightable-material lightable-striped lightable-hover lightable-classic caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">var</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">cat</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">exposure=1</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">p.value</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">var_lbl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">n</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">183</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">n</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">esbp_group</td>
+<td style="text-align: left;">esbp1,n(%) [miss]</td>
+<td style="text-align: left;">97 (53%) [0]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">esbp_group</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">esbp2,n(%) [miss]</td>
+<td style="text-align: left;">60 (32.8%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">esbp3,n(%) [miss]</td>
+<td style="text-align: left;">26 (14.2%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">antihtn_dose_inc</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">175 (95.6%) [0]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">antihtn_dose_inc</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">8 (4.4%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">antihtn_add</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">144 (78.7%) [0]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">antihtn_add</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">39 (21.3%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">antihtn_runin</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">176 (96.2%) [0]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">antihtn_runin</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">17 (9.3%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">antihtn_mt</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">176 (96.2%) [0]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">antihtn_mt</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">12 (6.6%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">antihtn_rm</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">95 (51.9%) [0]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">antihtn_rm</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">93 (50.8%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">untreated</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">151 (82.5%) [0]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">untreated</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">32 (17.5%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">expln1</td>
+<td style="text-align: left;">0,n(%) [miss]</td>
+<td style="text-align: left;">58 (31.7%) [0]</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">expln1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">1,n(%) [miss]</td>
+<td style="text-align: left;">130 (71%) [0]</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>As shown in the table above, anti-hypertensive drug use and low eligibility SBP together only explains 71% of the eligibility drift.</p>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
