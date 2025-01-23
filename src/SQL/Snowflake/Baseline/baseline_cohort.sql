@@ -12,79 +12,183 @@ Key CDM tables from KUMC and
 Auxillary tables: 
 1. ELIG_BP_REDCAP_20241120
 2. BASE_BP_REDCAP_20241120
-3. Z_MED_RXCUI_REF
+3. Z_MED_RXCUI_REF (ref/med_rxcui_ref.csv)
 4. PAT_TABLE1 (denom_cdm.sql)
+5. Z_CCI_REF (ref/cci_icd_ref.csv)
+6. VCCC_PID_ADDRID
+7. VCCC_UNIQUE_ADDR_GEOCODED
 =============================
 */ 
 
 select * from ELIG_BP_REDCAP_20241120 limit 5;
-select * from BASE_BP_REDCAP_20241120 limit 5;
+select * from BASE_BP_REDCAP_20250123 limit 5;
+select * from BASE_PT_REDCAP_20250115 limit 5;
+select * from BASELINE_TCOG_20250121 limit 5;
 select * from Z_MED_RXCUI_REF limit 5;
 select * from PAT_TABLE1 limit 5;
+select * from VCCC_PID_ADDRID limit 5;
+select * from VCCC_UNIQUE_ADDR_GEOCODED limit 5;
+select * from SDOH_DB.AHRQ.AHRQ_CT_2020 limit 5;
 
 select * from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PCORNET_TRIAL limit 5;
 select * from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PRESCRIBING limit 5;
 select * from GROUSE_DB_DEV.PCORNET_CDM_KUMC.ENCOUNTER where trim(drg) <> '' limit 5;
 
-create or replace table VCCC_UNMAPPED as 
-with trial_stk as (
-    select participantid, patid, 'KUMC' as site
-    from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PCORNET_TRIAL where TRIALID = 'vccc'
-    union 
-    select participantid, patid, 'UU' as site
-    from GROUSE_DB_DEV.PCORNET_CDM_UU.PCORNET_TRIAL where TRIALID = 'vccc'
+create or replace table ELIG_BP as 
+with stk as (
+    select study_id, elig_sbp1 as elig_sbp, elig_dbp1 as elig_dbp, elig_sbp1_date as elig_date
+    from ELIG_BP_REDCAP_20241120
+    union all 
+    select study_id, elig_sbp2 as elig_sbp, elig_dbp2 as elig_dbp, elig_sbp2_date as elig_date
+    from ELIG_BP_REDCAP_20241120
+    union all
+    select study_id, elig_sbp3 as elig_sbp, elig_dbp3 as elig_dbp, elig_sbp2_date_2 as elig_date
+    from ELIG_BP_REDCAP_20241120
+), stk_ord as (
+    select stk.*, row_number() over (partition by stk.study_id order by elig_date desc) as rn
+    from stk
 )
+select * exclude(rn,study_id), upper(study_id) as study_id
+from stk_ord
+where rn = 1 
+;
+
+select count(distinct study_id) from ELIG_BP;
+-- 1000
+
+create or replace table BASE_BP as 
+select upper(study_id) as study_id, 
+       round(result) as base_sbp,
+       bp_date as base_sbp_date
+from (
+    select a.*, row_number() over (partition by a.study_id, a.measure order by a.bp_date) rn
+    from BASE_BP_REDCAP_20250123 a
+    where a.measure = 'SBP'
+)
+where rn = 1
+;
+
+select count(distinct study_id) from base_bp;
+-- 1000
+
+select a.* from ELIG_BP a 
+where not exists (select 1 from base_bp b where a.study_id = b.study_id);
+
+create or replace table STUDYID_MAPPING as 
+select participantid, patid, trial_enroll_date, trial_end_date, trial_withdraw_date, 'KUMC' as site
+from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PCORNET_TRIAL where lower(TRIALID) = 'vccc'
+union 
+select participantid, patid, trial_enroll_date, trial_end_date, trial_withdraw_date, 'UU' as site
+from GROUSE_DB_DEV.PCORNET_CDM_UU.PCORNET_TRIAL where lower(TRIALID) = 'vccc'
+;
+
+create or replace table VCCC_UNMAPPED as 
 select a.*, b.patid, b.site 
 from ELIG_BP_REDCAP_20241120 a
-left join trial_stk b
-on a.study_id = b.participantid
+left join STUDYID_MAPPING b
+on lower(a.study_id) = lower(b.participantid)
 where b.patid is null
 ;
 
-select site, count(distinct study_id) 
+select substr(study_id,1,2), count(distinct study_id) 
 from VCCC_UNMAPPED
-group by site
+group by substr(study_id,1,2)
 ;
--- null	82
+-- null	74
 
-create or replace table VCCC_BASE_BP as 
-with trial_stk as (
-    select participantid, patid, trial_enroll_date, trial_end_date, trial_withdraw_date, 'KUMC' as site
-    from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PCORNET_TRIAL where TRIALID = 'vccc'
-    union 
-    select participantid, patid, trial_enroll_date, trial_end_date, trial_withdraw_date, 'UU' as site
-    from GROUSE_DB_DEV.PCORNET_CDM_UU.PCORNET_TRIAL where TRIALID = 'vccc'
-), base_sbp_only as (
-    select study_id, 
-           round(result) as base_sbp,
-           bp_date as base_sbp_date
-    from (
-        select a.*, row_number() over (partition by a.study_id, a.measure order by a.bp_date) rn
-        from BASE_BP_REDCAP_20241120 a
-        where a.measure = 'SBP'
-    )
-    where rn = 1
+-- select distinct study_id
+-- from VCCC_UNMAPPED
+-- where lower(substr(study_id,1,2)) = 'ut'
+-- ;
+-- -- 8
+
+-- select distinct study_id
+-- from VCCC_UNMAPPED
+-- where lower(substr(study_id,1,2)) = 'ku'
+-- order by study_id
+-- ;
+-- -- 74
+
+-- select distinct a.study_id, b.patid
+-- from ELIG_BP_REDCAP_20241120 a 
+-- join GROUSE_DB_DEV.PCORNET_CDM_KUMC.PCORNET_TRIAL b on a.study_id = b.participantid
+-- join GROUSE_DB_DEV.PCORNET_CDM_KUMC.DEMOGRAPHIC d on b.patid = d.patid
+-- where b.TRIALID = 'vccc' and 
+--       d.birth_date is null
+-- ;
+-- 10
+
+create or replace table OC_TCOG as 
+with clean_cte as (
+        select  study_id,
+                tcog_date,
+                'T'||lpad(test_id,2,'0') as testid,
+                score,
+                normed_score,
+                rmse as normed_rmse
+    from BASELINE_TCOG_20250121
 )
-select a.study_id,
-       c.patid, 
-       c.trial_enroll_date, 
-       c.trial_end_date, 
-       c.trial_withdraw_date,
-       c.site,
-       a.elig_sbp1,
-       a.elig_sbp1_date,
-       coalesce(a.elig_sbp2,a.elig_sbp3) as elig_sbp2,
-       coalesce(a.elig_sbp2_date,a.elig_sbp2_date_2) as elig_sbp2_date,
+, score_cte as (
+    select * from (
+        select study_id, tcog_date, testid, score from clean_cte
+    )
+    pivot (
+        avg(score) for testid in (any order by testid)
+    ) as p(study_id,tcog_date,T01,T02,T03,T04,T05,T06,T07,T08,T09,T10,T11,T12,T13,T14,T15,T16,T18,T19,T20)
+)
+, nscore_cte as (
+    select * from (
+        select study_id, tcog_date, testid, normed_score from clean_cte
+        where normed_score is not null
+    )
+    pivot (
+        avg(normed_score) for testid in (any order by testid)
+    ) as p(study_id,tcog_date,T08N,T09N,T12N,T13N,T15N,T16N)
+)
+, nrmse_cte as (
+    select * from (
+        select study_id, tcog_date, testid, normed_rmse from clean_cte
+        where normed_rmse is not null
+    )
+    pivot (
+        avg(normed_rmse) for testid in (any order by testid)
+    ) as p(study_id,tcog_date,T08NE,T09NE,T12NE,T13NE,T15NE,T16NE)
+)
+select score_cte.*, 
+       nscore_cte.* exclude(study_id, tcog_date),
+       nrmse_cte.* exclude(study_id, tcog_date)
+from score_cte
+left join nscore_cte on nscore_cte.study_id = score_cte.study_id and nscore_cte.tcog_date = score_cte.tcog_date
+left join nrmse_cte on nrmse_cte.study_id = score_cte.study_id and nrmse_cte.tcog_date = score_cte.tcog_date
+;
+
+select count(distinct study_id), count(*) from OC_TCOG;
+-- 1000	1000
+select * from OC_TCOG limit 5;
+
+create or replace table VCCC_BASE_BP_TCOG_SDH as 
+select upper(a.study_id) as study_id,
+    --    c.patid, 
+    --    c.trial_enroll_date, 
+    --    c.trial_end_date, 
+    --    c.trial_withdraw_date,
+    --    c.site,
+       p.enroll_date,
+       p.disp_date,
+       p.disp_status,
+       p.site,
+       a.elig_sbp,
+       a.elig_date,
        b.base_sbp,
-       b.base_sbp - a.elig_sbp1 as delta_sbp,
-       case when b.base_sbp - a.elig_sbp1 < 0 and b.base_sbp<130 then 'deltasbp1'
-            when b.base_sbp - a.elig_sbp1 < 0 and b.base_sbp>=130 and b.base_sbp<140 then 'deltasbp2'
+       b.base_sbp - a.elig_sbp as delta_sbp,
+       case when b.base_sbp - try_to_number(a.elig_sbp) < 0 and b.base_sbp<130 then 'deltasbp1'
+            when b.base_sbp - try_to_number(a.elig_sbp) < 0 and b.base_sbp>=130 and b.base_sbp<140 then 'deltasbp2'
             else 'deltasbp3'
        end as delta_sbp_group,
-       datediff('day',b.base_sbp_date,a.elig_sbp1_date) as delta_days,
-       case when a.elig_sbp1>=140 and a.elig_sbp1<150 then 'esbp1'
-            when a.elig_sbp1>=150 and a.elig_sbp1<160 then 'esbp2'
-            when a.elig_sbp1>=160 then 'esbp3'
+       datediff(day,b.base_sbp_date,a.elig_date) as delta_days,
+       case when try_to_number(a.elig_sbp) >=140 and try_to_number(a.elig_sbp) <150 then 'esbp1'
+            when try_to_number(a.elig_sbp) >=150 and try_to_number(a.elig_sbp) <160 then 'esbp2'
+            when try_to_number(a.elig_sbp) >=160 then 'esbp3'
             else 'esbp0'
        end as esbp_group,
        case when b.base_sbp>=140 and b.base_sbp<150 then 'bsbp1'
@@ -92,24 +196,41 @@ select a.study_id,
             when b.base_sbp>=160 then 'bsbp3'
             else 'bsbp0'
        end as bsbp_group,
-       datediff('day',c.trial_enroll_date,a.elig_sbp1_date) as elig_since_index 
-from ELIG_BP_REDCAP_20241120 a 
-join base_sbp_only b on a.study_id = b.study_id 
-join trial_stk c on a.study_id = c.participantid -- 81 study_id not mapped to patid
-where a.elig_sbp1 is not null and trim(a.elig_sbp1)<>'' and 
-      b.base_sbp is not null and trim(b.base_sbp)<>''
+       datediff('day',p.enroll_date,a.elig_date) as elig_since_index,
+       p.sex,
+       p.sex_str,
+       p.race,
+       p.race_str,
+       p.ethnicity,
+       p.ethn_str,
+       p.urm_ind,
+       p.age,
+       c.patid,
+    --    g.census_tract_id_2020,
+       t.* exclude(study_id),
+       sdh.* exclude(year,tractfips,countyfips,statefips,region,territory)
+from ELIG_BP a 
+join BASE_BP b on a.study_id = b.study_id 
+join BASE_PT_REDCAP_20250115 p on a.study_id = p.study_id
+join VCCC_PID_ADDRID pa on a.study_id = pa.study_id
+join VCCC_UNIQUE_ADDR_GEOCODED g on pa.id = g.id
+join OC_TCOG t on t.study_id = a.study_id
+join SDOH_DB.AHRQ.AHRQ_CT_2020 sdh on lpad(g.census_tract_id_2020,11,'0') = lpad(sdh.tractfips,11,'0')
+left join STUDYID_MAPPING c on a.study_id = c.participantid
 order by a.study_id
 ;
 
-select * from VCCC_BASE_BP limit 5;
+select * from VCCC_BASE_BP_TCOG_SDH limit 5;
 
 select count(distinct patid), count(distinct study_id), count(*)
-from VCCC_BASE_BP;
--- 899	899
-
-select site, count(distinct patid), count(distinct study_id), count(*)
-from VCCC_BASE_BP
-group by site
+from VCCC_BASE_BP_TCOG_SDH;
+-- 1000
+select * from SDOH_DB.AHRQ.Z_ALL_SDOH_VARIABLES;
+select distinct column_name as VAR, b.domain, b.topic, b.variable_label, b.data_source       
+from information_schema.columns a
+left join SDOH_DB.AHRQ.Z_ALL_SDOH_VARIABLES b 
+on a.column_name = b.variable_name
+where table_name = 'VCCC_BASE_BP_TCOG_SDH'
 ;
 
 create or replace table Z_MED_RXCUI_REF_AH as 
@@ -266,8 +387,8 @@ with dur_calc as(
         substr(coalesce(ING,raw_rx_med_name),1,20) as in_or_name_s,
         rx_start_since_index,
         case when rx_start_since_index<=0 and rx_start_since_index<=elig_since_index then 'bef'
-                when rx_start_since_index<=0 and rx_start_since_index>elig_since_index then 'runin'
-                else 'aft'
+             when rx_start_since_index<=0 and rx_start_since_index>elig_since_index then 'runin'
+             else 'aft'
         end as rx_timing,
         rx_start_date_imp,
         rx_end_date,
@@ -294,7 +415,7 @@ from dur_calc
 select * from VCCC_MED_LONG limit 5;
 
 
-create or replace procedure get_trial_base_med_long(
+create or replace procedure get_clinic_bp_long(
     TRIALID string,
     TRIAL_REF string,
     SITES array,

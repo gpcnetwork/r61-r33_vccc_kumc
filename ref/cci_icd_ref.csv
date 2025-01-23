@@ -1,0 +1,517 @@
+CODE_GRP,FULL_NAME,SCORE,CODE_TYPE,CODE
+mi,myocardial infarction,1,09,410
+mi,myocardial infarction,1,09,412
+mi,myocardial infarction,1,10,I21
+mi,myocardial infarction,1,10,I22
+mi,myocardial infarction,1,10,I25.2
+chf,congestive heart failure,1,09,398.91
+chf,congestive heart failure,1,09,402.01
+chf,congestive heart failure,1,09,402.11
+chf,congestive heart failure,1,09,402.91
+chf,congestive heart failure,1,09,404.01
+chf,congestive heart failure,1,09,404.03
+chf,congestive heart failure,1,09,404.11
+chf,congestive heart failure,1,09,404.13
+chf,congestive heart failure,1,09,404.91
+chf,congestive heart failure,1,09,404.93
+chf,congestive heart failure,1,09,425.4
+chf,congestive heart failure,1,09,425.5
+chf,congestive heart failure,1,09,425.6
+chf,congestive heart failure,1,09,425.7
+chf,congestive heart failure,1,09,425.8
+chf,congestive heart failure,1,09,425.9
+chf,congestive heart failure,1,09,428
+chf,congestive heart failure,1,10,I09.9
+chf,congestive heart failure,1,10,I11.0
+chf,congestive heart failure,1,10,I13.0
+chf,congestive heart failure,1,10,I13.2
+chf,congestive heart failure,1,10,I25.5
+chf,congestive heart failure,1,10,I42.0
+chf,congestive heart failure,1,10,I42.5
+chf,congestive heart failure,1,10,I42.6
+chf,congestive heart failure,1,10,I42.7
+chf,congestive heart failure,1,10,I42.8
+chf,congestive heart failure,1,10,I42.9
+chf,congestive heart failure,1,10,I43
+chf,congestive heart failure,1,10,I50
+chf,congestive heart failure,1,10,P29.0
+pvd,peripheral vascular disease,1,09,09.30
+pvd,peripheral vascular disease,1,09,437.3
+pvd,peripheral vascular disease,1,09,440
+pvd,peripheral vascular disease,1,09,441
+pvd,peripheral vascular disease,1,09,4431
+pvd,peripheral vascular disease,1,09,443.2
+pvd,peripheral vascular disease,1,09,443.3
+pvd,peripheral vascular disease,1,09,443.4
+pvd,peripheral vascular disease,1,09,443.5
+pvd,peripheral vascular disease,1,09,443.6
+pvd,peripheral vascular disease,1,09,443.7
+pvd,peripheral vascular disease,1,09,443.8
+pvd,peripheral vascular disease,1,09,443.9
+pvd,peripheral vascular disease,1,09,447.1
+pvd,peripheral vascular disease,1,09,557.1
+pvd,peripheral vascular disease,1,09,557.9
+pvd,peripheral vascular disease,1,09,V43.4
+pvd,peripheral vascular disease,1,10,I70
+pvd,peripheral vascular disease,1,10,I71
+pvd,peripheral vascular disease,1,10,I73.1
+pvd,peripheral vascular disease,1,10,I73.8
+pvd,peripheral vascular disease,1,10,I73.9
+pvd,peripheral vascular disease,1,10,I77.1
+pvd,peripheral vascular disease,1,10,I79.0
+pvd,peripheral vascular disease,1,10,I79.2
+pvd,peripheral vascular disease,1,10,K55.1
+pvd,peripheral vascular disease,1,10,K55.8
+pvd,peripheral vascular disease,1,10,K55.9
+pvd,peripheral vascular disease,1,10,Z95.8
+pvd,peripheral vascular disease,1,10,Z95.9
+cevd,cerebrovascular disease,1,09,362.34
+cevd,cerebrovascular disease,1,09,430
+cevd,cerebrovascular disease,1,09,431
+cevd,cerebrovascular disease,1,09,432
+cevd,cerebrovascular disease,1,09,433
+cevd,cerebrovascular disease,1,09,434
+cevd,cerebrovascular disease,1,09,435
+cevd,cerebrovascular disease,1,09,436
+cevd,cerebrovascular disease,1,09,437
+cevd,cerebrovascular disease,1,09,438
+cevd,cerebrovascular disease,1,10,G45
+cevd,cerebrovascular disease,1,10,G46
+cevd,cerebrovascular disease,1,10,H34.0
+cevd,cerebrovascular disease,1,10,I60
+cevd,cerebrovascular disease,1,10,I61
+cevd,cerebrovascular disease,1,10,I62
+cevd,cerebrovascular disease,1,10,I63
+cevd,cerebrovascular disease,1,10,I64
+cevd,cerebrovascular disease,1,10,I65
+cevd,cerebrovascular disease,1,10,I66
+cevd,cerebrovascular disease,1,10,I67
+cevd,cerebrovascular disease,1,10,I68
+cevd,cerebrovascular disease,1,10,I69
+dementia,dementia,1,09,290
+dementia,dementia,1,09,294.1
+dementia,dementia,1,09,331.2
+dementia,dementia,1,10,F00
+dementia,dementia,1,10,F01
+dementia,dementia,1,10,F02
+dementia,dementia,1,10,F03
+dementia,dementia,1,10,F05.1
+dementia,dementia,1,10,G30
+dementia,dementia,1,10,G31.1
+cpd,chronic pulmonary disease,1,09,416.8
+cpd,chronic pulmonary disease,1,09,416.9
+cpd,chronic pulmonary disease,1,09,490
+cpd,chronic pulmonary disease,1,09,491
+cpd,chronic pulmonary disease,1,09,492
+cpd,chronic pulmonary disease,1,09,493
+cpd,chronic pulmonary disease,1,09,494
+cpd,chronic pulmonary disease,1,09,495
+cpd,chronic pulmonary disease,1,09,496
+cpd,chronic pulmonary disease,1,09,497
+cpd,chronic pulmonary disease,1,09,498
+cpd,chronic pulmonary disease,1,09,499
+cpd,chronic pulmonary disease,1,09,500
+cpd,chronic pulmonary disease,1,09,501
+cpd,chronic pulmonary disease,1,09,502
+cpd,chronic pulmonary disease,1,09,503
+cpd,chronic pulmonary disease,1,09,504
+cpd,chronic pulmonary disease,1,09,505
+cpd,chronic pulmonary disease,1,09,506.4
+cpd,chronic pulmonary disease,1,09,508.1
+cpd,chronic pulmonary disease,1,09,508.8
+cpd,chronic pulmonary disease,1,10,I27.8
+cpd,chronic pulmonary disease,1,10,I27.9
+cpd,chronic pulmonary disease,1,10,J40
+cpd,chronic pulmonary disease,1,10,J41
+cpd,chronic pulmonary disease,1,10,J42
+cpd,chronic pulmonary disease,1,10,J43
+cpd,chronic pulmonary disease,1,10,J44
+cpd,chronic pulmonary disease,1,10,J45
+cpd,chronic pulmonary disease,1,10,J46
+cpd,chronic pulmonary disease,1,10,J47
+cpd,chronic pulmonary disease,1,10,J60
+cpd,chronic pulmonary disease,1,10,J61
+cpd,chronic pulmonary disease,1,10,J62
+cpd,chronic pulmonary disease,1,10,J63
+cpd,chronic pulmonary disease,1,10,J64
+cpd,chronic pulmonary disease,1,10,J65
+cpd,chronic pulmonary disease,1,10,J66
+cpd,chronic pulmonary disease,1,10,J67
+cpd,chronic pulmonary disease,1,10,J68.4
+cpd,chronic pulmonary disease,1,10,J70.1
+cpd,chronic pulmonary disease,1,10,J70.3
+rheumd,rheumatologic diease,1,09,446.5
+rheumd,rheumatologic diease,1,09,710
+rheumd,rheumatologic diease,1,09,710.1
+rheumd,rheumatologic diease,1,09,710.2
+rheumd,rheumatologic diease,1,09,710.3
+rheumd,rheumatologic diease,1,09,710.4
+rheumd,rheumatologic diease,1,09,714
+rheumd,rheumatologic diease,1,09,714.1
+rheumd,rheumatologic diease,1,09,714.2
+rheumd,rheumatologic diease,1,09,714.8
+rheumd,rheumatologic diease,1,09,725
+rheumd,rheumatologic diease,1,10,M05
+rheumd,rheumatologic diease,1,10,M06
+rheumd,rheumatologic diease,1,10,M31.5
+rheumd,rheumatologic diease,1,10,M32
+rheumd,rheumatologic diease,1,10,M33
+rheumd,rheumatologic diease,1,10,M34
+rheumd,rheumatologic diease,1,10,M35.1
+rheumd,rheumatologic diease,1,10,M35.3
+rheumd,rheumatologic diease,1,10,M36.0
+pud,peptic ulcer disease,1,09,531
+pud,peptic ulcer disease,1,09,532
+pud,peptic ulcer disease,1,09,533
+pud,peptic ulcer disease,1,09,534
+pud,peptic ulcer disease,1,10,K25
+pud,peptic ulcer disease,1,10,K26
+pud,peptic ulcer disease,1,10,K27
+pud,peptic ulcer disease,1,10,K28
+mld,mild liver disease,1,09,070.22
+mld,mild liver disease,1,09,070.23
+mld,mild liver disease,1,09,070.32
+mld,mild liver disease,1,09,070.33
+mld,mild liver disease,1,09,070.44
+mld,mild liver disease,1,09,070.54
+mld,mild liver disease,1,09,070.6
+mld,mild liver disease,1,09,070.9
+mld,mild liver disease,1,09,570
+mld,mild liver disease,1,09,571
+mld,mild liver disease,1,09,573.3
+mld,mild liver disease,1,09,573.4
+mld,mild liver disease,1,09,573.8
+mld,mild liver disease,1,09,573.9
+mld,mild liver disease,1,09,V42.7
+mld,mild liver disease,1,10,B18
+mld,mild liver disease,1,10,K70.0
+mld,mild liver disease,1,10,K70.1
+mld,mild liver disease,1,10,K70.2
+mld,mild liver disease,1,10,K70.3
+mld,mild liver disease,1,10,K70.9
+mld,mild liver disease,1,10,K71.3
+mld,mild liver disease,1,10,K71.4
+mld,mild liver disease,1,10,K71.5
+mld,mild liver disease,1,10,K71.7
+mld,mild liver disease,1,10,K73
+mld,mild liver disease,1,10,K74
+mld,mild liver disease,1,10,K76.0
+mld,mild liver disease,1,10,K76.2
+mld,mild liver disease,1,10,K76.3
+mld,mild liver disease,1,10,K76.4
+mld,mild liver disease,1,10,K76.8
+mld,mild liver disease,1,10,K76.9
+mld,mild liver disease,1,10,Z94.4
+diab,diabetes,1,09,250
+diab,diabetes,1,09,250.1
+diab,diabetes,1,09,250.2
+diab,diabetes,1,09,250.3
+diab,diabetes,1,09,250.8
+diab,diabetes,1,09,250.9
+diab,diabetes,1,10,E10.0
+diab,diabetes,1,10,E10.1
+diab,diabetes,1,10,E10.6
+diab,diabetes,1,10,E10.8
+diab,diabetes,1,10,E10.9
+diab,diabetes,1,10,E11.0
+diab,diabetes,1,10,E11.1
+diab,diabetes,1,10,E11.6
+diab,diabetes,1,10,E11.8
+diab,diabetes,1,10,E11.9
+diab,diabetes,1,10,E12.0
+diab,diabetes,1,10,E12.1
+diab,diabetes,1,10,E12.6
+diab,diabetes,1,10,E12.8
+diab,diabetes,1,10,E12.9
+diab,diabetes,1,10,E13.0
+diab,diabetes,1,10,E13.1
+diab,diabetes,1,10,E13.6
+diab,diabetes,1,10,E13.8
+diab,diabetes,1,10,E13.9
+diab,diabetes,1,10,E14.0
+diab,diabetes,1,10,E14.1
+diab,diabetes,1,10,E14.6
+diab,diabetes,1,10,E14.8
+diab,diabetes,1,10,E14.9
+diabwc,diabetes with chronic complications,2,09,250.4
+diabwc,diabetes with chronic complications,2,09,250.5
+diabwc,diabetes with chronic complications,2,09,250.6
+diabwc,diabetes with chronic complications,2,09,250.7
+diabwc,diabetes with chronic complications,2,10,E10.2
+diabwc,diabetes with chronic complications,2,10,E10.3
+diabwc,diabetes with chronic complications,2,10,E10.4
+diabwc,diabetes with chronic complications,2,10,E10.5
+diabwc,diabetes with chronic complications,2,10,E10.7
+diabwc,diabetes with chronic complications,2,10,E11.2
+diabwc,diabetes with chronic complications,2,10,E11.3
+diabwc,diabetes with chronic complications,2,10,E11.4
+diabwc,diabetes with chronic complications,2,10,E11.5
+diabwc,diabetes with chronic complications,2,10,E11.7
+diabwc,diabetes with chronic complications,2,10,E12.2
+diabwc,diabetes with chronic complications,2,10,E12.3
+diabwc,diabetes with chronic complications,2,10,E12.4
+diabwc,diabetes with chronic complications,2,10,E12.5
+diabwc,diabetes with chronic complications,2,10,E12.7
+diabwc,diabetes with chronic complications,2,10,E13.2
+diabwc,diabetes with chronic complications,2,10,E13.3
+diabwc,diabetes with chronic complications,2,10,E13.4
+diabwc,diabetes with chronic complications,2,10,E13.5
+diabwc,diabetes with chronic complications,2,10,E13.7
+diabwc,diabetes with chronic complications,2,10,E14.2
+diabwc,diabetes with chronic complications,2,10,E14.3
+diabwc,diabetes with chronic complications,2,10,E14.4
+diabwc,diabetes with chronic complications,2,10,E14.5
+diabwc,diabetes with chronic complications,2,10,E14.7
+hp,cerebrovascular hemiplegia event,2,09,334.1
+hp,cerebrovascular hemiplegia event,2,09,342
+hp,cerebrovascular hemiplegia event,2,09,343
+hp,cerebrovascular hemiplegia event,2,09,344
+hp,cerebrovascular hemiplegia event,2,09,344.1
+hp,cerebrovascular hemiplegia event,2,09,344.2
+hp,cerebrovascular hemiplegia event,2,09,344.3
+hp,cerebrovascular hemiplegia event,2,09,344.4
+hp,cerebrovascular hemiplegia event,2,09,344.5
+hp,cerebrovascular hemiplegia event,2,09,344.6
+hp,cerebrovascular hemiplegia event,2,09,344.9
+hp,cerebrovascular hemiplegia event,2,10,G04.1
+hp,cerebrovascular hemiplegia event,2,10,G11.4
+hp,cerebrovascular hemiplegia event,2,10,G80.1
+hp,cerebrovascular hemiplegia event,2,10,G80.2
+hp,cerebrovascular hemiplegia event,2,10,G81
+hp,cerebrovascular hemiplegia event,2,10,G82
+hp,cerebrovascular hemiplegia event,2,10,G83.0
+hp,cerebrovascular hemiplegia event,2,10,G83.1
+hp,cerebrovascular hemiplegia event,2,10,G83.2
+hp,cerebrovascular hemiplegia event,2,10,G83.3
+hp,cerebrovascular hemiplegia event,2,10,G83.4
+hp,cerebrovascular hemiplegia event,2,10,G83.9
+rend,moderate to severe renal disease,2,09,403.01
+rend,moderate to severe renal disease,2,09,403.11
+rend,moderate to severe renal disease,2,09,403.91
+rend,moderate to severe renal disease,2,09,404.02
+rend,moderate to severe renal disease,2,09,404.03
+rend,moderate to severe renal disease,2,09,404.12
+rend,moderate to severe renal disease,2,09,404.13
+rend,moderate to severe renal disease,2,09,404.92
+rend,moderate to severe renal disease,2,09,404.93
+rend,moderate to severe renal disease,2,09,582
+rend,moderate to severe renal disease,2,09,583
+rend,moderate to severe renal disease,2,09,583.1
+rend,moderate to severe renal disease,2,09,583.2
+rend,moderate to severe renal disease,2,09,583.3
+rend,moderate to severe renal disease,2,09,583.4
+rend,moderate to severe renal disease,2,09,583.5
+rend,moderate to severe renal disease,2,09,583.6
+rend,moderate to severe renal disease,2,09,583.7
+rend,moderate to severe renal disease,2,09,585
+rend,moderate to severe renal disease,2,09,586
+rend,moderate to severe renal disease,2,09,588
+rend,moderate to severe renal disease,2,09,V42.0
+rend,moderate to severe renal disease,2,09,V45.1
+rend,moderate to severe renal disease,2,09,V56
+rend,moderate to severe renal disease,2,10,I12.0
+rend,moderate to severe renal disease,2,10,I13.1
+rend,moderate to severe renal disease,2,10,N03.2
+rend,moderate to severe renal disease,2,10,N03.3
+rend,moderate to severe renal disease,2,10,N03.4
+rend,moderate to severe renal disease,2,10,N03.5
+rend,moderate to severe renal disease,2,10,N03.6
+rend,moderate to severe renal disease,2,10,N03.7
+rend,moderate to severe renal disease,2,10,N05.2
+rend,moderate to severe renal disease,2,10,N05.3
+rend,moderate to severe renal disease,2,10,N05.4
+rend,moderate to severe renal disease,2,10,N05.5
+rend,moderate to severe renal disease,2,10,N05.6
+rend,moderate to severe renal disease,2,10,N05.7
+rend,moderate to severe renal disease,2,10,N18
+rend,moderate to severe renal disease,2,10,N19
+rend,moderate to severe renal disease,2,10,N25.0
+rend,moderate to severe renal disease,2,10,Z49.0
+rend,moderate to severe renal disease,2,10,Z49.1
+rend,moderate to severe renal disease,2,10,Z49.2
+rend,moderate to severe renal disease,2,10,Z94.0
+rend,moderate to severe renal disease,2,10,Z99.2
+canc,cancer without metastases,2,09,140
+canc,cancer without metastases,2,09,141
+canc,cancer without metastases,2,09,142
+canc,cancer without metastases,2,09,143
+canc,cancer without metastases,2,09,144
+canc,cancer without metastases,2,09,145
+canc,cancer without metastases,2,09,146
+canc,cancer without metastases,2,09,147
+canc,cancer without metastases,2,09,148
+canc,cancer without metastases,2,09,149
+canc,cancer without metastases,2,09,150
+canc,cancer without metastases,2,09,151
+canc,cancer without metastases,2,09,152
+canc,cancer without metastases,2,09,153
+canc,cancer without metastases,2,09,154
+canc,cancer without metastases,2,09,155
+canc,cancer without metastases,2,09,156
+canc,cancer without metastases,2,09,157
+canc,cancer without metastases,2,09,158
+canc,cancer without metastases,2,09,159
+canc,cancer without metastases,2,09,160
+canc,cancer without metastases,2,09,161
+canc,cancer without metastases,2,09,162
+canc,cancer without metastases,2,09,163
+canc,cancer without metastases,2,09,164
+canc,cancer without metastases,2,09,165
+canc,cancer without metastases,2,09,166
+canc,cancer without metastases,2,09,167
+canc,cancer without metastases,2,09,168
+canc,cancer without metastases,2,09,169
+canc,cancer without metastases,2,09,170
+canc,cancer without metastases,2,09,171
+canc,cancer without metastases,2,09,172
+canc,cancer without metastases,2,09,174
+canc,cancer without metastases,2,09,175
+canc,cancer without metastases,2,09,176
+canc,cancer without metastases,2,09,177
+canc,cancer without metastases,2,09,178
+canc,cancer without metastases,2,09,179
+canc,cancer without metastases,2,09,180
+canc,cancer without metastases,2,09,181
+canc,cancer without metastases,2,09,182
+canc,cancer without metastases,2,09,183
+canc,cancer without metastases,2,09,184
+canc,cancer without metastases,2,09,185
+canc,cancer without metastases,2,09,186
+canc,cancer without metastases,2,09,187
+canc,cancer without metastases,2,09,188
+canc,cancer without metastases,2,09,189
+canc,cancer without metastases,2,09,190
+canc,cancer without metastases,2,09,191
+canc,cancer without metastases,2,09,192
+canc,cancer without metastases,2,09,193
+canc,cancer without metastases,2,09,194
+canc,cancer without metastases,2,09,195
+canc,cancer without metastases,2,09,200
+canc,cancer without metastases,2,09,201
+canc,cancer without metastases,2,09,202
+canc,cancer without metastases,2,09,203
+canc,cancer without metastases,2,09,204
+canc,cancer without metastases,2,09,205
+canc,cancer without metastases,2,09,206
+canc,cancer without metastases,2,09,207
+canc,cancer without metastases,2,09,208
+canc,cancer without metastases,2,09,238.6
+canc,cancer without metastases,2,10,C00
+canc,cancer without metastases,2,10,C01
+canc,cancer without metastases,2,10,C02
+canc,cancer without metastases,2,10,C03
+canc,cancer without metastases,2,10,C04
+canc,cancer without metastases,2,10,C05
+canc,cancer without metastases,2,10,C06
+canc,cancer without metastases,2,10,C07
+canc,cancer without metastases,2,10,C08
+canc,cancer without metastases,2,10,C09
+canc,cancer without metastases,2,10,C10
+canc,cancer without metastases,2,10,C11
+canc,cancer without metastases,2,10,C12
+canc,cancer without metastases,2,10,C13
+canc,cancer without metastases,2,10,C14
+canc,cancer without metastases,2,10,C15
+canc,cancer without metastases,2,10,C16
+canc,cancer without metastases,2,10,C17
+canc,cancer without metastases,2,10,C18
+canc,cancer without metastases,2,10,C19
+canc,cancer without metastases,2,10,C20
+canc,cancer without metastases,2,10,C21
+canc,cancer without metastases,2,10,C22
+canc,cancer without metastases,2,10,C23
+canc,cancer without metastases,2,10,C24
+canc,cancer without metastases,2,10,C25
+canc,cancer without metastases,2,10,C26
+canc,cancer without metastases,2,10,C30
+canc,cancer without metastases,2,10,C31
+canc,cancer without metastases,2,10,C32
+canc,cancer without metastases,2,10,C33
+canc,cancer without metastases,2,10,C34
+canc,cancer without metastases,2,10,C37
+canc,cancer without metastases,2,10,C38
+canc,cancer without metastases,2,10,C39
+canc,cancer without metastases,2,10,C40
+canc,cancer without metastases,2,10,C41
+canc,cancer without metastases,2,10,C43
+canc,cancer without metastases,2,10,C45
+canc,cancer without metastases,2,10,C46
+canc,cancer without metastases,2,10,C47
+canc,cancer without metastases,2,10,C48
+canc,cancer without metastases,2,10,C49
+canc,cancer without metastases,2,10,C50
+canc,cancer without metastases,2,10,C51
+canc,cancer without metastases,2,10,C52
+canc,cancer without metastases,2,10,C53
+canc,cancer without metastases,2,10,C54
+canc,cancer without metastases,2,10,C55
+canc,cancer without metastases,2,10,C56
+canc,cancer without metastases,2,10,C57
+canc,cancer without metastases,2,10,C58
+canc,cancer without metastases,2,10,C60
+canc,cancer without metastases,2,10,C61
+canc,cancer without metastases,2,10,C62
+canc,cancer without metastases,2,10,C63
+canc,cancer without metastases,2,10,C64
+canc,cancer without metastases,2,10,C65
+canc,cancer without metastases,2,10,C66
+canc,cancer without metastases,2,10,C67
+canc,cancer without metastases,2,10,C68
+canc,cancer without metastases,2,10,C69
+canc,cancer without metastases,2,10,C70
+canc,cancer without metastases,2,10,C71
+canc,cancer without metastases,2,10,C72
+canc,cancer without metastases,2,10,C73
+canc,cancer without metastases,2,10,C74
+canc,cancer without metastases,2,10,C75
+canc,cancer without metastases,2,10,C76
+canc,cancer without metastases,2,10,C81
+canc,cancer without metastases,2,10,C82
+canc,cancer without metastases,2,10,C83
+canc,cancer without metastases,2,10,C84
+canc,cancer without metastases,2,10,C85
+canc,cancer without metastases,2,10,C88
+canc,cancer without metastases,2,10,C90
+canc,cancer without metastases,2,10,C91
+canc,cancer without metastases,2,10,C92
+canc,cancer without metastases,2,10,C93
+canc,cancer without metastases,2,10,C94
+canc,cancer without metastases,2,10,C95
+canc,cancer without metastases,2,10,C96
+canc,cancer without metastases,2,10,C97
+msld,moderate or severe liver disease,3,09,456
+msld,moderate or severe liver disease,3,09,456.1
+msld,moderate or severe liver disease,3,09,456.2
+msld,moderate or severe liver disease,3,09,572.2
+msld,moderate or severe liver disease,3,09,572.3
+msld,moderate or severe liver disease,3,09,572.4
+msld,moderate or severe liver disease,3,09,572.5
+msld,moderate or severe liver disease,3,09,572.6
+msld,moderate or severe liver disease,3,09,572.7
+msld,moderate or severe liver disease,3,09,572.8
+msld,moderate or severe liver disease,3,10,I85.0
+msld,moderate or severe liver disease,3,10,I85.9
+msld,moderate or severe liver disease,3,10,I86.4
+msld,moderate or severe liver disease,3,10,I98.2
+msld,moderate or severe liver disease,3,10,K70.4
+msld,moderate or severe liver disease,3,10,K71.1
+msld,moderate or severe liver disease,3,10,K72.1
+msld,moderate or severe liver disease,3,10,K72.9
+msld,moderate or severe liver disease,3,10,K76.5
+msld,moderate or severe liver disease,3,10,K76.6
+msld,moderate or severe liver disease,3,10,K76.7
+metacanc,metastatic solic tumor,6,09,196
+metacanc,metastatic solic tumor,6,09,197
+metacanc,metastatic solic tumor,6,09,198
+metacanc,metastatic solic tumor,6,09,199
+metacanc,metastatic solic tumor,6,10,C77
+metacanc,metastatic solic tumor,6,10,C78
+metacanc,metastatic solic tumor,6,10,C79
+metacanc,metastatic solic tumor,6,10,C80
+aids,acquired immuno-deficiency syndrome,6,09,042
+aids,acquired immuno-deficiency syndrome,6,09,043
+aids,acquired immuno-deficiency syndrome,6,09,044
+aids,acquired immuno-deficiency syndrome,6,10,B20
+aids,acquired immuno-deficiency syndrome,6,10,B21
+aids,acquired immuno-deficiency syndrome,6,10,B22
+aids,acquired immuno-deficiency syndrome,6,10,B24

@@ -1,0 +1,379 @@
+VAR,DOMAIN,TOPIC,VARIABLE_LABEL,DATA_SOURCE
+ACS_AVG_HH_SIZE,Social context,Demographics,Average household size,ACS
+ACS_MEDIAN_AGE,Social context,Demographics,Median age of total population,ACS
+ACS_MEDIAN_AGE_FEMALE,Social context,Demographics,Median age of female population,ACS
+ACS_MEDIAN_AGE_MALE,Social context,Demographics,Median age of male population,ACS
+ACS_PCT_AGE_0_17,Social context,Demographics,Percentage of population between ages 0-17,ACS
+ACS_PCT_AGE_0_4,Social context,Demographics,Percentage of population between ages 0-4,ACS
+ACS_PCT_AGE_10_14,Social context,Demographics,Percentage of population between ages 10-14,ACS
+ACS_PCT_AGE_15_17,Social context,Demographics,Percentage of population between ages 15-17,ACS
+ACS_PCT_AGE_18_29,Social context,Demographics,Percentage of population between ages 18-29,ACS
+ACS_PCT_AGE_18_44,Social context,Demographics,Percentage of population between ages 18-44,ACS
+ACS_PCT_AGE_30_44,Social context,Demographics,Percentage of population between ages 30-44,ACS
+ACS_PCT_AGE_45_64,Social context,Demographics,Percentage of population between ages 45-64,ACS
+ACS_PCT_AGE_5_9,Social context,Demographics,Percentage of population between ages 5-9,ACS
+ACS_PCT_AGE_50_64,Social context,Demographics,Percentage of population between ages 50-64,ACS
+ACS_PCT_AGE_ABOVE65,Social context,Demographics,Percentage of population ages 65 and over,ACS
+ACS_PCT_AGE_ABOVE80,Social context,Demographics,Percentage of population ages 80 and over,ACS
+ACS_PCT_AIAN,Social context,Demographics,Percentage of population reporting American Indian and Alaska Native race alone,ACS
+ACS_PCT_AIAN_COMB,Social context,Demographics,Percentage of population reporting American Indian and Alaska Native alone or in combination with one or more races,ACS
+ACS_PCT_AIAN_FEMALE,Social context,Demographics,Percentage of American Indian and Alaska Native alone population reporting female,ACS
+ACS_PCT_AIAN_MALE,Social context,Demographics,Percentage of American Indian and Alaska Native alone population reporting male,ACS
+ACS_PCT_AIAN_NONHISP,Social context,Demographics,Percentage of non-Hispanic population reporting American Indian and Alaska Native race alone,ACS
+ACS_PCT_API_LANG,Social context,Demographics,Percentage of population that speaks Asian and Pacific Island languages (ages 5 and over),ACS
+ACS_PCT_ASIAN,Social context,Demographics,Percentage of population reporting Asian race alone,ACS
+ACS_PCT_ASIAN_COMB,Social context,Demographics,Percentage of population reporting Asian alone or in combination with one or more races,ACS
+ACS_PCT_ASIAN_FEMALE,Social context,Demographics,Percentage of Asian alone population reporting female,ACS
+ACS_PCT_ASIAN_MALE,Social context,Demographics,Percentage of Asian alone population reporting male,ACS
+ACS_PCT_ASIAN_NONHISP,Social context,Demographics,Percentage of non-Hispanic population reporting Asian race alone,ACS
+ACS_PCT_BLACK,Social context,Demographics,Percentage of population reporting Black or African American race alone,ACS
+ACS_PCT_BLACK_COMB,Social context,Demographics,Percentage of population reporting Black or African American alone or in combination with one or more races,ACS
+ACS_PCT_BLACK_FEMALE,Social context,Demographics,Percentage of Black or African American alone population reporting female,ACS
+ACS_PCT_BLACK_MALE,Social context,Demographics,Percentage of Black or African American alone population reporting male,ACS
+ACS_PCT_BLACK_NONHISP,Social context,Demographics,Percentage of non-Hispanic population reporting Black or African American race alone,ACS
+ACS_PCT_DIVORCED_F,Social context,Demographics,Percentage of female population divorced or separated (ages 15 and over),ACS
+ACS_PCT_DIVORCED_M,Social context,Demographics,Percentage of male population divorced or separated (ages 15 and over),ACS
+ACS_PCT_ENGL_NOT_ALL,Social context,Demographics,Percentage of population that speaks a language other than English that does not speak English at all (ages 5 and over),ACS
+ACS_PCT_ENGL_NOT_WELL,Social context,Demographics,Percentage of population that speaks a language other than English that does not speak English well (ages 5 and over),ACS
+ACS_PCT_ENGL_VERY_WELL,Social context,Demographics,Percentage of population that speaks a language other than English that speaks English very well (ages 5 and over),ACS
+ACS_PCT_ENGL_WELL,Social context,Demographics,Percentage of population that speaks a language other than English that speaks English well (ages 5 and over),ACS
+ACS_PCT_ENGLISH,Social context,Demographics,Percentage of population that only speaks English (ages 5 and over),ACS
+ACS_PCT_FEMALE,Social context,Demographics,Percentage of population that is female,ACS
+ACS_PCT_GULFWAR_1990_2001,Social context,Demographics,Percentage of the civilian veteran population that served during the Gulf War period from August 1990 to August 2001 (ages 18 and over),ACS
+ACS_PCT_GULFWAR_2001,Social context,Demographics,Percentage of the civilian veteran population that served during the Gulf War period from September 2001 or later (ages 18 and over),ACS
+ACS_PCT_GULFWAR_VIETNAM,Social context,Demographics,Percentage of the civilian veteran population that served between Gulf War and Vietnam era (ages 18 and over),ACS
+ACS_PCT_HH_LIMIT_ENGLISH,Social context,Demographics,Percentage of limited English speaking households,ACS
+ACS_PCT_HISP_FEMALE,Social context,Demographics,Percentage of Hispanic or Latino population reporting female,ACS
+ACS_PCT_HISP_MALE,Social context,Demographics,Percentage of Hispanic or Latino population reporting male,ACS
+ACS_PCT_HISPANIC,Social context,Demographics,Percentage of population reporting Hispanic ethnicity,ACS
+ACS_PCT_HOUSEHOLDER_AIAN,Social context,Demographics,Percentage of householders who are American Indian and Alaska Native alone,ACS
+ACS_PCT_HOUSEHOLDER_ASIAN,Social context,Demographics,Percentage of householders who are Asian alone,ACS
+ACS_PCT_HOUSEHOLDER_BLACK,Social context,Demographics,Percentage of householders who are Black or African American alone,ACS
+ACS_PCT_HOUSEHOLDER_MULT,Social context,Demographics,Percentage of householders who are two or more races,ACS
+ACS_PCT_HOUSEHOLDER_NHPI,Social context,Demographics,Percentage of householders who are Native Hawaiian and other Pacific Islander alone,ACS
+ACS_PCT_HOUSEHOLDER_OTHER,Social context,Demographics,Percentage of householders who are some other race alone,ACS
+ACS_PCT_HOUSEHOLDER_WHITE,Social context,Demographics,Percentage of householders who are White alone,ACS
+ACS_PCT_MALE,Social context,Demographics,Percentage of population that is male,ACS
+ACS_PCT_MARRIED_SP_AB_F,Social context,Demographics,Percentage of female population now married and spouse absent (ages 15 and over),ACS
+ACS_PCT_MARRIED_SP_AB_M,Social context,Demographics,Percentage of male population now married and spouse absent (ages 15 and over),ACS
+ACS_PCT_MARRIED_SP_PR_F,Social context,Demographics,Percentage of female population now married and spouse present (ages 15 and over),ACS
+ACS_PCT_MARRIED_SP_PR_M,Social context,Demographics,Percentage of male population now married and spouse present (ages 15 and over),ACS
+ACS_PCT_MULT_RACE,Social context,Demographics,Percentage of population reporting multiple races,ACS
+ACS_PCT_MULT_RACE_FEMALE,Social context,Demographics,Percentage of population reporting two or more races and female,ACS
+ACS_PCT_MULT_RACE_MALE,Social context,Demographics,Percentage of population reporting two or more races and male,ACS
+ACS_PCT_MULT_RACE_NONHISP,Social context,Demographics,Percentage of non-Hispanic population reporting multiple races,ACS
+ACS_PCT_NHPI,Social context,Demographics,Percentage of population reporting Native Hawaiian and Pacific Islander race alone,ACS
+ACS_PCT_NHPI_COMB,Social context,Demographics,Percentage of population reporting Native Hawaiian and other Pacific Islander alone or in combination with one or more races,ACS
+ACS_PCT_NHPI_FEMALE,Social context,Demographics,Percentage of Native Hawaiian and other Pacific Islander alone population reporting female,ACS
+ACS_PCT_NHPI_MALE,Social context,Demographics,Percentage of Native Hawaiian and other Pacific Islander alone  population reporting male,ACS
+ACS_PCT_NHPI_NONHISP,Social context,Demographics,Percentage of non-Hispanic population reporting Native Hawaiian and Pacific Islander race alone,ACS
+ACS_PCT_NVR_MARRIED_F,Social context,Demographics,Percentage of female population never married (ages 15 and over),ACS
+ACS_PCT_NVR_MARRIED_M,Social context,Demographics,Percentage of male population never married (ages 15 and over),ACS
+ACS_PCT_OTH_EURP,Social context,Demographics,Percentage of population who speak other Indo-European languages (ages 5 and over),ACS
+ACS_PCT_OTH_LANG,Social context,Demographics,Percentage of population who speak other languages (ages 5 and over),ACS
+ACS_PCT_OTHER_FEMALE,Social context,Demographics,Percentage of population reporting some other race alone and female,ACS
+ACS_PCT_OTHER_MALE,Social context,Demographics,Percentage of population reporting some other race alone and male,ACS
+ACS_PCT_OTHER_NONHISP,Social context,Demographics,Percentage of non-Hispanic population reporting some other race alone,ACS
+ACS_PCT_OTHER_RACE,Social context,Demographics,Percentage of population reporting some other race alone,ACS
+ACS_PCT_POP_SAME_SEX_SPOUSE,Social context,Demographics,Percentage of population with same-sex spouse,ACS
+ACS_PCT_POP_SAME_SEX_UNMRD_P,Social context,Demographics,Percentage of population with same-sex unmarried partner,ACS
+ACS_PCT_SPANISH,Social context,Demographics,Percentage of population that speaks Spanish (ages 5 and over),ACS
+ACS_PCT_VET,Social context,Demographics,Percentage of the civilian population consisting of veterans (ages 18 and over),ACS
+ACS_PCT_VIETNAM,Social context,Demographics,Percentage of the civilian veteran population that served in the Vietnam era (ages 18 and over),ACS
+ACS_PCT_WHITE,Social context,Demographics,Percentage of population reporting White race alone,ACS
+ACS_PCT_WHITE_COMB,Social context,Demographics,Percentage of population reporting White alone or in combination with one or more races,ACS
+ACS_PCT_WHITE_FEMALE,Social context,Demographics,Percentage of White non-Hispanic alone population reporting female,ACS
+ACS_PCT_WHITE_MALE,Social context,Demographics,Percentage of White non-Hispanic alone population reporting male,ACS
+ACS_PCT_WHITE_NONHISP,Social context,Demographics,Percentage of non-Hispanic population reporting White race alone,ACS
+ACS_PCT_WIDOWED_F,Social context,Demographics,Percentage of female population now widowed (ages 15 and over),ACS
+ACS_PCT_WIDOWED_M,Social context,Demographics,Percentage of male population now widowed (ages 15 and over),ACS
+ACS_TOT_CIVIL_NONINST_POP,Social context,Demographics,Total civilian noninstitutionalized population,ACS
+ACS_TOT_CIVIL_POP_ABOVE18,Social context,Demographics,Total civilian population (ages 18 and over),ACS
+ACS_TOT_CIVIL_VET_POP,Social context,Demographics,Total number of civilian veterans (ages 18 and over),ACS
+ACS_TOT_CIVIL_VET_POP_ABOVE25,Social context,Demographics,Total civilian population who are veterans (ages 25 and over),ACS
+ACS_TOT_HH,Social context,Demographics,Total number of households,ACS
+ACS_TOT_OWN_CHILD_BELOW17,Social context,Demographics,Total own children (ages 17 and below),ACS
+ACS_TOT_POP_16_19,Social context,Demographics,Total population (between ages 16 and 19),ACS
+ACS_TOT_POP_ABOVE15,Social context,Demographics,Total population (ages 15 and over),ACS
+ACS_TOT_POP_ABOVE16,Social context,Demographics,Total population (ages 16 and over),ACS
+ACS_TOT_POP_ABOVE25,Social context,Demographics,Total population (ages 25 and over),ACS
+ACS_TOT_POP_ABOVE5,Social context,Demographics,Total population (ages 5 and over),ACS
+ACS_TOT_POP_US_ABOVE1,Social context,Demographics,Total population in the U.S. (ages 1 and over),ACS
+ACS_TOT_POP_WT,Social context,Demographics,Total weighted population,ACS
+ACS_PCT_CHILD_DISAB,Social context,Disability,Percentage of children with a disability (ages 17 and below),ACS
+ACS_PCT_DISABLE,Social context,Disability,Percentage of population with a disability,ACS
+ACS_PCT_NONVET_DISABLE_18_64,Social context,Disability,Percentage of nonveterans with a disability (between ages 18 and 64),ACS
+ACS_PCT_VET_DISABLE_18_64,Social context,Disability,Percentage of civilian veterans with a disability (between ages 18 and 64),ACS
+ACS_PCT_CTZ_ABOVE18,Social context,Immigration,Percentage of population who are citizens (ages 18 and over),ACS
+ACS_PCT_CTZ_NATURALIZED,Social context,Immigration,Percentage of population consisting of U.S. citizens by naturalization,ACS
+ACS_PCT_CTZ_NONUS_BORN,Social context,Immigration,Percentage of population consisting of U.S. citizens born abroad of American parents or naturalized,ACS
+ACS_PCT_CTZ_US_BORN,Social context,Immigration,"Percentage of population consisting of U.S. citizens born in United States, Puerto Rico, or U.S. Islands ",ACS
+ACS_PCT_FOREIGN_BORN,Social context,Immigration,Percentage of population that is foreign-born,ACS
+ACS_PCT_NON_CITIZEN,Social context,Immigration,Percentage of population who are not U.S. citizens,ACS
+ACS_PCT_NONCTN_1990,Social context,Immigration,Percentage of population who are not U.S. citizens and entered U.S. before 1990,ACS
+ACS_PCT_NONCTN_1999,Social context,Immigration,Percentage of population who are not U.S. citizens and entered U.S. between 1990 and 1999,ACS
+ACS_PCT_NONCTN_2000,Social context,Immigration,Percentage of population who are not U.S. citizens and entered U.S. between 2000 and 2009,ACS
+ACS_PCT_NONCTN_2010,Social context,Immigration,Percentage of population who are not U.S. citizens and entered U.S. since 2010,ACS
+ACS_PCT_CHILD_1FAM,Social context,Living conditions,Percentage of families with children that are single-parent families,ACS
+ACS_PCT_CHILDREN_GRANDPARENT,Social context,Living conditions,Percentage of children living with a grandparent householder (ages 17 and below),ACS
+ACS_PCT_GRANDP_NO_RESPS,Social context,Living conditions,Percentage of children living with grandparent householder whose grandparent is not responsible for them,ACS
+ACS_PCT_GRANDP_RESPS_NO_P,Social context,Living conditions,Percentage of children living with grandparent householder whose grandparent is responsible for them: parent not present,ACS
+ACS_PCT_GRANDP_RESPS_P,Social context,Living conditions,Percentage of children living with grandparent householder whose grandparent is responsible for them: parent present,ACS
+ACS_PCT_HH_1PERS,Social context,Living conditions,Percentage of households with only one occupant,ACS
+ACS_PCT_HH_ABOVE65,Social context,Living conditions,Percentage of households with one or more people 65 years and over,ACS
+ACS_PCT_HH_ALONE_ABOVE65,Social context,Living conditions,Percentage of households with a person 65 years and over living alone,ACS
+ACS_PCT_HH_KID_1PRNT,Social context,Living conditions,"Percentage of family households with female or male householder, no spouse present",ACS
+ACS_TOT_GRANDCHILDREN_GP,Social context,Living conditions,Total grandchildren under 18 living with grandparent householder,ACS
+ACS_PCT_ADMIN,Economic context,Employment,Percentage of civilian employed population working in public administration (ages 16 and over),ACS
+ACS_PCT_ARMED_FORCES,Economic context,Employment,Percentage of population in armed forces (ages 16 and over),ACS
+ACS_PCT_ART,Economic context,Employment,"Percentage of employed working in arts, entertainment, recreation, and accommodation and food services (ages 16 and over)",ACS
+ACS_PCT_CONSTRUCT,Economic context,Employment,Percentage of employed working in construction (ages 16 and over),ACS
+ACS_PCT_EDUC,Economic context,Employment,"Percentage of employed working in educational services, and healthcare and social assistance (ages 16 and over)",ACS
+ACS_PCT_EMPLOYED,Economic context,Employment,Percentage of civilian labor force that is employed (ages 16 and over),ACS
+ACS_PCT_FINANCE,Economic context,Employment,"Percentage of employed working in finance and insurance, real estate, and rental and leasing (ages 16 and over)",ACS
+ACS_PCT_GOVT,Economic context,Employment,Percentage of civilian employed population who are government workers (ages 16 and over),ACS
+ACS_PCT_INFORM,Economic context,Employment,Percentage of employed working in information services (ages 16 and over),ACS
+ACS_PCT_MANUFACT,Economic context,Employment,Percentage of employed working in manufacturing (ages 16 and over),ACS
+ACS_PCT_NATURE,Economic context,Employment,"Percentage of employed working in agriculture, forestry, fishing and hunting, and mining (ages 16 and over)",ACS
+ACS_PCT_NOT_LABOR,Economic context,Employment,Percentage of population not in labor force (ages 16 and over),ACS
+ACS_PCT_OTHER,Economic context,Employment,"Percentage of employed working in other services, except public administration (ages 16 and over)",ACS
+ACS_PCT_PROFESS,Economic context,Employment,"Percentage of employed working in professional, scientific, management, administrative, and waste management services (ages 16 and over)",ACS
+ACS_PCT_PVT_NONPROFIT,Economic context,Employment,Percentage of population who are private not-for-profit wage and salary workers (ages 16 and over),ACS
+ACS_PCT_PVT_PROFIT,Economic context,Employment,Percentage of population who are private for-profit wage and salary workers (ages 16 and over),ACS
+ACS_PCT_RETAIL,Economic context,Employment,Percentage of employed working in retail trade (ages 16 and over),ACS
+ACS_PCT_TRANSPORT,Economic context,Employment,"Percentage of employed working in transportation and warehousing, and in utilities (ages 16 and over)",ACS
+ACS_PCT_UNEMPLOY,Economic context,Employment,Percentage of civilian labor force that is unemployed (ages 16 and over),ACS
+ACS_PCT_VET_LABOR_FORCE_18_64,Economic context,Employment,Percentage of civilian veterans in labor force (between ages 18 and 64),ACS
+ACS_PCT_VET_UNEMPL_18_64,Economic context,Employment,Percentage of civilian veterans that are unemployed (between ages 18 and 64),ACS
+ACS_PCT_WHOLESALE,Economic context,Employment,Percentage of employed working in wholesale trade (ages 16 and over),ACS
+ACS_PCT_WORK_RES_F,Economic context,Employment,Percentage of female population who worked in place of residence (ages 16 and over),ACS
+ACS_PCT_WORK_RES_M,Economic context,Employment,Percentage of male population who worked in place of residence (ages 16 and over),ACS
+ACS_TOT_CIVIL_EMPLOY_POP,Economic context,Employment,Total civilian employed population (ages 16 and over),ACS
+ACS_TOT_CIVILIAN_LABOR,Economic context,Employment,Total population in the civilian labor force (ages 16 and over),ACS
+ACS_TOT_WORKER_HH,Economic context,Employment,Total workers in households (ages 16 and over),ACS
+ACS_TOT_WORKER_NWFH,Economic context,Employment,Total workers who do not work from home (ages 16 and over),ACS
+ACS_GINI_INDEX,Economic context,Income,Gini index of income inequality,ACS
+ACS_MDN_GRNDPRNT_INC,Economic context,Income,"Median income of grandparent householder and/or spouse responsible for grandchildren under 18 (dollars, inflation-adjusted to data file year)",ACS
+ACS_MDN_GRNDPRNT_NO_PRNT_INC,Economic context,Income,"Median income of grandparent householder and/or spouse responsible for grandchildren under 18 and no parent present (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC,Economic context,Income,"Median household income (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC_AIAN,Economic context,Income,"Median household income for households with an American Indian and Alaska Native alone householder (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC_ASIAN,Economic context,Income,"Median household income for households with an Asian alone householder (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC_BLACK,Economic context,Income,"Median household income for households with a Black or African American alone householder (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC_HISP,Economic context,Income,"Median household income for households with a Hispanic or Latino householder (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC_MULTI,Economic context,Income,"Median household income for households with a two or more races householder (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC_NHPI,Economic context,Income,"Median household income for households with a Native Hawaiian and other Pacific Islander alone householder (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC_OTHER,Economic context,Income,"Median household income for households with a some other race alone householder (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_HH_INC_WHITE,Economic context,Income,"Median household income for households with a White alone, not Hispanic or Latino householder (dollars, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_INC_F,Economic context,Income,"Median income of female population (dollars, ages 15 and over with income in the past 12 months, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_INC_M,Economic context,Income,"Median income of male population (dollars, ages 15 and over with income in the past 12 months, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_NONVET_INC,Economic context,Income,"Median income of civilian nonveteran population (dollars, ages 18 and over, inflation-adjusted to data file year)",ACS
+ACS_MEDIAN_VET_INC,Economic context,Income,"Median income of civilian veterans (dollars, ages 18 and over, inflation-adjusted to data file year)",ACS
+ACS_PCT_HH_INC_10000,Economic context,Income,"Percentage of population with household income less than $10,000",ACS
+ACS_PCT_HH_INC_100000,Economic context,Income,"Percentage of population with household income greater than $100,000",ACS
+ACS_PCT_HH_INC_14999,Economic context,Income,"Percentage of population with household income between $10,000 and $14,999",ACS
+ACS_PCT_HH_INC_24999,Economic context,Income,"Percentage of population with household income between $15,000 and $24,999",ACS
+ACS_PCT_HH_INC_49999,Economic context,Income,"Percentage of population with household income between $25,000 and $49,999",ACS
+ACS_PCT_HH_INC_99999,Economic context,Income,"Percentage of population with household income between $50,000 and $99,999",ACS
+ACS_PCT_INC50_BELOW17,Economic context,Income,Percentage of children with income to poverty ratio under 0.50  (ages 17 and below),ACS
+ACS_PER_CAPITA_INC,Economic context,Income,"Per capita income (dollars, inflation-adjusted to data file year)",ACS
+ACS_PCT_HEALTH_INC_138_199,Economic context,Poverty,Percentage of population between 1.38 and 1.99 of the poverty threshold (relevant for health insurance coverage),ACS
+ACS_PCT_HEALTH_INC_200_399,Economic context,Poverty,Percentage of population between 2.00 and 3.99 of the poverty threshold (relevant for health insurance coverage),ACS
+ACS_PCT_HEALTH_INC_ABOVE400,Economic context,Poverty,Percentage of population over 4.00 of the poverty threshold (relevant for health insurance coverage),ACS
+ACS_PCT_HEALTH_INC_BELOW137,Economic context,Poverty,Percentage of population under 1.37 of the poverty threshold (relevant for health insurance coverage),ACS
+ACS_PCT_HH_1FAM_FOOD_STMP,Economic context,Poverty,Percentage of unmarried partner households that received food stamps/SNAP benefits,ACS
+ACS_PCT_HH_FOOD_STMP,Economic context,Poverty,"Percentage of households that received food stamps/SNAP, past 12 months",ACS
+ACS_PCT_HH_FOOD_STMP_BLW_POV,Economic context,Poverty,Percentage of households receiving food stamps/SNAP with income below the poverty level,ACS
+ACS_PCT_HH_NO_FD_STMP_BLW_POV,Economic context,Poverty,Percentage of households not receiving food stamps/SNAP with income below the poverty level,ACS
+ACS_PCT_HH_PUB_ASSIST,Economic context,Poverty,Percentage of households with public assistance income or food stamps/SNAP,ACS
+ACS_PCT_INC50,Economic context,Poverty,Percentage of population with income to poverty ratio under 0.50,ACS
+ACS_PCT_INC50_ABOVE65,Economic context,Poverty,Percentage of population with income to poverty ratio under 0.50 (ages 65 and over),ACS
+ACS_PCT_NONVET_POV_18_64,Economic context,Poverty,Percentage of civilian nonveterans with income below the poverty level in the past 12 months (between ages 18 and 64),ACS
+ACS_PCT_PERSON_INC_100_124,Economic context,Poverty,Percentage of population with an income to poverty ratio between 1.00 and 1.24,ACS
+ACS_PCT_PERSON_INC_125_199,Economic context,Poverty,Percentage of population with an income to poverty ratio between 1.25 and 1.99,ACS
+ACS_PCT_PERSON_INC_ABOVE200,Economic context,Poverty,Percentage of population with an income to poverty ratio of 2.00 or higher,ACS
+ACS_PCT_PERSON_INC_BELOW99,Economic context,Poverty,Percentage of population with an income to poverty ratio under 1.00,ACS
+ACS_PCT_POV_AIAN,Economic context,Poverty,Percentage of American Indian or Alaska Native population below poverty level,ACS
+ACS_PCT_POV_ASIAN,Economic context,Poverty,Percentage of Asian population below poverty level,ACS
+ACS_PCT_POV_BLACK,Economic context,Poverty,Percentage of Black or African American population below poverty level,ACS
+ACS_PCT_POV_HISPANIC,Economic context,Poverty,Percentage of Hispanic or Latino population below poverty level,ACS
+ACS_PCT_POV_MULTI,Economic context,Poverty,Percentage of two or more races population below poverty level,ACS
+ACS_PCT_POV_NHPI,Economic context,Poverty,Percentage of Native Hawaiian or Pacific Islander population below poverty level,ACS
+ACS_PCT_POV_OTHER,Economic context,Poverty,Percentage of some other race population below poverty level,ACS
+ACS_PCT_POV_WHITE,Economic context,Poverty,"Percentage of White, not Hispanic population below poverty level",ACS
+ACS_PCT_VET_POV_18_64,Economic context,Poverty,Percentage of civilian veterans with income below the poverty level in past 12 months (between ages 18 and 64),ACS
+ACS_TOT_CIVIL_NONINST_POP_POV,Economic context,Poverty,Total civilian noninstitutionalized population for whom poverty status is determined,ACS
+ACS_TOT_CIVIL_POP_POV,Economic context,Poverty,Total civilian population for whom poverty status is determined (ages 18 and over),ACS
+ACS_TOT_POP_POV,Economic context,Poverty,Total population for whom poverty status is determined,ACS
+ACS_PCT_BACHELOR_DGR,Education,Attainment,Percentage of population with a bachelor's degree (ages 25 and over),ACS
+ACS_PCT_COLLEGE_ASSOCIATE_DGR,Education,Attainment,Percentage of population with some college or associate's degree (ages 25 and over),ACS
+ACS_PCT_GRADUATE_DGR,Education,Attainment,Percentage of population with a master's or professional school degree or doctorate (ages 25 and over),ACS
+ACS_PCT_HS_GRADUATE,Education,Attainment,Percentage of population with only high school diploma (ages 25 and over),ACS
+ACS_PCT_LT_HS,Education,Attainment,Percentage of population with less than high school education (ages 25 and over),ACS
+ACS_PCT_NO_WORK_NO_SCHL_16_19,Education,Attainment,Percentage of teens and adults who are unemployed and not in school (between ages 16 and 19),ACS
+ACS_PCT_POSTHS_ED,Education,Attainment,Percentage of population with any postsecondary education (ages 25 and over),ACS
+ACS_PCT_VET_BACHELOR,Education,Attainment,Percentage of civilian veterans that have a bachelor's degree or higher (ages 25 and over),ACS
+ACS_PCT_VET_COLLEGE,Education,Attainment,Percentage of civilian veterans that have some college education or an associate's degree (ages 25 and over),ACS
+ACS_PCT_VET_HS,Education,Attainment,Percentage of civilian veterans who are high school graduates or less than high school graduates (age 25 years and over),ACS
+WUSTL_AVG_PM25,Physical infrastructure,Environment,Annual mean of Particulate Matter (PM2.5) concentration (μg/m3),WUSTL
+ACS_MDN_OWNER_COST_MORTGAGE,Physical infrastructure,Housing,Median selected monthly owner costs for houses with a mortgage (dollars),ACS
+ACS_MDN_OWNER_COST_NO_MORTG,Physical infrastructure,Housing,Median selected monthly owner costs for houses without a mortgage (dollars),ACS
+ACS_MEDIAN_HOME_VALUE,Physical infrastructure,Housing,Median home value of owner-occupied housing units (dollars),ACS
+ACS_MEDIAN_RENT,Physical infrastructure,Housing,Median gross rent (dollars),ACS
+ACS_MEDIAN_YEAR_BUILT,Physical infrastructure,Housing,Median year structure built of housing units,ACS
+ACS_PCT_10UNITS,Physical infrastructure,Housing,Percentage of housing in structures with 10 or more units,ACS
+ACS_PCT_1UP_OWNER_1ROOM,Physical infrastructure,Housing,Percentage of owner-occupied housing units with more than one occupant per room,ACS
+ACS_PCT_1UP_PERS_1ROOM,Physical infrastructure,Housing,Percentage of housing units with more than one occupant per room,ACS
+ACS_PCT_1UP_RENT_1ROOM,Physical infrastructure,Housing,Percentage of renter-occupied housing units with more than one occupant per room,ACS
+ACS_PCT_GRP_QRT,Physical infrastructure,Housing,Percentage of persons in institutionalized group quarters,ACS
+ACS_PCT_HU_BOT_TANK_LP_GAS,Physical infrastructure,Housing,"Percentage of occupied housing units with bottled, tank, or LP gas",ACS
+ACS_PCT_HU_BUILT_1979,Physical infrastructure,Housing,Percentage of housing units built before 1979,ACS
+ACS_PCT_HU_COAL,Physical infrastructure,Housing,Percentage of occupied housing units with coal or coke heating,ACS
+ACS_PCT_HU_ELEC,Physical infrastructure,Housing,Percentage of occupied housing units with electricity heating,ACS
+ACS_PCT_HU_KITCHEN,Physical infrastructure,Housing,Percentage of housing units lacking complete kitchen facilities,ACS
+ACS_PCT_HU_MOBILE_HOME,Physical infrastructure,Housing,Percentage of housing units that are mobile homes,ACS
+ACS_PCT_HU_NO_FUEL,Physical infrastructure,Housing,Percentage of occupied housing units without fuel,ACS
+ACS_PCT_HU_OIL,Physical infrastructure,Housing,Percentage of occupied housing units with fuel oil heating,ACS
+ACS_PCT_HU_OTHER,Physical infrastructure,Housing,Percentage of occupied housing units with other heating fuel,ACS
+ACS_PCT_HU_PLUMBING,Physical infrastructure,Housing,Percentage of housing units lacking complete plumbing facilities,ACS
+ACS_PCT_HU_SOLAR,Physical infrastructure,Housing,Percentage of occupied housing units with solar energy,ACS
+ACS_PCT_HU_UTILITY_GAS,Physical infrastructure,Housing,Percentage of occupied housing units with utility gas heating,ACS
+ACS_PCT_HU_WOOD,Physical infrastructure,Housing,Percentage of occupied housing units with wood heating,ACS
+ACS_PCT_OWNER_HU,Physical infrastructure,Housing,Percentage of occupied housing units: owner-occupied,ACS
+ACS_PCT_OWNER_HU_CHILD,Physical infrastructure,Housing,Percentage of owner-occupied housing units with children,ACS
+ACS_PCT_OWNER_HU_COST_30PCT,Physical infrastructure,Housing,Percentage of owner-occupied housing units with selected monthly owner costs equal to 30 percent or more of household income,ACS
+ACS_PCT_OWNER_HU_COST_50PCT,Physical infrastructure,Housing,Percentage of owner-occupied housing units with selected monthly owner costs equal to 50 percent or more of household income,ACS
+ACS_PCT_RENTER_HU,Physical infrastructure,Housing,Percentage of occupied housing units: rented,ACS
+ACS_PCT_RENTER_HU_ABOVE65,Physical infrastructure,Housing,Percentage of renter-occupied housing units occupied by householders aged 65 and above,ACS
+ACS_PCT_RENTER_HU_CHILD,Physical infrastructure,Housing,Percentage of renter-occupied housing units with children,ACS
+ACS_PCT_RENTER_HU_COST_30PCT,Physical infrastructure,Housing,Percentage of renter-occupied housing units with rent equal to 30 percent or more of household income,ACS
+ACS_PCT_RENTER_HU_COST_50PCT,Physical infrastructure,Housing,Percentage of renter-occupied housing units with rent equal to 50 percent or more of household income,ACS
+ACS_PCT_VACANT_HU,Physical infrastructure,Housing,Percentage of housing units vacant,ACS
+ACS_TOT_HU,Physical infrastructure,Housing,Total housing units,ACS
+ACS_PCT_HH_BROADBAND,Physical infrastructure,Internet connectivity,"Percentage of households with broadband such as cable, fiber optic or DSL ",ACS
+ACS_PCT_HH_BROADBAND_ANY,Physical infrastructure,Internet connectivity,Percentage of households with broadband of any type,ACS
+ACS_PCT_HH_BROADBAND_ONLY,Physical infrastructure,Internet connectivity,"Percentage of households with broadband such as cable, fiber optic or DSL with no other type of Internet subscription",ACS
+ACS_PCT_HH_CELLULAR,Physical infrastructure,Internet connectivity,Percentage of households with a cellular data plan,ACS
+ACS_PCT_HH_CELLULAR_ONLY,Physical infrastructure,Internet connectivity,Percentage of households with a cellular data plan with no other type of internet subscription,ACS
+ACS_PCT_HH_DIAL_INTERNET_ONLY,Physical infrastructure,Internet connectivity,Percentage of households with dial up and no other type of internet subscription,ACS
+ACS_PCT_HH_INTERNET,Physical infrastructure,Internet connectivity,Percentage of households with any internet subscription,ACS
+ACS_PCT_HH_INTERNET_NO_SUBS,Physical infrastructure,Internet connectivity,Percentage of households with internet access without a subscription,ACS
+ACS_PCT_HH_NO_COMP_DEV,Physical infrastructure,Internet connectivity,Percentage of households without a computing device,ACS
+ACS_PCT_HH_NO_INTERNET,Physical infrastructure,Internet connectivity,Percentage of households with no internet access,ACS
+ACS_PCT_HH_OTHER_COMP,Physical infrastructure,Internet connectivity,Percentage of households with other type of computer,ACS
+ACS_PCT_HH_OTHER_COMP_ONLY,Physical infrastructure,Internet connectivity,Percentage of households with other type of computer only,ACS
+ACS_PCT_HH_PC,Physical infrastructure,Internet connectivity,Percentage of households with a desktop or laptop,ACS
+ACS_PCT_HH_PC_ONLY,Physical infrastructure,Internet connectivity,Percentage of households with a desktop or laptop with no other type of computing device,ACS
+ACS_PCT_HH_SAT_INTERNET,Physical infrastructure,Internet connectivity,Percentage of households with satellite internet service,ACS
+ACS_PCT_HH_SMARTPHONE,Physical infrastructure,Internet connectivity,Percentage of households with a smartphone,ACS
+ACS_PCT_HH_SMARTPHONE_ONLY,Physical infrastructure,Internet connectivity,Percentage of households with a smartphone with no other type of computing device,ACS
+ACS_PCT_HH_TABLET,Physical infrastructure,Internet connectivity,Percentage of households with a tablet or other portable wireless computer,ACS
+ACS_PCT_HH_TABLET_ONLY,Physical infrastructure,Internet connectivity,Percentage of households with a tablet or other portable wireless computer with no other type of computing device,ACS
+ACS_PCT_DIF_STATE,Physical infrastructure,Migration,Percentage of population that moved from different state in the past year (age 1 and over),ACS
+ACS_PCT_IN_COUNTY_MOVE,Physical infrastructure,Migration,Percentage of population that moved within the same county in the past year (age 1 and over),ACS
+ACS_PCT_IN_STATE_MOVE,Physical infrastructure,Migration,Percentage of population that moved from different county within same state in the past year (age 1 and over),ACS
+ACS_PCT_COMMT_15MIN,Physical infrastructure,Transportation,Percentage of workers with < 15-minute commute time (ages 16 and over),ACS
+ACS_PCT_COMMT_29MIN,Physical infrastructure,Transportation,Percentage of workers with 15- to 29-minute commute time (ages 16 and over),ACS
+ACS_PCT_COMMT_59MIN,Physical infrastructure,Transportation,Percentage of workers with 30- to 59-minute commute time (ages 16 and over),ACS
+ACS_PCT_COMMT_60MINUP,Physical infrastructure,Transportation,Percentage of workers with at least 60-minute commute time (ages 16 and over),ACS
+ACS_PCT_DRIVE_2WORK,Physical infrastructure,Transportation,"Percentage of workers taking a car, truck, or van to work (ages 16 and over)",ACS
+ACS_PCT_HU_NO_VEH,Physical infrastructure,Transportation,Percentage of housing units with no vehicle available,ACS
+ACS_PCT_PUB_COMMT_15MIN,Physical infrastructure,Transportation,Percentage of workers who use public transportation with < 15-minute commute time (ages 16 and over),ACS
+ACS_PCT_PUB_COMMT_29MIN,Physical infrastructure,Transportation,Percentage of workers who use public transportation with 15- to 29-minute commute time (ages 16 and over),ACS
+ACS_PCT_PUB_COMMT_59MIN,Physical infrastructure,Transportation,Percentage of workers who use public transportation with 30- to 59-minute commute time (ages 16 and over),ACS
+ACS_PCT_PUB_COMMT_60MINUP,Physical infrastructure,Transportation,Percentage of workers who use public transportation with at least 60-minute commute time (ages 16 and over),ACS
+ACS_PCT_PUBL_TRANSIT,Physical infrastructure,Transportation,"Percentage of workers taking public transportation, excluding taxicab (ages 16 and over)",ACS
+ACS_PCT_TAXICAB_2WORK,Physical infrastructure,Transportation,"Percentage of workers taking taxicab, motorcycle, bicycle, or other means to work (ages 16 and over)",ACS
+ACS_PCT_WALK_2WORK,Physical infrastructure,Transportation,Percentage of workers walking to work (ages 16 and over),ACS
+ACS_PCT_WORK_NO_CAR,Physical infrastructure,Transportation,Percentage of workers in households with no vehicle available (ages 16 and over),ACS
+POS_DIST_ALC_TRACT,Healthcare context,Characteristics of health care facilities,"Distance in miles to the nearest hospital with alcohol and drug abuse inpatient care, calculated using population weighted tract centroids",POS
+POS_DIST_CLINIC_TRACT,Healthcare context,Characteristics of health care facilities,"Distance in miles to the nearest health clinic (FQHC, RHC), calculated using population weighted tract centroids",POS
+POS_DIST_ED_TRACT,Healthcare context,Characteristics of health care facilities,"Distance in miles to the nearest emergency department, calculated using population weighted tract centroids",POS
+POS_DIST_MEDSURG_ICU_TRACT,Healthcare context,Characteristics of health care facilities,"Distance in miles to the nearest medical-surgical ICU, calculated using population weighted tract centroids",POS
+POS_DIST_OBSTETRICS_TRACT,Healthcare context,Characteristics of health care facilities,"Distance in miles to the nearest obstetrics department, calculated using population weighted tract centroids",POS
+POS_DIST_PED_ICU_TRACT,Healthcare context,Characteristics of health care facilities,"Distance in miles to the nearest pediatric ICU, calculated using population weighted tract centroids",POS
+POS_DIST_TRAUMA_TRACT,Healthcare context,Characteristics of health care facilities,"Distance in miles to the nearest designated trauma center, calculated using population weighted tract centroids",POS
+HIFLD_DIST_UC_TRACT,Healthcare context,Distance to Provider,"Distance in miles to the nearest urgent care, calculated using population weighted tract centroids",HIFLD
+ACS_PCT_MEDICAID_ANY,Healthcare context,Health insurance status,Percentage of population with any Medicaid/means-tested public health insurance coverage,ACS
+ACS_PCT_MEDICAID_ANY_BELOW64,Healthcare context,Health insurance status,Percentage of population with any Medicaid/means-tested public health insurance coverage (ages 64 and below),ACS
+ACS_PCT_MEDICARE_ONLY,Healthcare context,Health insurance status,Percentage of population with Medicare only,ACS
+ACS_PCT_OTHER_INS,Healthcare context,Health insurance status,Percentage of population with other health insurance coverage combinations,ACS
+ACS_PCT_PRIVATE_ANY,Healthcare context,Health insurance status,Percentage of population with any private health insurance coverage,ACS
+ACS_PCT_PRIVATE_ANY_BELOW64,Healthcare context,Health insurance status,Percentage of population with any private health insurance coverage (ages 64 and below),ACS
+ACS_PCT_PRIVATE_EMPL,Healthcare context,Health insurance status,Percentage of population with employer-based health insurance,ACS
+ACS_PCT_PRIVATE_EMPL_BELOW64,Healthcare context,Health insurance status,Percentage of population with employer-based health insurance only (ages 64 and below),ACS
+ACS_PCT_PRIVATE_MDCR,Healthcare context,Health insurance status,Percentage of population with employer-based and Medicare insurance coverage,ACS
+ACS_PCT_PRIVATE_MDCR_35_64,Healthcare context,Health insurance status,Percentage of population with direct-purchase and Medicare health insurance (between ages 35 and 64),ACS
+ACS_PCT_PRIVATE_OTHER,Healthcare context,Health insurance status,Percentage of population with other private-only health insurance combinations,ACS
+ACS_PCT_PRIVATE_OTHER_BELOW64,Healthcare context,Health insurance status,Percentage of population with other private-only health insurance combinations (ages 64 and below),ACS
+ACS_PCT_PRIVATE_SELF,Healthcare context,Health insurance status,Percentage of population with direct-purchase health insurance only,ACS
+ACS_PCT_PRIVATE_SELF_BELOW64,Healthcare context,Health insurance status,Percentage of population with direct-purchase health insurance only (ages 64 and below),ACS
+ACS_PCT_PUBLIC_ONLY,Healthcare context,Health insurance status,"Percentage of population with Medicare, Medicaid, TRICARE/military, U.S. Department of Veterans Affairs (VA) coverage and other public-only health insurance combinations",ACS
+ACS_PCT_PUBLIC_OTHER,Healthcare context,Health insurance status,Percentage of population with other public-only health insurance combinations,ACS
+ACS_PCT_PUBLIC_OTHER_BELOW64,Healthcare context,Health insurance status,Percentage of population with other public-only health insurance combinations (ages 64 and below),ACS
+ACS_PCT_PVT_EMPL_DRCT,Healthcare context,Health insurance status,Percentage of population with employer-based and direct-purchase coverage,ACS
+ACS_PCT_PVT_EMPL_DRCT_BELOW64,Healthcare context,Health insurance status,Percentage of population with employer-based and direct-purchase coverage (ages 64 and below),ACS
+ACS_PCT_SELF_MDCR_ABOVE35,Healthcare context,Health insurance status,Percentage of population with direct-purchase and Medicare health insurance (ages 35 and over),ACS
+ACS_PCT_TRICARE_VA,Healthcare context,Health insurance status,Percentage of population with TRICARE/military or VA health insurance coverage only,ACS
+ACS_PCT_TRICARE_VA_BELOW64,Healthcare context,Health insurance status,Percentage of population with TRICARE/military or VA coverage only (ages 64 and below),ACS
+ACS_PCT_UNINSURED,Healthcare context,Health insurance status,Percentage of population with no health insurance coverage,ACS
+ACS_PCT_UNINSURED_BELOW64,Healthcare context,Health insurance status,Percentage of population with no health insurance (ages 64 and below),ACS
+CEN_AIAN_NH_IND,Geography,Geography,American Indian/Alaska Native areas/Hawaiian home land indicator,CEN
+CEN_AREALAND_SQM_TRACT,Geography,Geography,Land area in square miles,CEN
+CEN_POPDENSITY_TRACT,Geography,Geography,Population density (Census Tract),CEN
+COUNTY,Geography,Geography,County name,CEN
+STATE,Geography,Geography,State name,CEN
+AGE,baseline,baseline,age at enrollment,REDCAP
+BASE_SBP,baseline,baseline,baseline SBP,REDCAP
+BSBP_GROUP,baseline,baseline,baseline SBP group,REDCAP
+DELTA_DAYS,baseline,baseline,days of baseline SBP since enrollment,REDCAP
+DELTA_SBP,baseline,baseline,delta between eligible SBP and baseline SBP,REDCAP
+DELTA_SBP_GROUP,baseline,baseline,delta grouping between eligible SBP and baseline SBP,REDCAP
+DISP_DATE,baseline,baseline,Date of Disposition Status,REDCAP
+DISP_STATUS,baseline,baseline,Disposition Status,REDCAP
+ELIG_DATE,baseline,baseline,date of eligibility visit,REDCAP
+ELIG_SBP,baseline,baseline,in-clinic eligibility SBP,REDCAP
+ELIG_SINCE_INDEX,baseline,baseline,eligibility visit since enrollment,REDCAP
+ENROLL_DATE,baseline,baseline,enrollment date,REDCAP
+ESBP_GROUP,baseline,baseline,eligibility SBP group,REDCAP
+ETHN_STR,baseline,baseline,ethnicity label,REDCAP
+ETHNICITY,baseline,baseline,ethnicity code,REDCAP
+PATID,baseline,baseline,CDM patid,REDCAP
+RACE,baseline,baseline,race code,REDCAP
+RACE_STR,baseline,baseline,race label,REDCAP
+SEX,baseline,baseline,sex code,REDCAP
+SEX_STR,baseline,baseline,sex label,REDCAP
+SITE,baseline,baseline,site,REDCAP
+STUDY_ID,baseline,baseline,study id,REDCAP
+T01,Tcog,Tcog,MoCA Blind Total Raw Score Uncorrected,REDCAP
+T02,Tcog,Tcog,Rey Auditory Verbal Learning - Immediate Trial 1 - Total Recall,REDCAP
+T03,Tcog,Tcog,Rey Auditory Verbal Learning - Immediate Trial 2 - Total Recall,REDCAP
+T04,Tcog,Tcog,Rey Auditory Verbal Learning - Immediate Trial 3 - Total Recall,REDCAP
+T05,Tcog,Tcog,Rey Auditory Verbal Learning - Immediate Trial 4 - Total Recall,REDCAP
+T06,Tcog,Tcog,Rey Auditory Verbal Learning - Immediate Trial 5 - Total Recall,REDCAP
+T07,Tcog,Tcog,Sum of Rey Auditory Verbal Learning - Immediate Trials 1-5 Total Recall,REDCAP
+T08,Tcog,Tcog,Number Span Test: Forward Number of Correct Trials,REDCAP
+T08N,Tcog,Tcog,Number Span Test: Forward Number of Correct Trials,REDCAP
+T08NE,Tcog,Tcog,Number Span Test: Forward Number of Correct Trials,REDCAP
+T09,Tcog,Tcog,Number Span Test: Backward Number of Correct Trials,REDCAP
+T09N,Tcog,Tcog,Number Span Test: Backward Number of Correct Trials,REDCAP
+T09NE,Tcog,Tcog,Number Span Test: Backward Number of Correct Trials,REDCAP
+T10,Tcog,Tcog,Oral Trail Making Test Part A Total number of seconds,REDCAP
+T11,Tcog,Tcog,Oral Trail Making Test Part B Total number of seconds,REDCAP
+T12,Tcog,Tcog,Category Fluency: Animals,REDCAP
+T12N,Tcog,Tcog,Category Fluency: Animals,REDCAP
+T12NE,Tcog,Tcog,Category Fluency: Animals,REDCAP
+T13,Tcog,Tcog,Category Fluency: Vegetables,REDCAP
+T13N,Tcog,Tcog,Category Fluency: Vegetables,REDCAP
+T13NE,Tcog,Tcog,Category Fluency: Vegetables,REDCAP
+T14,Tcog,Tcog,Sum of Category Fluency: Animals and Vegetables,REDCAP
+T15,Tcog,Tcog,Verbal Fluency: Phonemic Test Number of Correct F-words,REDCAP
+T15N,Tcog,Tcog,Verbal Fluency: Phonemic Test Number of Correct F-words,REDCAP
+T15NE,Tcog,Tcog,Verbal Fluency: Phonemic Test Number of Correct F-words,REDCAP
+T16,Tcog,Tcog,Verbal Fluency: Phonemic Test Number of Correct L-words,REDCAP
+T16N,Tcog,Tcog,Verbal Fluency: Phonemic Test Number of Correct L-words,REDCAP
+T16NE,Tcog,Tcog,Verbal Fluency: Phonemic Test Number of Correct L-words,REDCAP
+T18,Tcog,Tcog,Rey Auditory Verbal Learning - Delayed Recall and Recognition Total Delayed Recall,REDCAP
+T19,Tcog,Tcog,Rey Auditory Verbal Learning - Delayed Recall and Recognition Recognition Total Correct,REDCAP
+T20,Tcog,Tcog,Verbal Naming Test Total Correct without a Cue,REDCAP
+TCOG_DATE,Tcog,Tcog,TCOG assessment date,REDCAP
+URM_IND,baseline,baseline,"Underrepresented minority (URM) indicator (1=URM, 0=non-URM)",REDCAP

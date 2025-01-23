@@ -58,9 +58,10 @@ for(i=0; i<SITES.length; i++){
                     round(datediff(day,d.birth_date::date,e.admit_date::date)/365.25) AS age_at_index,
                     d.sex, 
                     CASE WHEN d.race IN ('05') THEN 'white' 
-                            WHEN d.race IN ('03') THEN 'black'
-                            WHEN d.race IN ('NI','UN',NULL) THEN 'NI'
-                            ELSE 'ot' END AS race, 
+                         WHEN d.race IN ('03') THEN 'black'
+                         WHEN d.race IN ('02') THEN 'asian'
+                         WHEN d.race IN ('NI','UN',NULL) THEN 'NI'
+                         ELSE 'ot' END AS race, 
                     CASE WHEN d.hispanic = 'Y' THEN 'hispanic' 
                             WHEN d.hispanic = 'N' THEN 'non-hispanic' 
                             WHEN d.hispanic IN ('NI','UN',NULL) THEN 'NI'
