@@ -1,0 +1,173 @@
+---
+title: "Explore associations between SDH and TCOG"
+author: "Xing Song"
+format: html
+editor: visual
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+#| label: starter-chunk
+
+#load packages
+rm(list=ls())
+pacman::p_load(
+  tidyverse,
+  magrittr,
+  stringr,
+  broom,
+  cowplot,
+  ggrepel,
+  kableExtra,
+  gtsummary,
+  devtools,
+  tableone,
+  pROC,
+  corrplot
+)
+
+#load custom functions
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/analysis_util.R")
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
+
+#specify abs paths
+path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
+path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
+path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
+```
+
+
+
+```{r}
+#| label: data-load
+
+dat<-readRDS(file.path(path_to_data,"tcog_sdh.rda")) %>%
+  mutate(
+    SEX_FAC = relevel(factor(SEX),ref='1'),
+    RACE_FAC = relevel(factor(RACE),ref='5'),
+    ETHN_FAC = relevel(factor(ETHNICITY),ref='2')
+  )
+dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
+
+var_sdh<-dd %>% filter(DATA_SOURCE %in% c('ACS')) %>% select(VAR) %>% unlist
+var_base_lbl<-c("AGE","SEX","RACE","ETHNICITY","BASE_SBP","BSBP_GROUP","SITE")
+var_tcog<-dd %>% filter(DOMAIN == 'Tcog'&!grepl("DATE",VAR)) %>% select(VAR) %>% unlist
+
+var_all<-c(var_base_lbl,var_tcog,var_sdh)
+facvar_all<-c("SEX","RACE","ETHNICITY","BSBP_GROUP","STATE","COUNTY","SITE")
+```
+
+
+```{r}
+#| label: quick-summary
+
+var_lbl_df <- dd %>% mutate(var=VAR,var_lbl=VARIABLE_LABEL) %>% select(var,var_lbl)
+cohort_summ<-univar_analysis_mixed(
+  df = dat,
+  id_col ="STUDY_ID",
+  var_lst = var_all,
+  facvar_lst  = facvar_all,
+  pretty = T,
+  var_lbl_df = var_lbl_df
+)
+cohort_summ %>% 
+  save_kable(
+    file.path(path_to_res,'tcog_sdh_allvar.html')
+  ) 
+```
+
+
+## Univariate SDH Selection 
+
+```{r}
+#| label: m-reg-fixed-cfset
+
+miss_rt_tbl<-data.frame(
+  sdh_var=as.character(),
+  miss_rt = as.numeric()
+)
+for(x in var_sdh){
+  miss_rt<-mean(as.numeric(is.na(dat[,x])))
+  miss_rt_tbl %<>%
+    add_row(
+      sdh_var=x,
+      miss_rt = miss_rt
+    )
+}
+
+odds_ratio<-data.frame(
+  y=as.character(),
+  sdh_var=as.character(),
+  var=as.character(),
+  odds_ratio=as.numeric(),
+  ci_lower=as.numeric(),
+  ci_upper=as.numeric(),
+  p_value=as.numeric()
+)
+
+var_base_mod<-c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP","SITE")
+var_sdh_sel<-var_sdh[var_sdh %in% (miss_rt_tbl %>% filter(miss_rt<0.2) %>% select(sdh_var) %>% unlist)]
+for(y in var_tcog){
+  cat("outcome:",y,"\n")
+  
+  for(x in var_sdh_sel){
+    cat("sdh variable:",x,"\n")
+    
+    dat_filter<-dat[!is.na(dat[,x]),]
+    fit<-glm(
+      as.formula(paste0(y," ~ ",paste(c(var_base_mod,x),collapse = "+"))),
+      data = dat_filter,
+      family = poisson()
+    )
+    summ.fit<-summary(fit)
+    ci.fit<-confint(fit)
+  
+    odds_ratio<-odds_ratio %>%
+      add_row(
+        y = y,
+        sdh_var = x,
+        var = row.names(summ.fit$coefficients)[-1],
+        odds_ratio = exp(summ.fit$coefficients[-1,1]),
+        ci_lower = exp(ci.fit[-1,1]),
+        ci_upper = exp(ci.fit[-1,2]),
+        p_value=summ.fit$coefficients[-1,4]
+      )
+  }
+}
+
+
+odds_ratio<-odds_ratio %>% 
+  filter(p_value<0.1) %>%
+  arrange(p_value)
+
+odds_ratio
+
+```
+
+## Domain Selection
+
+# 
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).

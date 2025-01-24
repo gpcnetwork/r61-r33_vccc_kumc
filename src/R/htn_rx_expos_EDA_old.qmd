@@ -1,0 +1,475 @@
+---
+title: "Exploring potential explanations for eligibility drift"
+author: "Xing Song"
+format: html
+editor: visual
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+#| label: load-pkg
+
+rm(list=ls())
+pacman::p_load(
+  tidyverse,
+  magrittr,
+  stringr,
+  broom,
+  cowplot,
+  ggrepel,
+  kableExtra,
+  gtsummary,
+  devtools,
+  tableone,
+  pROC
+)
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/analysis_util.R")
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
+
+path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
+path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
+```
+
+
+# Data Availability & Coverage
+
+```{r}
+#| label: data-avail
+#| include: false
+
+bp_long<-readRDS(file.path(root_dir,"data","bp_long.rda"))
+
+id<-unique(bp_long$STUDY_ID) #634
+id_ku<-id[grepl("^(KU)+",id)] #527
+id_ut<-id[grepl("^(UT)+",id)] #105
+
+bp_ku<-bp_long %>% 
+  filter(bp_type=="sbp") %>%
+  filter(grepl("^(KU)+",toupper(STUDY_ID))) %>%
+  group_by(STUDY_ID,type) %>%
+  mutate(days_since_index_lag1 = lag(days_since_index,n=1L)) %>%
+  ungroup %>%
+  mutate(days_since_last = days_since_index - days_since_index_lag1)
+
+bp_ku %>% 
+  group_by(STUDY_ID,type) %>%
+  summarize(
+    cnt = length(unique(days_since_index)),
+    delta_m = mean(days_since_last,na.rm=T),
+    delta_sd = sd(days_since_last,na.rm=T),
+    .groups = 'drop') %>%
+  mutate(prop = round(cnt/length(id_ku),3)) %>%
+  group_by(type) %>%
+  summarize(
+    pat_n = length(unique(STUDY_ID)),
+    cnt_m = round(mean(cnt)),
+    cnt_sd = round(sd(cnt),1),
+    cnt_med = round(median(cnt)),
+    cnt_q1 = round(quantile(cnt,prob =0.25)),
+    cnt_q3 = round(quantile(cnt,prob =0.75)),
+    delta_m_m = round(mean(delta_m,na.rm=T)),
+    delta_m_sd = round(sd(delta_m,na.rm=T),1), 
+    delta_m_med = round(median(delta_m,na.rm=T)),
+    delta_m_q1 = round(quantile(delta_m,prob =0.25,na.rm=T)),
+    delta_m_q3 = round(quantile(delta_m,prob =0.75,na.rm=T)),
+    .groups = 'drop'
+  )
+
+```
+
+-   `base_`: BP extracts from Qardio at baseline visit, serving as *INDEX_DATE*
+-   `elig_`: BP collected at two adjacent visits when eligibility criteria was satisfied
+
+Let's take a look at a few BP trajectory examples of these different types:
+
+```{r}
+#| label: plot-bp
+#| fig-width: 12
+#| fig-height: 10
+#| include: false
+
+k<-2
+id_sample<-sample(id_ku,k)
+  
+# individual plots of a random sample of size k
+ggplot(
+  bp_long %>% filter(STUDY_ID %in% id_sample),
+  aes(x = days_since_index,
+      y = bp_val,
+      color = bp_type)
+)+
+  geom_line(aes(group = bp_type))+
+  geom_point(aes(shape = type),size=3,alpha=0.6)+
+  geom_vline(xintercept = 0,linetype=2) +
+  facet_wrap(~STUDY_ID,scales = "free",ncol=1)
+```
+
+## Clinic BP vs. Home BP at Baseline
+
+We define the following stratification groups: 1. based on eligibility sbp:
+
+-   esbp1: 140 - 150
+-   esbp2: 150 - 160
+-   esbp3: \> 160
+
+2.  based on baseline sbp:
+
+-   bsbp1: 140 - 150
+-   bsbp2: 150 - 160
+-   bsbp3: \> 160
+
+3.  based on change from eligibility to baseline sbp:
+
+-   deltasbp1: sbp decreased to below 130
+-   deltasbp2: sbp decreased to between 130 and 140
+-   deltasbp3: sbp decreased but remain above 140 or not decreased
+
+```{r}
+#| label: bp-baseline-plot
+
+base_bp<-readRDS(file.path(path_to_data,'base_bp.rda')) %>%
+  semi_join(readRDS(file.path(path_to_data,'baseline_aset.rda')),by="STUDY_ID")
+
+N<-length(unique(base_bp$STUDY_ID))
+ggplot(
+  base_bp %>%
+    filter(ELIG_SINCE_INDEX>=-100) %>%
+    select(STUDY_ID,ELIG_SINCE_INDEX) %>%
+    unique,
+  aes(x=ELIG_SINCE_INDEX)
+)+
+  geom_histogram(
+    aes(y=..density..),
+    binwidth = 2,
+    fill="grey",
+    color="blue")+
+  geom_density(
+    aes(y = ..density..),
+    color = "red",
+    stat = 'density',
+    bw = 2,
+    size = 1.5) +
+  stat_bin(
+    aes(y = ..density..,
+        label=scales::percent(round(..density..,3))),
+    geom='text',
+    binwidth=2,
+    vjust = 1.5,
+    fontface = "bold"
+  )+
+  scale_x_continuous(
+    name = "run-in period duration"
+  )+
+  scale_y_continuous(
+    name = "Percentage (%)",
+    breaks = seq(0,0.2,by=0.02),
+    labels = seq(0,0.2,by=0.02)*100,
+    sec.axis = sec_axis(
+      trans = ~ . * N,
+      name = "Count",
+      breaks = seq(0,40000,by=2000),
+      labels = seq(0,40000,by=2000))
+  )+
+  theme(
+    panel.background = element_rect(fill = "white", colour = "grey50"),
+    panel.grid.major.y = element_line(colour = "grey"),
+    text = element_text(face="bold",size=14)
+  )
+
+ggplot(
+  base_bp %>%
+    select(STUDY_ID,ELIG_SINCE_INDEX,DELTA_SBP,DELTA_SBP_GROUP,SITE) %>%
+    unique,
+  aes(
+    x = ELIG_SINCE_INDEX,
+    y = DELTA_SBP,
+    color = DELTA_SBP_GROUP
+    )
+)+
+  geom_point()+
+  geom_hline(yintercept=0,linetype=2)+
+  geom_vline(xintercept=-30,linetype=2)+
+  geom_vline(xintercept=-60,linetype=2)+
+  geom_vline(xintercept=-90,linetype=2)+
+  labs(
+    x = 'run-in period duration', 
+    y = 'SBP difference', 
+    title = "eligibility and baseline SBP"
+  )+
+  facet_wrap(~ SITE)
+
+elig_drift<-base_bp %>%
+  group_by(SITE) %>%
+  mutate(n_site = length(unique(STUDY_ID))) %>%
+  ungroup %>%
+  group_by(SITE,DELTA_SBP_GROUP,n_site) %>%
+  summarise(cnt = length(unique(STUDY_ID)),.groups='drop') %>%
+  mutate(
+    N = n_site,
+    prop = round(cnt/N,3)
+  )
+elig_drift
+```
+
+As shown above, the run-in period duration averaged around `r -round(mean(base_bp$ELIG_SINCE_INDEX))` (`r round(sd(base_bp$ELIG_SINCE_INDEX),1)`) days, and we identified about `r round(elig_drift$prop[1]*100)`% with significant eligibility drift (to below 130 at baseline).
+
+
+## Investigation: How much of the eligibility drift can be explained by anti-hypertensive medication use during the run-in period?
+
+We set out to investigate what could be some legitimate reasons occured during the run-in period (i.e., the time period between eligibility and recruitment/randomization) to explain this eligibility drift. For this investigation, we also collected all prescription data from CDM PRESCRIBING table provided by KUMC team and identified the following anti-HTN medications (using VA classifications) as well as their timings (start before eligibility visit or during the run-in period):
+
+-   CV100: beta blockers/related
+
+-   CV150: alpha blockers/related
+
+-   CV200: calcium channel blockers
+
+-   CV400: anti-hypertensive combinations
+
+-   CV490: antihypertensive, others
+
+-   CV701: thiazides/related diuretics
+
+-   CV702: loop diuretics
+
+-   CV703: carbonic anhydrase inhibitor diuretics
+
+-   CV704: potassium sparing/combinations diretics
+
+-   CV709: diuretics, other
+
+-   CV800: ACE inhibitors
+
+-   CV805: angiotensin II inhibitor
+
+-   CV806: direct renin inhibitor
+
+### Analysis I: Using systematic explanatory feature screening to investigate what are the explanatory factors for significant BP drop
+
+```{r}
+#| label: load-all-data
+
+baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda'))
+
+var_excld<-c(
+  "STUDY_ID",
+  "DELTA_SBP",
+  "DELTA_SBP_GROUP",
+  "decr_ind",
+  "sig_decr_ind1",
+  "sig_decr_ind2",
+  "RX_TIMING",
+  "BSBP",
+  "BSBP_GROUP"
+)
+var_lst<-colnames(baseline_aset)[!colnames(baseline_aset) %in% var_excld]
+var_lst<-var_lst[!grepl("(bef_1st)+?$",var_lst)]
+```
+
+Using prescription data, we included `r length(var_lst)` factors that includes:
+
+-   `r length(var_lst[grepl('_maintain',var_lst)])` anti-hyptertensive drug use pattern (generic name & class) indicators suggesting a drug started before and continued during the run-in period;
+-   `r length(var_lst[grepl('_runin_start',var_lst)])` anti-hyptertensive drug use pattern (generic name & class) indicators suggesting a drug started during the run-in period;
+-   `r length(var_lst[grepl('_runin_stop',var_lst)])` anti-hyptertensive drug use pattern (generic name & class) indicators suggesting a drug started before but no new prescription was observed during the run-in period;
+-   `r length(var_lst[grepl('_does_inc',var_lst)])` anti-hyptertensive drug use pattern indicators suggesting a dose increase of a generic drug
+-   age at baseline, sex, race, ethnicity, eligibility SBP
+
+```{r}
+#| label: med-use-segment
+
+CreateTableOne(
+  vars = c("DELTA_SBP_GROUP"),
+  strata = "antihtn_delta_med" ,
+  data = baseline_aset,
+  factorVars = c("DELTA_SBP_GROUP")
+)
+
+CreateTableOne(
+  vars = c("antihtn_delta_med"), 
+  strata = "DELTA_SBP_GROUP" , 
+  data = baseline_aset, 
+  factorVars = c("antihtn_delta_med")
+)
+```
+
+
+```{r}
+#| label: med-use-segment2
+
+CreateTableOne(
+  vars = c("DELTA_SBP_GROUP"), 
+  strata = "antihtn_dose_inc" , 
+  data = baseline_aset, 
+  factorVars = c("DELTA_SBP_GROUP")
+)
+
+
+CreateTableOne(
+  vars = c("antihtn_dose_inc"), 
+  strata = "DELTA_SBP_GROUP" , 
+  data = baseline_aset, 
+  factorVars = c("antihtn_dose_inc")
+)
+```
+
+
+```{r}
+#| label: simple-fs-multi-re
+
+var_excld<-c(
+  "STUDY_ID",
+  "DELTA_SBP",
+  "DELTA_SBP_sign",
+  "DELTA_SBP",
+  "decr_ind",
+  "sig_decr_ind1",
+  "sig_decr_ind2",
+  "RX_TIMING",
+  "INDEX_DATE"
+)
+var_lst<-colnames(baseline_aset)[!colnames(baseline_aset) %in% var_excld]
+var_lst<-var_lst[!grepl("(bef_1st)+?$",var_lst)]
+
+odds_ratio<-data.frame(
+  var1=as.character(),
+  var2=as.character(),
+  odds_ratio=as.numeric(),
+  ci_lower=as.numeric(),
+  ci_upper=as.numeric(),
+  p_value=as.numeric()
+)
+
+for (vari in var_lst){
+  cat("test variable:",vari,"\n")
+  
+  fit<-glm(
+    as.formula(paste0("sig_decr_ind1 ~",vari)),
+    data=baseline_aset,
+    family=binomial()
+  )
+  summ.fit<-summary(fit)
+  ci.fit<-confint(fit)
+  
+  odds_ratio<-odds_ratio %>%
+    add_row(
+      var1 = vari,
+      var2 = attr(summ.fit$coefficients,"dimnames")[[1]][-1],
+      odds_ratio=exp(summ.fit$coefficients[-1,1]), # note that the coefficient of logistic regression is the log-odds
+      ci_lower = exp(ci.fit[-1,1]),
+      ci_upper = exp(ci.fit[-1,2]),
+      p_value=summ.fit$coefficients[-1,4])
+  
+}
+odds_ratio<-odds_ratio %>% 
+  filter(p_value<0.1) %>%
+  arrange(p_value)
+
+odds_ratio
+
+var_sel<-unique(c(
+  'SITE',
+  odds_ratio$var1
+))
+facvar_sel<-var_sel
+cohort_summ<-univar_analysis_mixed(
+  df = baseline_aset,
+  id_col ="STUDY_ID",
+  var_lst = var_sel,
+  grp = baseline_aset$sig_decr_ind1,
+  facvar_lst  = facvar_sel,
+  pretty = T
+)
+cohort_summ %>% kable_classic() 
+```
+
+```{r}
+#| label: multi-reg
+#| warning: false
+#| eval: false
+
+# multiple regression model
+var_sel<-odds_ratio$var1
+sel_model <- glm(
+  formula(paste0("sig_decr_ind1 ~ ",paste(var_sel,collapse = "+"))), 
+  data = baseline_aset, family = binomial()
+)
+sel_model %>% tbl_regression(exponentiate = TRUE)
+
+pROC::ggroc(pROC::roc(sel_model$y, sel_model$fitted))+
+  geom_abline(intercept=1,linetype=2)+
+  labs(subtitle = paste0("AUC:",round(pROC::auc(sel_model$y, sel_model$fitted),4)))
+```
+
+
+```{r}
+#| label: stepwise-reg
+
+# Specify a null model with no predictors
+null_model <- glm(
+  sig_decr_ind1 ~ 1,
+  data = baseline_aset, 
+  family = binomial()
+)
+
+# Specify the full model using all of the potential predictors
+full_model <- glm(
+  formula(paste0("sig_decr_ind1 ~ ",paste(var_sel,collapse = "+"))), 
+  data = baseline_aset, 
+  family = binomial()
+)
+
+# Use a bi-directional stepwise algorithm to build a parsimonious model
+step_model <- step(
+  null_model,
+  scope = list(lower = null_model, upper = full_model),
+  direction = "both"
+)
+
+modsumm<-summary(step_model)
+with(modsumm, 1 - deviance/null.deviance)
+
+step_model %>% tbl_regression(exponentiate = TRUE)
+
+# pROC::ggroc(pROC::roc(step_model$y, step_model$fitted))+
+#   geom_abline(intercept=1,linetype=2)+
+#   labs(subtitle = paste0("AUC:",round(pROC::auc(step_model$y, step_model$fitted),4)))
+
+```
+
+### Analysis II: Profile the affected cohort with reasonable explanations
+
+```{r}
+#| label: profile-suseptible-cohort
+#| warning: false
+
+sel_aset<-data.frame(baseline_aset) %>% 
+  filter(sig_decr_ind1 == 1) %>%
+  mutate(
+    expln1 = as.numeric(ESBP_GROUP=="esbp1"|antihtn_dose_inc==1|antihtn_add==1|antihtn_runin==1)
+  )
+
+var_expln<-c(
+  "ESBP_GROUP",
+  "antihtn_dose_inc",
+  "antihtn_add",
+  "antihtn_runin",
+  "antihtn_mt",
+  "antihtn_rm",
+  "untreated",
+  "expln1"
+)
+  
+cohort_summ<-univar_analysis_mixed(
+  df = sel_aset,
+  id_col ="STUDY_ID",
+  var_lst = var_expln,
+  facvar_lst  = var_expln,
+  pretty = T
+)
+cohort_summ %>% kable_classic()
+```
+
+As shown in the table above, anti-hypertensive drug use and low eligibility SBP together only explains 71% of the eligibility drift.
