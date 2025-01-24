@@ -131,15 +131,15 @@ write.csv(odds_ratio,file.path(path_to_res,'sdh_univar_sel.csv'),row.names = FAL
 facvar_lst<-c("SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP","SITE")
 datfac_ohe<-dat %>% select(all_of(c("STUDY_ID",facvar_lst))) %>%
   pivot_longer(cols = - STUDY_ID,names_to = "facvar",values_to = "val") %>%
-  mutate(ind = 1) %>% unite("var",c(facvar,val),sep="_") %>%
+  mutate(ind = 1) %>% unite("var",c(facvar,val),sep="") %>%
   select(STUDY_ID,var,ind) %>%
   pivot_wider(names_from = var,values_from = ind,values_fill = list(ind=0)) %>%
-  select(-SEX_FAC_1,-RACE_FAC_5,-ETHN_FAC_2,-BSBP_GROUP_bsbp0,-SITE_KUMC) 
+  select(-SEX_FAC1,-RACE_FAC5,-ETHN_FAC2,-BSBP_GROUPbsbp0,-SITEKUMC) 
 
 dat2<-dat %>% select(-all_of(facvar_lst)) %>%
   left_join(datfac_ohe,by="STUDY_ID")
 
-var_base_mod2<-c("AGE",colnames(datfac_ohe))
+var_base_mod2<-c("AGE",colnames(datfac_ohe)[!colnames(datfac_ohe) %in% "STUDY_ID"])
 domain_lst<-c("Social context","Economic context","Education","Physical infrastructure","Healthcare context" )
 odds_ratio_lasso<-data.frame(
   y=as.character(),
@@ -167,8 +167,8 @@ for(s in c(var_tcog_disc,var_tcog_cont)){
       
       dat2_filter<-dat2[!is.na(dat[,s]),] %>%
         mutate(across(where(is.numeric), ~ ifelse(is.na(.), median(., na.rm = TRUE), .)))
-      X<-as.matrix(dat_filter[,c(var_base_mod2,var_sdh_selt)])
-      y<-unlist(dat_filter[,s])
+      X<-as.matrix(dat2_filter[,c(var_base_mod2,var_sdh_selt)])
+      y<-unlist(dat2_filter[,s])
       
       if(s %in% var_tcog_disc){
         lasso_model <- cv.glmnet(x = X,y = y,family="poisson",alpha = 1)  # alpha = 1 for Lasso
@@ -224,8 +224,8 @@ for(s in c(var_tcog_disc,var_tcog_cont)){
 odds_ratio_lasso %<>%
   mutate(
     OR = exp(coef),
-    OR_upper = exp(coef_lower),
-    OR_lower = exp(coef_upper)
+    OR_lower = exp(coef_lower),
+    OR_upper = exp(coef_upper)
   )
 write.csv(odds_ratio_lasso,file.path(path_to_res,'sdh_group_sel.csv'),row.names = FALSE)
 
@@ -234,5 +234,5 @@ write.csv(odds_ratio_lasso,file.path(path_to_res,'sdh_group_sel.csv'),row.names 
 
 
 
-write.csv(odds_ratio,file.path(path_to_res,'sdh_groupabstract_sel.csv'),row.names = FALSE)
+# write.csv(odds_ratio,file.path(path_to_res,'sdh_group_sel.csv'),row.names = FALSE)
 
