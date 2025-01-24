@@ -88,9 +88,11 @@ odds_ratio<-data.frame(
 )
 
 for(y in c(var_tcog_disc,var_tcog_cont)){
+  # y<-c(var_tcog_disc,var_tcog_cont)[1]
   cat("outcome:",y,"\n")
   
   for(x in var_sdh_sel){
+    # x<-var_sdh_sel[1]
     cat("outcome:",y,"; sdh variable:",x,"\n")
     
     dat_filter<-dat[!is.na(dat[,x]),]
@@ -219,6 +221,12 @@ for(s in c(var_tcog_disc,var_tcog_cont)){
     }
   }
 }
+odds_ratio_lasso %<>%
+  mutate(
+    OR = exp(coef),
+    OR_upper = exp(coef_lower),
+    OR_lower = exp(coef_upper)
+  )
 write.csv(odds_ratio_lasso,file.path(path_to_res,'sdh_group_sel.csv'),row.names = FALSE)
 
 

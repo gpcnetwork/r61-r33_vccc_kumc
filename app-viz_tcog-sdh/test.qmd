@@ -1,0 +1,86 @@
+---
+title: "test EDA results visualization"
+author: "Xing Song"
+format: html
+editor: visual
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+#| label: starter-chunk
+
+#load packages
+rm(list=ls())
+pacman::p_load(
+  tidyverse,
+  devtools
+)
+
+#load custom functions
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/analysis_util.R")
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
+
+#specify abs paths
+path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
+path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
+```
+
+```{r}
+#| label: load-result
+
+rslt_uni<-read.csv(file.path(path_to_res,'sdh_univar_sel.csv'),stringsAsFactors = F)
+rslt_lasso<-read.csv(file.path(path_to_res,'sdh_group_sel.csv'),stringsAsFactors = F)
+dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
+```
+
+```{r}
+#| label: plot
+threshold<-0.05
+
+dt_plt<-rslt_lasso %>%
+  filter(p_value<=threshold) %>%
+  mutate(
+    coef_sign = sign(coef),
+    OR_upper = pmax(pmin(OR_upper,10),OR_lower)) %>%
+  select(y,domain,topic,coef_sign,OR,OR_lower,OR_upper,p_value,var) %>%
+  inner_join(
+    rslt_uni %>%
+      filter(sdh_var==var) %>%
+      mutate(p_value = round(p_value,4)) %>%
+      select(y,odds_ratio,ci_lower,ci_upper,p_value,var),
+    by=c("y","var")
+  ) %>%
+  left_join(
+    dd %>% select(VAR,VARIABLE_LABEL),by=c("var"="VAR")
+  )
+
+
+ggplot(
+  data=dt_plt,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=1)+
+  xlab('Topic')+ ylab("Odds Ratio (95% Confidence Interval)")+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+```
+
+```{r}
+#| label: table
+
+rslt_uni<-read.csv(file.path(path_to_res,'sdh_univar_sel.csv'),stringsAsFactors = F)
+rslt_lasso<-read.csv(file.path(path_to_res,'sdh_group_sel.csv'),stringsAsFactors = F)
+dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
+```
