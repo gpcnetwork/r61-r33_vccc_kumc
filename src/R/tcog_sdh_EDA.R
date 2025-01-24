@@ -139,7 +139,6 @@ datfac_ohe<-dat %>% select(all_of(c("STUDY_ID",facvar_lst))) %>%
 dat2<-dat %>% select(-all_of(facvar_lst)) %>%
   left_join(datfac_ohe,by="STUDY_ID")
 
-var_base_mod2<-c("AGE",colnames(datfac_ohe)[!colnames(datfac_ohe) %in% "STUDY_ID"])
 domain_lst<-c("Social context","Economic context","Education","Physical infrastructure","Healthcare context" )
 odds_ratio_lasso<-data.frame(
   y=as.character(),
@@ -152,7 +151,8 @@ odds_ratio_lasso<-data.frame(
   p_value=as.numeric()
 )
 for(s in c(var_tcog_disc,var_tcog_cont)){
-  # s<-c(var_tcog_disc,var_tcog_cont)[1]
+  # s<-var_tcog_cont[1]
+  # s<-var_tcog_disc[1]
   cat("outcome:",s,"\n")
   
   for(d in domain_lst){
@@ -167,13 +167,16 @@ for(s in c(var_tcog_disc,var_tcog_cont)){
       
       dat2_filter<-dat2[!is.na(dat[,s]),] %>%
         mutate(across(where(is.numeric), ~ ifelse(is.na(.), median(., na.rm = TRUE), .)))
-      X<-as.matrix(dat2_filter[,c(var_base_mod2,var_sdh_selt)])
       y<-unlist(dat2_filter[,s])
       
       if(s %in% var_tcog_disc){
+        var_base_mod2<-c("AGE",colnames(datfac_ohe)[!colnames(datfac_ohe) %in% "STUDY_ID"])
+        X<-as.matrix(dat2_filter[,c(var_base_mod2,var_sdh_selt)])
         lasso_model <- cv.glmnet(x = X,y = y,family="poisson",alpha = 1)  # alpha = 1 for Lasso
       }else{
-        lasso_model <- cv.glmnet(x = X,y = y,alpha = 1)  # alpha = 1 for Lasso
+        var_base_mod2<-c(colnames(datfac_ohe)[!colnames(datfac_ohe) %in% "STUDY_ID"])
+        X<-as.matrix(dat2_filter[,c(var_base_mod2,var_sdh_selt)])
+        lasso_model <- cv.glmnet(x = X,y = y,family="gaussian",alpha = 1)  # alpha = 1 for Lasso
       }
       
       best_lambda <- lasso_model$lambda.min      # Best lambda from cross-validation
