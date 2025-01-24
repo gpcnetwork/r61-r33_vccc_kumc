@@ -7,11 +7,7 @@ library(ggrepel)
 library(cowplot)
 
 # load data --------------------
-path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
-path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
-rslt_uni<-read.csv(file.path(path_to_res,'sdh_univar_sel.csv'),stringsAsFactors = F)
-rslt_lasso<-read.csv(file.path(path_to_res,'sdh_group_sel.csv'),stringsAsFactors = F)
-dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
+dt<-readRDS("C:/repos/r61-r33_vccc_kumc/app-viz_tcog-sdh/data/rslt_tbl.rda")
 
 # define UI for application -------------
 ui<-dashboardPage(
@@ -63,16 +59,11 @@ ui<-dashboardPage(
 server <- function(input, output, session) {
   # dashboard reactives--------------------------
   datainput1<-reactive({
-    rslt_uni %>% filter(y == input$tcog&p_value<=input$threshold) %>%
-      select()
-      
+    dt %>% filter(p_value<=threshold)
   })
   
   datainput2<-reactive({
-    vpos<-unique(c(
-      datainput1()$rx_start_since_index,
-      datainput1()$rx_end_since_index
-    ))
+    dt %>% filter(p_value<=threshold) %>% select(y)
   })
   
   datainput3<-reactive({

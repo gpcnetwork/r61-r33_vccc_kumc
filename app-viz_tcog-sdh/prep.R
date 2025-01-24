@@ -2,38 +2,35 @@ pacman::p_load(
   tidyverse,
   magrittr
 )
-root_dir<-file.path(
-  'C:',"repos","r61-r33-vccc-kumc"
-)
 
-# spec-sel
-presel<-c(
-  'KU-015',
-  'KU-028'
-)
+path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
+path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
+rslt_uni<-read.csv(file.path(path_to_res,'sdh_univar_sel.csv'),stringsAsFactors = F)
+rslt_lasso<-read.csv(file.path(path_to_res,'sdh_group_sel.csv'),stringsAsFactors = F)
+dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
 
-# random-sel
-n<-20
+dt_plt<-rslt_lasso %>%
+  mutate(
+    coef_sign = sign(coef),
+    OR_lower = pmin(OR_lower,2),
+    OR = pmax(pmin(OR,2),OR_lower),
+    OR_upper = pmax(pmin(OR_upper,2),OR_lower)) %>%
+  select(y,domain,topic,coef_sign,OR,OR_lower,OR_upper,p_value,var) %>%
+  inner_join(
+    rslt_uni %>%
+      filter(sdh_var==var) %>%
+      mutate(p_value = round(p_value,4)) %>%
+      select(y,odds_ratio,ci_lower,ci_upper,p_value,var) %>%
+      rename(pval=p_value),
+    by=c("y","var")
+  ) %>%
+  left_join(
+    dd %>% select(VAR,VARIABLE_LABEL),
+    by=c("var"="VAR")
+  ) %>%
+  left_join(
+    dd %>% select(VAR,VARIABLE_LABEL) %>% rename(y_lbl = VARIABLE_LABEL),
+    by=c("y"="VAR")
+  )
 
-sample_df<-readRDS(file.path(root_dir,"data","bp_long.rda")) %>%
-  select(study_id) %>% 
-  unique %>% 
-  sample_n(n) %>%
-  # filter(study_id %in% presel) %>%
-  mutate(id = row_number())
-
-bp_long_sample<-readRDS(file.path(root_dir,"data","bp_long.rda")) %>%
-  inner_join(sample_df,by="study_id")
-  
-saveRDS(
-  bp_long_sample,
-  file.path(root_dir,"app_bp_med_viz","data","bp_long_sample.rda")
-)
-
-med_long_sample<-readRDS(file.path(root_dir,"data","med_long.rda")) %>%
-  inner_join(sample_df,by="study_id")
-
-saveRDS(
-  med_long_sample,
-  file.path(root_dir,"app_bp_med_viz","data","med_long_sample.rda")
-)
+saveRDS(dt_plt,file="C:/repos/r61-r33_vccc_kumc/app-viz_tcog-sdh/data/rslt_tbl.rda")
