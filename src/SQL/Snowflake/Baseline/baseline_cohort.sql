@@ -29,6 +29,8 @@ select * from PAT_TABLE1 limit 5;
 select * from VCCC_PID_ADDRID limit 5;
 select * from VCCC_UNIQUE_ADDR_GEOCODED limit 5;
 select * from SDOH_DB.AHRQ.AHRQ_CT_2020 limit 5;
+select * from SDOH_DB.ADI.ADI_BG_2020 limit 5;
+select * from SDOH_DB.RUCA.RUCA_TR_2010 limit 5;
 
 select * from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PCORNET_TRIAL limit 5;
 select * from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PRESCRIBING limit 5;
@@ -206,9 +208,21 @@ select upper(a.study_id) as study_id,
        p.urm_ind,
        p.age,
        c.patid,
+    --    g.g.census_block_group_id_2020,
     --    g.census_tract_id_2020,
+       dense_rank() over (order by  g.census_tract_id_2020) as census_track_deid,
        t.* exclude(study_id),
-       sdh.* exclude(year,tractfips,countyfips,statefips,region,territory)
+       (t.T08N + t.T09N + t.T12N + t.T13N + t.T15N + t.T16N)/6 as T21N,
+       sdh.* exclude(year,tractfips,countyfips,statefips,region,territory),
+       coalesce(try_to_number(adi.adi_natrank),33) as adi_natrank,  -- manual mode imputation
+       coalesce(try_to_number(adi.adi_staterank),1) as adi_staterank,  -- manual mode imputation
+       coalesce(ruca.ruca_primary,99) as ruca_primary,
+       case when ruca.ruca_primary in (1,2,3) then 'metro'
+            when ruca.ruca_primary in (4,5,6) then 'micro'
+            when ruca.ruca_primary in (7,8,9) then 'town'
+            when ruca.ruca_primary in (10) then 'rural'
+            else 'NI'
+       end as ruca_primary_grp
 from ELIG_BP a 
 join BASE_BP b on a.study_id = b.study_id 
 join BASE_PT_REDCAP_20250115 p on a.study_id = p.study_id
@@ -216,9 +230,19 @@ join VCCC_PID_ADDRID pa on a.study_id = pa.study_id
 join VCCC_UNIQUE_ADDR_GEOCODED g on pa.id = g.id
 join OC_TCOG t on t.study_id = a.study_id
 join SDOH_DB.AHRQ.AHRQ_CT_2020 sdh on lpad(g.census_tract_id_2020,11,'0') = lpad(sdh.tractfips,11,'0')
+left join SDOH_DB.ADI.ADI_BG_2020 adi on lpad(g.census_block_group_id_2020,12,'0') = adi.geocodeid
+left join SDOH_DB.RUCA.RUCA_TR_2010 ruca on lpad(g.census_tract_id_2020,11,'0') = ruca.geocodeid
 left join STUDYID_MAPPING c on a.study_id = c.participantid
 order by a.study_id
 ;
+
+select count(distinct census_tract_id_2020) from VCCC_BASE_BP_TCOG_SDH;
+select count(distinct census_track_deid) from VCCC_BASE_BP_TCOG_SDH;
+
+select adi_staterank, count(distinct patid)
+from VCCC_BASE_BP_TCOG_SDH
+group by adi_staterank
+order by count(distinct patid) desc;
 
 select * from VCCC_BASE_BP_TCOG_SDH limit 5;
 

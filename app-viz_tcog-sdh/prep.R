@@ -1,3 +1,4 @@
+rm(list=ls())
 pacman::p_load(
   tidyverse,
   magrittr
@@ -5,9 +6,14 @@ pacman::p_load(
 
 path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
-rslt_uni<-read.csv(file.path(path_to_res,'sdh_univar_sel.csv'),stringsAsFactors = F)
-rslt_lasso<-read.csv(file.path(path_to_res,'sdh_group_sel.csv'),stringsAsFactors = F)
+# rslt_uni<-read.csv(file.path(path_to_res,'sdh_univar_sel.csv'),stringsAsFactors = F)
+# rslt_lasso<-read.csv(file.path(path_to_res,'sdh_group_sel.csv'),stringsAsFactors = F)
+rslt_base<-readRDS(file.path(path_to_res,'model_tcog_baseline.rda'))
 dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
+
+base_mod_plt<-rslt_base$coef_sel %>%
+  inner_join(rslt_base$model_sel %>%)
+
 
 dt_plt<-rslt_lasso %>%
   mutate(
