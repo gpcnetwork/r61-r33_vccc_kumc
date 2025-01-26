@@ -382,5 +382,6 @@ ADI_NATRANK,Socio-Economic context,ADI,area deprivation index - national ranking
 ADI_STATERANK,Socio-Economic context,ADI,area deprivation index - state ranking (1-10),ADI
 RUCA_PRIMARY,Physical infrastructure,RUCA,rural-urban commuting area primary code,RUCA
 RUCA_PRIMARY_GRP,Physical infrastructure,RUCA,"rural-urban commuting area primary code grouping (metro,micro,small town,rural,NI)",RUCA
+RUCA_PRIMARY_NONMETRO_IND,Physical infrastructure,RUCA,"rural-urban commuting area primary code grouping (0=metro,1=non-metro)",RUCA
 
 

@@ -40,7 +40,7 @@ var_tcog_cont<-var_tcog[grepl("N",var_tcog)&!grepl("NE",var_tcog)]
 var_base_lbl<-c("AGE","SEX_STR","RACE_STR","ETHN_STR","URM_IND","ELIG_SBP","ESBP_GROUP","BASE_SBP","BSBP_GROUP","STATE_GROUP","COUNTY_GROUP","SITE")
 var_sdh<-dd %>% filter(DATA_SOURCE %in% c('ACS','ADI','RUCA')) %>% select(VAR) %>% unlist
 var_all<-c(var_base_lbl,var_tcog,var_sdh)
-facvar_all<-c("SEX_STR","RACE_STR","ETHN_STR","URM_IND","ESBP_GROUP","BSBP_GROUP","STATE_GROUP","COUNTY_GROUP","SITE","RUCA_PRIMARY_GRP")
+facvar_all<-c("SEX_STR","RACE_STR","ETHN_STR","URM_IND","ESBP_GROUP","BSBP_GROUP","STATE_GROUP","COUNTY_GROUP","SITE","RUCA_PRIMARY_GRP","RUCA_PRIMARY_NONMETRO_IND")
 var_lbl_df <- dd %>% mutate(var=VAR,var_lbl=VARIABLE_LABEL) %>% select(var,var_lbl)
 
 cohort_summ<-univar_analysis_mixed(
@@ -57,16 +57,20 @@ cohort_summ %>%
   ) 
 
 #====baseline model====
-var_base_mod<-c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_SBP","SITE","ADI_NATRANK","RUCA_PRIMARY_GRP")
+var_base_mod_lst<-list(
+  basevar1 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_SBP"),
+  basevar2 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_SBP","ADI_NATRANK","RUCA_PRIMARY_NONMETRO_IND")
+)
 fm_lst<-c(
    'gaussian'
-  ,'poisson'
+  # ,'poisson'
   # ,'Gamma'
   # ,'inverse.gaussian'
 )
 
 moddx<-data.frame(
   y = as.character(),
+  varlst_idx = as.numeric(),
   family = as.character(),
   normTest_s = as.numeric(),
   normTest_p = as.numeric(),
@@ -82,6 +86,7 @@ moddx<-data.frame(
 
 coefdt<-data.frame(
   y=as.character(),
+  varlst_idx = as.numeric(),
   family = as.character(),
   var=as.character(),
   coef = as.numeric(),
@@ -94,57 +99,65 @@ for(y in c(var_tcog_disc,var_tcog_cont)){
   # y<-var_tcog_disc[1]
   cat("outcome:",y,"\n")
   
-  for(fm in fm_lst){
-    # fm<-"gaussian"
-    cat("outcome:",y,";family:",fm,"\n")
+  for(i in seq_len(length(var_base_mod_lst))){
+    # i<-1
+    cat("outcome:",y,";varlst:",i,"\n")
+    var_base_mod<-var_base_mod_lst[[i]]
     
-    # model fitting
-    if(y %in% var_tcog_cont){
-      formula_str<-paste0(y," ~ ",paste(var_base_mod[!var_base_mod %in% c("AGE")],collapse = "+"))
-    }else{
-      formula_str<-paste0(y," ~ ",paste(var_base_mod,collapse = "+"))
+    for(fm in fm_lst){
+      # fm<-"gaussian"
+      cat("outcome:",y,";varlst:",i,";family:",fm,"\n")
+      
+      # model fitting
+      if(y %in% var_tcog_cont){
+        formula_str<-paste0(y," ~ ",paste(var_base_mod[!var_base_mod %in% c("AGE")],collapse = "+"))
+      }else{
+        formula_str<-paste0(y," ~ ",paste(var_base_mod,collapse = "+"))
+      }
+      fit<-glm(
+        as.formula(formula_str),
+        data = dat %>% filter(!is.na(get(y))),
+        family = fm
+      )
+      
+      # goodness of fit
+      swtst<-shapiro.test(fit$residuals)
+      bptst<-bptest(fit)
+      dwtst<-dwtest(fit)
+      fit_chisq<-sum(residuals(fit, type = "pearson")^2)
+      dof<-length(fit$fitted.values)-length(fit$coefficients)+1
+      moddx <- moddx %>%
+        add_row(
+          y = y,
+          varlst_idx = i,
+          family = fm,
+          normTest_s = swtst$statistic,
+          normTest_p = swtst$p.value,
+          HomoTest_s = bptst$statistic,
+          HomoTest_p = bptst$p.value,
+          IndTest_s = dwtst$statistic,
+          IndTest_p = dwtst$p.value,
+          rsq = 1 - (fit$deviance/fit$null.deviance),
+          chisq_s = fit_chisq,
+          chisq_p = pchisq(fit_chisq, df = dof),
+          AIC = fit$aic
+        )
+      
+      # coefficients
+      summ.fit<-summary(fit)
+      ci.fit<-suppressMessages(confint(fit))
+      coefdt<-coefdt %>%
+        add_row(
+          y = y,
+          varlst_idx = i,
+          family = fm,
+          var = row.names(summ.fit$coefficients)[-1],
+          coef = summ.fit$coefficients[-1,1],
+          coef_lower = ci.fit[-1,1],
+          coef_upper = ci.fit[-1,2],
+          p_value=summ.fit$coefficients[-1,4]
+        )
     }
-    fit<-glm(
-      as.formula(formula_str),
-      data = dat %>% filter(!is.na(get(y))),
-      family = fm
-    )
-    
-    # goodness of fit
-    swtst<-shapiro.test(fit$residuals)
-    bptst<-bptest(fit)
-    dwtst<-dwtest(fit)
-    fit_chisq<-sum(residuals(fit, type = "pearson")^2)
-    dof<-length(fit$fitted.values)-length(fit$coefficients)+1
-    moddx <- moddx %>%
-      add_row(
-        y = y,
-        family = fm,
-        normTest_s = swtst$statistic,
-        normTest_p = swtst$p.value,
-        HomoTest_s = bptst$statistic,
-        HomoTest_p = bptst$p.value,
-        IndTest_s = dwtst$statistic,
-        IndTest_p = dwtst$p.value,
-        rsq = 1 - (fit$deviance/fit$null.deviance),
-        chisq_s = fit_chisq,
-        chisq_p = pchisq(fit_chisq, df = dof),
-        AIC = fit$aic
-      )
-    
-    # coefficients
-    summ.fit<-summary(fit)
-    ci.fit<-suppressMessages(confint(fit))
-    coefdt<-coefdt %>%
-      add_row(
-        y = y,
-        family = fm,
-        var = row.names(summ.fit$coefficients)[-1],
-        coef = summ.fit$coefficients[-1,1],
-        coef_lower = ci.fit[-1,1],
-        coef_upper = ci.fit[-1,2],
-        p_value=summ.fit$coefficients[-1,4]
-      )
   }
 }
 
