@@ -16,7 +16,9 @@ execute:
 rm(list=ls())
 pacman::p_load(
   tidyverse,
-  devtools
+  devtools,
+  ggrepel,
+  kableExtra
 )
 
 #load custom functions
@@ -24,47 +26,34 @@ source_url("https://raw.githubusercontent.com/sxinger/utils/master/analysis_util
 source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
 
 #specify abs paths
-path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
-path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
+dt<-readRDS("C:/repos/r61-r33_vccc_kumc/app-viz_tcog-sdh/data/rslt_tbl.rda")
 ```
 
-```{r}
-#| label: load-result
-
-rslt_uni<-read.csv(file.path(path_to_res,'sdh_univar_sel.csv'),stringsAsFactors = F)
-rslt_lasso<-read.csv(file.path(path_to_res,'sdh_group_sel.csv'),stringsAsFactors = F)
-dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
-```
 
 ```{r}
-#| label: plot
+#| label: data-for-plot
+
 threshold<-0.05
+dt_plt<-dt %>% filter(p_value<=threshold)
+```
 
-dt_plt<-rslt_lasso %>%
-  filter(p_value<=threshold) %>%
-  mutate(
-    coef_sign = sign(coef),
-    OR_upper = pmax(pmin(OR_upper,10),OR_lower)) %>%
-  select(y,domain,topic,coef_sign,OR,OR_lower,OR_upper,p_value,var) %>%
-  inner_join(
-    rslt_uni %>%
-      filter(sdh_var==var) %>%
-      mutate(p_value = round(p_value,4)) %>%
-      select(y,odds_ratio,ci_lower,ci_upper,p_value,var),
-    by=c("y","var")
-  ) %>%
-  left_join(
-    dd %>% select(VAR,VARIABLE_LABEL),by=c("var"="VAR")
-  )
 
+```{r}
+#| label: T01
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T01") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
 
 ggplot(
-  data=dt_plt,
+  data=dtsub,
   aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
 )+
-  geom_point()+
-  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=1)+
-  xlab('Topic')+ ylab("Odds Ratio (95% Confidence Interval)")+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T01:",dtsub$y_lbl[1]))+
   facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
   theme(
     plot.title=element_text(size=16,face="bold"),
@@ -75,12 +64,478 @@ ggplot(
     strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
   )+
   coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T04
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T04") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T04:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T06
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T06") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T06:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T07
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T07") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T07:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T08
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T08") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T08:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T10
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T10") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T10:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T11
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T11") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T11:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T13
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T13") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T13:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
 ```
 
 ```{r}
-#| label: table
+#| label: T14
+#| out-width: 100% 
 
-rslt_uni<-read.csv(file.path(path_to_res,'sdh_univar_sel.csv'),stringsAsFactors = F)
-rslt_lasso<-read.csv(file.path(path_to_res,'sdh_group_sel.csv'),stringsAsFactors = F)
-dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
+dtsub<-dt_plt %>% filter(y == "T14") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T14:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T15
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T15") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T15:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T16
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T16") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T16:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T18
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T18") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T18:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T19
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T19") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T19:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
+```
+
+
+```{r}
+#| label: T20
+#| out-width: 100% 
+
+dtsub<-dt_plt %>% filter(y == "T20") %>%
+  select(domain,topic,var,VARIABLE_LABEL,OR,OR_lower,OR_upper,y_lbl) %>%
+  mutate(OR = round(OR,3),OR_lower = round(OR_lower,3),OR_upper=round(OR_upper,3))
+
+ggplot(
+  data=dtsub,
+  aes(x = var,y = OR, ymin = OR_lower, ymax = OR_upper,color=topic)
+)+
+  geom_point()+geom_hline(yintercept = 1,linetype = 2)+
+  geom_errorbar(aes(ymin=OR_lower, ymax=OR_upper),width=0.5,cex=0.8)+
+  geom_text_repel(aes(label = var))+
+  labs(x='Domain',y="Odds Ratio (95% Confidence Interval)",title=paste0("T20:",dtsub$y_lbl[1]))+
+  facet_wrap(~ domain,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dtsub %>% 
+    mutate(OR_report = paste0(OR,"(",OR_lower,"-",OR_upper),")") %>%
+    select(domain, topic, var, VARIABLE_LABEL, OR_report)
+) %>%
+  collapse_rows(columns = 1:2, valign = "top")
 ```
