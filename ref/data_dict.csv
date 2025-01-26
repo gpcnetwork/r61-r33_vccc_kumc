@@ -377,3 +377,10 @@ T19,Tcog,Tcog,Rey Auditory Verbal Learning - Delayed Recall and Recognition Reco
 T20,Tcog,Tcog,Verbal Naming Test Total Correct without a Cue,REDCAP
 TCOG_DATE,Tcog,Tcog,TCOG assessment date,REDCAP
 URM_IND,baseline,baseline,"Underrepresented minority (URM) indicator (1=URM, 0=non-URM)",REDCAP
+T21N,Tcog,Tcog,"average of the normalized test scors of (T08,T09,T12,T13,T15,T16)",REDCAP
+ADI_NATRANK,Socio-Economic context,ADI,area deprivation index - national ranking (1-100),ADI
+ADI_STATERANK,Socio-Economic context,ADI,area deprivation index - state ranking (1-10),ADI
+RUCA_PRIMARY,Physical infrastructure,RUCA,rural-urban commuting area primary code,RUCA
+RUCA_PRIMARY_GRP,Physical infrastructure,RUCA,"rural-urban commuting area primary code grouping (metro,micro,small town,rural,NI)",RUCA
+
+

@@ -1,20 +1,16 @@
+#====setup====
 #load packages
 rm(list=ls())
 pacman::p_load(
   tidyverse,
   magrittr,
-  stringr,
   broom,
-  cowplot,
   ggrepel,
   kableExtra,
-  gtsummary,
   devtools,
-  tableone,
-  pROC,
-  corrplot,
   glmnet,
-  boot
+  boot,
+  lmtest
 )
 
 #load custom functions
@@ -26,7 +22,7 @@ path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
 path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 
-#load data
+#====data====
 dat<-readRDS(file.path(path_to_data,"tcog_sdh.rda")) %>%
   mutate(
     SEX_FAC = relevel(factor(SEX),ref='1'),
@@ -35,14 +31,14 @@ dat<-readRDS(file.path(path_to_data,"tcog_sdh.rda")) %>%
   )
 dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
 
-var_sdh<-dd %>% filter(DATA_SOURCE %in% c('ACS')) %>% select(VAR) %>% unlist
+var_sdh<-dd %>% filter(DATA_SOURCE %in% c('ACS','ADI','RUCA')) %>% select(VAR) %>% unlist
 var_base_lbl<-c("AGE","SEX_STR","RACE_STR","ETHN_STR","BSBP_GROUP","STATE","COUNTY","SITE")
 var_tcog<-dd %>% filter(DOMAIN == 'Tcog'&!grepl("DATE",VAR)) %>% select(VAR) %>% unlist
 
 var_all<-c(var_base_lbl,var_tcog,var_sdh)
 facvar_all<-c("SEX_STR","RACE_STR","ETHN_STR","BSBP_GROUP","STATE","COUNTY","SITE")
 
-#quick summary
+#====quick summary====
 var_lbl_df <- dd %>% mutate(var=VAR,var_lbl=VARIABLE_LABEL) %>% select(var,var_lbl)
 cohort_summ<-univar_analysis_mixed(
   df = dat,
@@ -57,6 +53,106 @@ cohort_summ %>%
     file.path(path_to_res,'tcog_sdh_allvar.html')
   ) 
 
+#====baseline model====
+var_base_mod<-c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP","SITE","ADI_NATRANK","RUCA_PRIMARY_GRP")
+var_tcog_disc<-var_tcog[!grepl("N",var_tcog)]
+var_tcog_cont<-var_tcog[grepl("N",var_tcog)&!grepl("NE",var_tcog)]
+fm_lst<-c(
+   'gaussian'
+  ,'poisson'
+  # ,'Gamma'
+  # ,'inverse.gaussian'
+)
+
+moddx<-data.frame(
+  y = as.character(),
+  family = as.character(),
+  normTest_s = as.numeric(),
+  normTest_p = as.numeric(),
+  HomoTest_s = as.numeric(),
+  HomoTest_p = as.numeric(),
+  IndTest_s = as.numeric(),
+  IndTest_p = as.numeric(),
+  rsq = as.numeric(),
+  chisq_s = as.numeric(),
+  chisq_p = as.numeric(),
+  AIC = as.numeric()
+)
+
+coefdt<-data.frame(
+  y=as.character(),
+  family = as.character(),
+  var=as.character(),
+  coef = as.numeric(),
+  coef_lower = as.numeric(),
+  coef_upper = as.numeric(),
+  p_value=as.numeric()
+)
+
+for(y in c(var_tcog_disc,var_tcog_cont)){
+  # y<-c(var_tcog_disc,var_tcog_cont)[1]
+  cat("outcome:",y,"\n")
+  
+  for(fm in fm_lst){
+    # fm<-"Gamma"
+    cat("outcome:",y,";family:",fm,"\n")
+    
+    # model fitting
+    if(y %in% var_tcog_cont){
+      formula_str<-paste0(y," ~ ",paste(var_base_mod[!var_base_mod %in% c("AGE")],collapse = "+"))
+    }else{
+      formula_str<-paste0(y," ~ ",paste(var_base_mod,collapse = "+"))
+    }
+    fit<-glm(
+      as.formula(formula_str),
+      data = dat %>% filter(!is.na(get(y))),
+      family = fm
+    )
+    
+    # goodness of fit
+    swtst<-shapiro.test(fit$residuals)
+    bptst<-bptest(fit)
+    dwtst<-dwtest(fit)
+    fit_chisq<-sum(residuals(fit, type = "pearson")^2/fit$fitted.values)
+    dof<-length(fit$fitted.values)-length(fit$coefficients)+1
+    moddx <- moddx %>%
+      add_row(
+        y = y,
+        family = fm,
+        normTest_s = swtst$statistic,
+        normTest_p = swtst$p.value,
+        HomoTest_s = bptst$statistic,
+        HomoTest_p = bptst$p.value,
+        IndTest_s = dwtst$statistic,
+        IndTest_p = dwtst$p.value,
+        rsq = 1 - (fit$deviance/fit$null.deviance),
+        chisq_s = fit_chisq,
+        chisq_p = pchisq(fit_chisq, df = dof),
+        AIC = AIC(fit)
+      )
+    
+    # coefficients
+    summ.fit<-summary(fit)
+    ci.fit<-suppressMessages(confint(fit))
+    coefdt<-coefdt %>%
+      add_row(
+        y = y,
+        family = fm,
+        var = row.names(summ.fit$coefficients)[-1],
+        coef = summ.fit$coefficients[-1,1],
+        coef_lower = ci.fit[-1,1],
+        coef_upper = ci.fit[-1,2],
+        p_value=summ.fit$coefficients[-1,4]
+      )
+  }
+}
+
+saveRDS(
+  list(model_sel = moddx, coef_sel = coefdt),
+  file = file.path(path_to_res,'model_tcog_baseline.rda')
+)
+
+#==== sdh selection by domain and topic ====
 #exclude variables with high missing rate
 miss_rt_tbl<-data.frame(
   sdh_var=as.character(),
@@ -71,9 +167,7 @@ for(x in var_sdh){
     )
 }
 
-var_base_mod<-c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP","SITE")
-var_tcog_disc<-var_tcog[!grepl("N",var_tcog)]
-var_tcog_cont<-var_tcog[grepl("N",var_tcog)&!grepl("NE",var_tcog)]
+
 var_sdh_sel<-var_sdh[var_sdh %in% (miss_rt_tbl %>% filter(miss_rt<0.2) %>% select(sdh_var) %>% unlist)]
 
 #univariate selection with fixed confounding set
