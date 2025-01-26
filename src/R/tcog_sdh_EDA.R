@@ -10,7 +10,8 @@ pacman::p_load(
   devtools,
   glmnet,
   boot,
-  lmtest
+  lmtest,
+  lme4
 )
 
 #load custom functions
@@ -31,15 +32,17 @@ dat<-readRDS(file.path(path_to_data,"tcog_sdh.rda")) %>%
   )
 dd<-read.csv(file.path(path_to_ref,'data_dict.csv'),stringsAsFactors = F)
 
-var_sdh<-dd %>% filter(DATA_SOURCE %in% c('ACS','ADI','RUCA')) %>% select(VAR) %>% unlist
-var_base_lbl<-c("AGE","SEX_STR","RACE_STR","ETHN_STR","BSBP_GROUP","STATE","COUNTY","SITE")
 var_tcog<-dd %>% filter(DOMAIN == 'Tcog'&!grepl("DATE",VAR)) %>% select(VAR) %>% unlist
-
-var_all<-c(var_base_lbl,var_tcog,var_sdh)
-facvar_all<-c("SEX_STR","RACE_STR","ETHN_STR","BSBP_GROUP","STATE","COUNTY","SITE")
+var_tcog_disc<-var_tcog[!grepl("N",var_tcog)]
+var_tcog_cont<-var_tcog[grepl("N",var_tcog)&!grepl("NE",var_tcog)]
 
 #====quick summary====
+var_base_lbl<-c("AGE","SEX_STR","RACE_STR","ETHN_STR","URM_IND","ELIG_SBP","ESBP_GROUP","BASE_SBP","BSBP_GROUP","STATE_GROUP","COUNTY_GROUP","SITE")
+var_sdh<-dd %>% filter(DATA_SOURCE %in% c('ACS','ADI','RUCA')) %>% select(VAR) %>% unlist
+var_all<-c(var_base_lbl,var_tcog,var_sdh)
+facvar_all<-c("SEX_STR","RACE_STR","ETHN_STR","URM_IND","ESBP_GROUP","BSBP_GROUP","STATE_GROUP","COUNTY_GROUP","SITE","RUCA_PRIMARY_GRP")
 var_lbl_df <- dd %>% mutate(var=VAR,var_lbl=VARIABLE_LABEL) %>% select(var,var_lbl)
+
 cohort_summ<-univar_analysis_mixed(
   df = dat,
   id_col ="STUDY_ID",
@@ -54,9 +57,7 @@ cohort_summ %>%
   ) 
 
 #====baseline model====
-var_base_mod<-c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP","SITE","ADI_NATRANK","RUCA_PRIMARY_GRP")
-var_tcog_disc<-var_tcog[!grepl("N",var_tcog)]
-var_tcog_cont<-var_tcog[grepl("N",var_tcog)&!grepl("NE",var_tcog)]
+var_base_mod<-c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_SBP","SITE","ADI_NATRANK","RUCA_PRIMARY_GRP")
 fm_lst<-c(
    'gaussian'
   ,'poisson'
@@ -90,11 +91,11 @@ coefdt<-data.frame(
 )
 
 for(y in c(var_tcog_disc,var_tcog_cont)){
-  # y<-c(var_tcog_disc,var_tcog_cont)[1]
+  # y<-var_tcog_disc[1]
   cat("outcome:",y,"\n")
   
   for(fm in fm_lst){
-    # fm<-"Gamma"
+    # fm<-"gaussian"
     cat("outcome:",y,";family:",fm,"\n")
     
     # model fitting
@@ -113,7 +114,7 @@ for(y in c(var_tcog_disc,var_tcog_cont)){
     swtst<-shapiro.test(fit$residuals)
     bptst<-bptest(fit)
     dwtst<-dwtest(fit)
-    fit_chisq<-sum(residuals(fit, type = "pearson")^2/fit$fitted.values)
+    fit_chisq<-sum(residuals(fit, type = "pearson")^2)
     dof<-length(fit$fitted.values)-length(fit$coefficients)+1
     moddx <- moddx %>%
       add_row(
@@ -128,7 +129,7 @@ for(y in c(var_tcog_disc,var_tcog_cont)){
         rsq = 1 - (fit$deviance/fit$null.deviance),
         chisq_s = fit_chisq,
         chisq_p = pchisq(fit_chisq, df = dof),
-        AIC = AIC(fit)
+        AIC = fit$aic
       )
     
     # coefficients
@@ -151,6 +152,10 @@ saveRDS(
   list(model_sel = moddx, coef_sel = coefdt),
   file = file.path(path_to_res,'model_tcog_baseline.rda')
 )
+
+
+#====mixed-effect model====
+
 
 #==== sdh selection by domain and topic ====
 #exclude variables with high missing rate

@@ -383,6 +383,55 @@ border: 0;
    <td style="text-align:left;">  </td>
   </tr>
   <tr>
+   <td style="text-align:left;"> URM_IND </td>
+   <td style="text-align:left;"> 0,n(%) [miss] </td>
+   <td style="text-align:left;"> 876 (87.6%) [0] </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> Underrepresented minority (URM) indicator (1=URM, 0=non-URM) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 1,n(%) [miss] </td>
+   <td style="text-align:left;"> 124 (12.4%) [0] </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ELIG_SBP </td>
+   <td style="text-align:left;"> mean(sd); med(iqr) [miss] </td>
+   <td style="text-align:left;"> 151 (9.1);148(144,155) [0] </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> in-clinic eligibility SBP </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> ESBP_GROUP </td>
+   <td style="text-align:left;"> esbp1,n(%) [miss] </td>
+   <td style="text-align:left;"> 545 (54.5%) [0] </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> eligibility SBP group </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> esbp2,n(%) [miss] </td>
+   <td style="text-align:left;"> 302 (30.2%) [0] </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> esbp3,n(%) [miss] </td>
+   <td style="text-align:left;"> 153 (15.3%) [0] </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> BASE_SBP </td>
+   <td style="text-align:left;"> mean(sd); med(iqr) [miss] </td>
+   <td style="text-align:left;"> 135.4 (17.3);133(124,146) [0] </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> baseline SBP </td>
+  </tr>
+  <tr>
    <td style="text-align:left;"> BSBP_GROUP </td>
    <td style="text-align:left;"> bsbp0,n(%) [miss] </td>
    <td style="text-align:left;"> 627 (62.7%) [0] </td>
@@ -411,39 +460,11 @@ border: 0;
    <td style="text-align:left;">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> STATE </td>
-   <td style="text-align:left;"> Arizona,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;"> 1 </td>
-   <td style="text-align:left;"> State name </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> California,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Delaware,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Florida,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> STATE_GROUP </td>
    <td style="text-align:left;"> Kansas,n(%) [miss] </td>
    <td style="text-align:left;"> 451 (45.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> STATE_GROUP </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
@@ -454,8 +475,8 @@ border: 0;
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Nevada,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
+   <td style="text-align:left;"> OT,n(%) [miss] </td>
+   <td style="text-align:left;"> 6 (0.6%) [0] </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;">  </td>
   </tr>
@@ -467,53 +488,11 @@ border: 0;
    <td style="text-align:left;">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Wyoming,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> COUNTY </td>
-   <td style="text-align:left;"> Adair County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;"> 1 </td>
-   <td style="text-align:left;"> County name </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Atchison County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Barry County,n(%) [miss] </td>
-   <td style="text-align:left;"> 2 (0.2%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Buchanan County,n(%) [miss] </td>
-   <td style="text-align:left;"> 3 (0.3%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> COUNTY_GROUP </td>
    <td style="text-align:left;"> Cass County,n(%) [miss] </td>
    <td style="text-align:left;"> 21 (2.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Clark County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> COUNTY_GROUP </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
@@ -524,57 +503,8 @@ border: 0;
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Clinton County,n(%) [miss] </td>
-   <td style="text-align:left;"> 2 (0.2%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Crawford County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Daggett County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
    <td style="text-align:left;"> Davis County,n(%) [miss] </td>
    <td style="text-align:left;"> 44 (4.4%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Douglas County,n(%) [miss] </td>
-   <td style="text-align:left;"> 11 (1.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Franklin County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Geary County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Henry County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;">  </td>
   </tr>
@@ -594,13 +524,6 @@ border: 0;
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Lafayette County,n(%) [miss] </td>
-   <td style="text-align:left;"> 2 (0.2%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
    <td style="text-align:left;"> Leavenworth County,n(%) [miss] </td>
    <td style="text-align:left;"> 21 (2.1%) [0] </td>
    <td style="text-align:left;">  </td>
@@ -608,43 +531,8 @@ border: 0;
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Linn County,n(%) [miss] </td>
-   <td style="text-align:left;"> 2 (0.2%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Livingston County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Martin County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Miami County,n(%) [miss] </td>
-   <td style="text-align:left;"> 3 (0.3%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> New Castle County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Ottawa County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
+   <td style="text-align:left;"> OT,n(%) [miss] </td>
+   <td style="text-align:left;"> 84 (8.4%) [0] </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;">  </td>
   </tr>
@@ -657,20 +545,6 @@ border: 0;
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Riley County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Saline County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
    <td style="text-align:left;"> Salt Lake County,n(%) [miss] </td>
    <td style="text-align:left;"> 177 (17.7%) [0] </td>
    <td style="text-align:left;">  </td>
@@ -678,92 +552,8 @@ border: 0;
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> San Diego County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> St. Clair County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Summit County,n(%) [miss] </td>
-   <td style="text-align:left;"> 5 (0.5%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Taney County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Tooele County,n(%) [miss] </td>
-   <td style="text-align:left;"> 20 (2%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Uinta County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Utah County,n(%) [miss] </td>
-   <td style="text-align:left;"> 4 (0.4%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Wabaunsee County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Wasatch County,n(%) [miss] </td>
-   <td style="text-align:left;"> 3 (0.3%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Washington County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Weber County,n(%) [miss] </td>
-   <td style="text-align:left;"> 6 (0.6%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
    <td style="text-align:left;"> Wyandotte County,n(%) [miss] </td>
    <td style="text-align:left;"> 68 (6.8%) [0] </td>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;">  </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:left;"> Yavapai County,n(%) [miss] </td>
-   <td style="text-align:left;"> 1 (0.1%) [0] </td>
    <td style="text-align:left;">  </td>
    <td style="text-align:left;">  </td>
   </tr>
@@ -3191,10 +2981,38 @@ border: 0;
   </tr>
   <tr>
    <td style="text-align:left;"> RUCA_PRIMARY_GRP </td>
-   <td style="text-align:left;"> mean(sd); med(iqr) [miss] </td>
-   <td style="text-align:left;"> NaN (NA);NA(NA,NA) [1.01] </td>
+   <td style="text-align:left;"> NI,n(%) [miss] </td>
+   <td style="text-align:left;"> 199 (19.9%) [0] </td>
    <td style="text-align:left;"> 1 </td>
    <td style="text-align:left;"> rural-urban commuting area primary code grouping (metro,micro,small town,rural,NI) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> metro,n(%) [miss] </td>
+   <td style="text-align:left;"> 775 (77.5%) [0] </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> micro,n(%) [miss] </td>
+   <td style="text-align:left;"> 18 (1.8%) [0] </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> rural,n(%) [miss] </td>
+   <td style="text-align:left;"> 4 (0.4%) [0] </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> town,n(%) [miss] </td>
+   <td style="text-align:left;"> 4 (0.4%) [0] </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:left;">  </td>
   </tr>
 </tbody>
 </table>
