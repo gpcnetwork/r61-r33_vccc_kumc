@@ -128,7 +128,7 @@ with clean_cte as (
                 score,
                 normed_score,
                 rmse as normed_rmse
-    from BASELINE_TCOG_20250121
+    from BASELINE_TCOG_20250127
 )
 , score_cte as (
     select * from (
@@ -211,14 +211,8 @@ select upper(a.study_id) as study_id,
     --    g.g.census_block_group_id_2020,
     --    g.census_tract_id_2020,
        dense_rank() over (order by  g.census_tract_id_2020) as census_track_deid,
-       t.* exclude(study_id,T08N,T09N,T12N,T13N,T15N,T16N),
-       (t.T08 - t.T08N)/t.T08NE as T08N,
-       (t.T09 - t.T09N)/t.T09NE as T09N,
-       (t.T12 - t.T12N)/t.T12NE as T12N,
-       (t.T13 - t.T13N)/t.T13NE as T13N,
-       (t.T15 - t.T15N)/t.T15NE as T15N,
-       (t.T16 - t.T16N)/t.T16NE as T16N,
-       ((t.T08 - t.T08N)/t.T08NE+(t.T09 - t.T09N)/t.T09NE+(t.T12 - t.T12N)/t.T12NE+(t.T13 - t.T13N)/t.T13NE+(t.T15 - t.T15N)/t.T15NE+(t.T16 - t.T16N)/t.T16NE)/6 as T21N,
+       t.* exclude(study_id),
+       (t.T08N+t.T09N+t.T12N+t.T13N+t.T15N+t.T16N)/6 as T21N,
        sdh.* exclude(year,tractfips,countyfips,statefips,region,territory),
        coalesce(try_to_number(adi.adi_natrank),33) as adi_natrank,  -- manual mode imputation
        coalesce(try_to_number(adi.adi_staterank),1) as adi_staterank,  -- manual mode imputation

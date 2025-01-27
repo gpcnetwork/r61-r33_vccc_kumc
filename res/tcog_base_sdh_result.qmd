@@ -37,13 +37,13 @@ dd<-read.csv("C:/repos/r61-r33_vccc_kumc/ref/data_dict.csv",stringsAsFactors = F
 dt_plt<-dt$coef_sel %>% filter(y %in% c(
   "T01",
   "T07",
-  "T08",#"T08N",
-  "T09",#"T09N",
-  "T12",#"T12N",
-  "T13",#"T13N",
+  "T08","T08N",
+  "T09","T09N",
+  "T12","T12N",
+  "T13","T13N",
   "T14",
-  "T15",#"T15N",
-  "T16",#"T16N",
+  "T15","T15N",
+  "T16","T16N",
   "T17",
   "T18",
   "T19",
@@ -62,7 +62,6 @@ dt_plt<-dt$coef_sel %>% filter(y %in% c(
     y_lbl = paste0(y,":",y_lbl)
   )
 ```
-
 
 ```{r}
 #| label: outcomewide-ruca
@@ -98,8 +97,6 @@ kbl(
   footnote(general=which_var,general_title="Variable: ") %>%
   collapse_rows(columns = 1:1, valign = "top")
 ```
-
-
 
 ```{r}
 #| label: outcomewide-adi
