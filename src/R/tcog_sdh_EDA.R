@@ -59,9 +59,9 @@ cohort_summ %>%
 
 #====baseline model====
 var_base_mod_lst<-list(
-  basevar0 = c("BASE_SBP"),
-  basevar1 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_SBP"),
-  basevar2 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_SBP","ADI_NATRANK","RUCA_PRIMARY_NONMETRO_IND")
+  basevar0 = c("BSBP_GROUP"),
+  basevar1 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP"),
+  basevar2 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP","ADI_NATRANK","RUCA_PRIMARY_NONMETRO_IND")
 )
 fm_lst<-c(
    'gaussian'
