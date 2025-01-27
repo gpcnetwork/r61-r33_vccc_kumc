@@ -73,6 +73,87 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="univariate-regression-of-normalized-tcog-score-against-baseline-sbp" class="level2">
+<h2 class="anchored" data-anchor-id="univariate-regression-of-normalized-tcog-score-against-baseline-sbp">Univariate Regression of Normalized Tcog score against Baseline SBP</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="tcog_base_result_files/figure-html/outcomewide-sbp-univar-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<table class="lightable-classic caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">VARIABLE_LABEL</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">y_lbl</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">coef_w_95ci</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">pval_lbl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="7" style="text-align: left; vertical-align: top !important;">baseline SBP</td>
+<td style="text-align: left;">T08N:Number Span Test: Forward Number of Correct Trials</td>
+<td style="text-align: left;">0 (0 - 0.001)</td>
+<td style="text-align: left;">0.377</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T09N:Number Span Test: Backward Number of Correct Trials</td>
+<td style="text-align: left;">0 (0 - 0.001)</td>
+<td style="text-align: left;">0.377</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T12N:Category Fluency: Animals</td>
+<td style="text-align: left;">0.001 (-0.002 - 0.005)</td>
+<td style="text-align: left;">0.377</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T13N:Category Fluency: Vegetables</td>
+<td style="text-align: left;">0.001 (-0.001 - 0.002)</td>
+<td style="text-align: left;">0.377</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T15N:Verbal Fluency: Phonemic Test Number of Correct F-words</td>
+<td style="text-align: left;">0 (-0.001 - 0.002)</td>
+<td style="text-align: left;">0.377</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T16N:Verbal Fluency: Phonemic Test Number of Correct L-words</td>
+<td style="text-align: left;">0.001 (-0.001 - 0.002)</td>
+<td style="text-align: left;">0.377</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T21N:average of the normalized test scors of (T08,T09,T12,T13,T15,T16)</td>
+<td style="text-align: left;">0.001 (-0.001 - 0.002)</td>
+<td style="text-align: left;">0.377</td>
+</tr>
+</tbody><tfoot>
+<tr class="even">
+<td style="text-align: left; padding: 0;"><span style="font-style: italic;">Variable: </span></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> sbp</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+</section>
+<section id="multiple-regression-of-raw-and-normalized-tcog-scores-against-baseline-characteristics" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-regression-of-raw-and-normalized-tcog-scores-against-baseline-characteristics">Multiple regression of raw and normalized Tcog scores against baseline characteristics</h2>
+<p>Note: for all normalized scores (e.g., T08N, T09N, etc.), Age was excluded from the predictors/covariates</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -355,9 +436,39 @@ ul.task-list li input[type="checkbox"] {
 <td style="text-align: left;">&lt;0.001</td>
 </tr>
 <tr class="odd">
-<td rowspan="2" style="text-align: left; vertical-align: top !important;">race = Black</td>
+<td rowspan="8" style="text-align: left; vertical-align: top !important;">race = Black</td>
 <td style="text-align: left;">T20:Verbal Naming Test Total Correct without a Cue</td>
 <td style="text-align: left;">-3.864 (-4.437 - -3.291)</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T08N:Number Span Test: Forward Number of Correct Trials</td>
+<td style="text-align: left;">0.058 (0.026 - 0.09)</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T09N:Number Span Test: Backward Number of Correct Trials</td>
+<td style="text-align: left;">0.08 (0.035 - 0.125)</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T12N:Category Fluency: Animals</td>
+<td style="text-align: left;">0.334 (0.148 - 0.52)</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T13N:Category Fluency: Vegetables</td>
+<td style="text-align: left;">0.185 (0.082 - 0.288)</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T15N:Verbal Fluency: Phonemic Test Number of Correct F-words</td>
+<td style="text-align: left;">0.118 (0.052 - 0.184)</td>
+<td style="text-align: left;">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T16N:Verbal Fluency: Phonemic Test Number of Correct L-words</td>
+<td style="text-align: left;">0.122 (0.054 - 0.191)</td>
 <td style="text-align: left;">&lt;0.001</td>
 </tr>
 <tr class="even">
@@ -495,6 +606,7 @@ ul.task-list li input[type="checkbox"] {
 
 </div>
 </div>
+</section>
 
 </main>
 <!-- /main column -->
