@@ -11,7 +11,8 @@ pacman::p_load(
   glmnet,
   boot,
   lmtest,
-  lme4
+  lme4,
+  lmerTest
 )
 
 #load custom functions
@@ -58,6 +59,7 @@ cohort_summ %>%
 
 #====baseline model====
 var_base_mod_lst<-list(
+  basevar0 = c("BASE_SBP"),
   basevar1 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_SBP"),
   basevar2 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_SBP","ADI_NATRANK","RUCA_PRIMARY_NONMETRO_IND")
 )
@@ -114,12 +116,14 @@ for(y in c(var_tcog_disc,var_tcog_cont)){
       }else{
         formula_str<-paste0(y," ~ ",paste(var_base_mod,collapse = "+"))
       }
+      
+      # fixed-effect model
       fit<-glm(
         as.formula(formula_str),
         data = dat %>% filter(!is.na(get(y))),
         family = fm
       )
-      
+
       # goodness of fit
       swtst<-shapiro.test(fit$residuals)
       bptst<-bptest(fit)
@@ -165,9 +169,6 @@ saveRDS(
   list(model_sel = moddx, coef_sel = coefdt),
   file = file.path(path_to_res,'model_tcog_baseline.rda')
 )
-
-
-#====mixed-effect model====
 
 
 #==== sdh selection by domain and topic ====
