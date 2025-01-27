@@ -325,6 +325,11 @@ STATE,Geography,Geography,State name,CEN
 AGE,baseline,age,age at enrollment,REDCAP
 BASE_SBP,baseline,sbp,baseline SBP,REDCAP
 BSBP_GROUP,baseline,sbp,baseline SBP group,REDCAP
+BSBP_GROUPbsbp0,baseline,sbp,baseline SBP <= 130,REDCAP
+BSBP_GROUPbsbp1,baseline,sbp,baseline SBP between 130 and 140,REDCAP
+BSBP_GROUPbsbp2,baseline,sbp,baseline SBP between 140 and 150,REDCAP
+BSBP_GROUPbsbp3,baseline,sbp,baseline SBP between 150 and 160 group,REDCAP
+BSBP_GROUPbsbp4,baseline,sbp,baseline SBP >= 160 group,REDCAP
 DELTA_DAYS,baseline,visit,days of baseline SBP since enrollment,REDCAP
 DELTA_SBP,baseline,sbp,delta between eligible SBP and baseline SBP,REDCAP
 DELTA_SBP_GROUP,baseline,sbp,delta grouping between eligible SBP and baseline SBP,REDCAP

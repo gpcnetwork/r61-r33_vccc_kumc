@@ -193,9 +193,10 @@ select upper(a.study_id) as study_id,
             when try_to_number(a.elig_sbp) >=160 then 'esbp3'
             else 'esbp0'
        end as esbp_group,
-       case when b.base_sbp>=140 and b.base_sbp<150 then 'bsbp1'
-            when b.base_sbp>=150 and b.base_sbp<160 then 'bsbp2'
-            when b.base_sbp>=160 then 'bsbp3'
+       case when b.base_sbp>=130 and b.base_sbp<140 then 'bsbp1'
+            when b.base_sbp>=140 and b.base_sbp<150 then 'bsbp2'
+            when b.base_sbp>=150 and b.base_sbp<160 then 'bsbp3'
+            when b.base_sbp>=160 then 'bsbp4'
             else 'bsbp0'
        end as bsbp_group,
        datediff('day',p.enroll_date,a.elig_date) as elig_since_index,

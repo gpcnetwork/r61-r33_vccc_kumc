@@ -74,7 +74,7 @@ dt_plt<-dt$coef_sel %>% filter(y %in% c(
 which_var<-"sbp"
 ggplot(
   data = dt_plt %>% filter(varlst_idx==1) %>% filter(TOPIC==which_var) %>% filter(grepl("N",y)),
-  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = "green")
+  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
 )+
   geom_point()+geom_hline(yintercept = 0,linetype = 2)+
   geom_errorbar(aes(ymin=coef_lower, ymax=coef_upper),width=0.5,cex=0.8)+

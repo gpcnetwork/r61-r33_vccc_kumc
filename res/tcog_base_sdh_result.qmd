@@ -49,7 +49,7 @@ dt_plt<-dt$coef_sel %>% filter(y %in% c(
   "T19",
   "T20",
   "T21N"
-)) %>% filter(varlst_idx == 2) %>%
+)) %>%
   left_join(dd,by=c("var"="VAR")) %>%
   left_join(dd %>% select(VAR,VARIABLE_LABEL) %>% rename(y_lbl=VARIABLE_LABEL),by=c("y"="VAR")) %>%
   mutate(
@@ -63,6 +63,8 @@ dt_plt<-dt$coef_sel %>% filter(y %in% c(
   )
 ```
 
+
+
 ```{r}
 #| label: outcomewide-ruca
 #| fig.height: 5
@@ -70,7 +72,7 @@ dt_plt<-dt$coef_sel %>% filter(y %in% c(
 
 which_var<-"RUCA"
 ggplot(
-  data = dt_plt %>% filter(TOPIC==which_var),
+  data = dt_plt %>% filter(varlst_idx==3) %>% filter(TOPIC==which_var),
   aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
 )+
   geom_point()+geom_hline(yintercept = 0,linetype = 2)+
@@ -98,6 +100,8 @@ kbl(
   collapse_rows(columns = 1:1, valign = "top")
 ```
 
+
+
 ```{r}
 #| label: outcomewide-adi
 #| fig.height: 5
@@ -105,7 +109,7 @@ kbl(
 
 which_var<-"ADI"
 ggplot(
-  data = dt_plt %>% filter(TOPIC==which_var),
+  data = dt_plt %>% filter(varlst_idx==3) %>% filter(TOPIC==which_var),
   aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
 )+
   geom_point()+geom_hline(yintercept = 0,linetype = 2)+
