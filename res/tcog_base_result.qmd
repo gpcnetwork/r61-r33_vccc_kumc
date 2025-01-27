@@ -1,0 +1,245 @@
+---
+title: "Tcog baseline model results"
+author: "Xing Song"
+format: html
+editor: visual
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+#| label: starter-chunk
+
+#load packages
+rm(list=ls())
+pacman::p_load(
+  tidyverse,
+  devtools,
+  ggrepel,
+  kableExtra,
+  scales
+)
+
+#load custom functions
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/analysis_util.R")
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
+
+#load result table
+dt<-readRDS("C:/repos/r61-r33_vccc_kumc/res/model_tcog_baseline.rda")
+dd<-read.csv("C:/repos/r61-r33_vccc_kumc/ref/data_dict.csv",stringsAsFactors = F)
+```
+
+
+```{r}
+#| label: baseline-result
+
+dt_plt<-dt$coef_sel %>% filter(y %in% c(
+  "T01",
+  "T07",
+  "T08",#"T08N",
+  "T09",#"T09N",
+  "T12",#"T12N",
+  "T13",#"T13N",
+  "T14",
+  "T15",#"T15N",
+  "T16",#"T16N",
+  "T17",
+  "T18",
+  "T19",
+  "T20",
+  "T21N"
+)) %>% filter(varlst_idx == 1) %>%
+  left_join(dd,by=c("var"="VAR")) %>%
+  left_join(dd %>% select(VAR,VARIABLE_LABEL) %>% rename(y_lbl=VARIABLE_LABEL),by=c("y"="VAR")) %>%
+  mutate(
+    coef_lbl = round(coef,3),
+    coef_lower_lbl = round(coef_lower,3),
+    coef_upper_lbl = round(coef_upper,3),
+    coef_w_95ci = paste0(coef_lbl,"\n (",coef_lower_lbl," - ",coef_upper_lbl,")"),
+    pval_lbl = case_when(p_value >= 0.001 ~ as.character(round(p_value,3)), TRUE ~ '<0.001'),
+    coef_sign = case_when(coef>0&p_value<=0.05 ~ 'pos', coef<0&p_value<=0.05~'neg', TRUE ~ 'nonsig'),
+    y_lbl = paste0(y,":",y_lbl)
+  )
+```
+
+
+
+```{r}
+#| label: outcomewide-age
+
+which_var<-"age"
+ggplot(
+  data = dt_plt %>% filter(TOPIC==which_var),
+  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
+)+
+  geom_point()+geom_hline(yintercept = 0,linetype = 2)+
+  geom_errorbar(aes(ymin=coef_lower, ymax=coef_upper),width=0.5,cex=0.8)+
+  scale_x_discrete(labels = label_wrap(20)) +
+  # geom_text_repel(aes(label = var))+
+  labs(x='Tcog Tests',y="Coefficient (95% CI)")+
+  facet_wrap(~ VARIABLE_LABEL,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dt_plt %>% filter(TOPIC==which_var) %>% 
+    filter(coef_sign != 'nonsig') %>%
+    select(VARIABLE_LABEL, y_lbl, coef_w_95ci, pval_lbl)
+) %>%
+  kable_classic(full_width = T) %>%
+  footnote(general=which_var,general_title="Variable: ") %>%
+  collapse_rows(columns = 1:1, valign = "top")
+```
+
+
+
+```{r}
+#| label: outcomewide-sex
+
+which_var<-"sex"
+ggplot(
+  data = dt_plt %>% filter(TOPIC==which_var),
+  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
+)+
+  geom_point()+geom_hline(yintercept = 0,linetype = 2)+
+  geom_errorbar(aes(ymin=coef_lower, ymax=coef_upper),width=0.5,cex=0.8)+
+  scale_x_discrete(labels = label_wrap(20)) +
+  # geom_text_repel(aes(label = var))+
+  labs(x='Tcog Tests',y="Coefficient (95% CI)")+
+  facet_wrap(~ VARIABLE_LABEL,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dt_plt %>% filter(TOPIC==which_var) %>% 
+    filter(coef_sign != 'nonsig') %>%
+    select(VARIABLE_LABEL, y_lbl, coef_w_95ci, pval_lbl)
+) %>%
+  kable_classic(full_width = T) %>%
+  footnote(general=which_var,general_title="Variable: ") %>%
+  collapse_rows(columns = 1:1, valign = "top")
+```
+
+
+```{r}
+#| label: outcomewide-race
+#| fig.height: 10
+#| fig.width: 10 
+
+which_var<-"race"
+ggplot(
+  data = dt_plt %>% filter(TOPIC==which_var),
+  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
+)+
+  geom_point()+geom_hline(yintercept = 0,linetype = 2)+
+  geom_errorbar(aes(ymin=coef_lower, ymax=coef_upper),width=0.5,cex=0.8)+
+  scale_x_discrete(labels = label_wrap(20)) +
+  # geom_text_repel(aes(label = var))+
+  labs(x='Tcog Tests',y="Coefficient (95% CI)")+
+  facet_wrap(~ VARIABLE_LABEL,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dt_plt %>% filter(TOPIC==which_var) %>% 
+    filter(coef_sign != 'nonsig') %>%
+    select(VARIABLE_LABEL, y_lbl, coef_w_95ci, pval_lbl)
+) %>%
+  kable_classic(full_width = T) %>%
+  footnote(general=which_var,general_title="Variable: ") %>%
+  collapse_rows(columns = 1:1, valign = "top")
+```
+
+
+```{r}
+#| label: outcomewide-ethn
+#| fig.height: 5
+#| fig.width: 8 
+
+which_var<-"ethnicity"
+ggplot(
+  data = dt_plt %>% filter(TOPIC==which_var),
+  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
+)+
+  geom_point()+geom_hline(yintercept = 0,linetype = 2)+
+  geom_errorbar(aes(ymin=coef_lower, ymax=coef_upper),width=0.5,cex=0.8)+
+  scale_x_discrete(labels = label_wrap(20)) +
+  # geom_text_repel(aes(label = var))+
+  labs(x='Tcog Tests',y="Coefficient (95% CI)")+
+  facet_wrap(~ VARIABLE_LABEL,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dt_plt %>% filter(TOPIC==which_var) %>% 
+    filter(coef_sign != 'nonsig') %>%
+    select(VARIABLE_LABEL, y_lbl, coef_w_95ci, pval_lbl)
+) %>%
+  kable_classic(full_width = T) %>%
+  footnote(general=which_var,general_title="Variable: ") %>%
+  collapse_rows(columns = 1:1, valign = "top")
+```
+
+
+```{r}
+#| label: outcomewide-sbp
+#| fig.height: 5
+#| fig.width: 8 
+
+which_var<-"sbp"
+ggplot(
+  data = dt_plt %>% filter(TOPIC==which_var),
+  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
+)+
+  geom_point()+geom_hline(yintercept = 0,linetype = 2)+
+  geom_errorbar(aes(ymin=coef_lower, ymax=coef_upper),width=0.5,cex=0.8)+
+  scale_x_discrete(labels = label_wrap(20)) +
+  # geom_text_repel(aes(label = var))+
+  labs(x='Tcog Tests',y="Coefficient (95% CI)")+
+  facet_wrap(~ VARIABLE_LABEL,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dt_plt %>% filter(TOPIC==which_var) %>% 
+    filter(coef_sign != 'nonsig') %>%
+    select(VARIABLE_LABEL, y_lbl, coef_w_95ci, pval_lbl)
+) %>%
+  kable_classic(full_width = T) %>%
+  footnote(general=which_var,general_title="Variable: ") %>%
+  collapse_rows(columns = 1:1, valign = "top")
+```
+
+

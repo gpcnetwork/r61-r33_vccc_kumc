@@ -222,7 +222,10 @@ select upper(a.study_id) as study_id,
             when ruca.ruca_primary in (7,8,9) then 'town'
             when ruca.ruca_primary in (10) then 'rural'
             else 'NI'
-       end as ruca_primary_grp
+       end as ruca_primary_grp,
+       case when ruca.ruca_primary in (1,2,3) then 0
+            else 1
+       end as ruca_primary_nonmetro_ind
 from ELIG_BP a 
 join BASE_BP b on a.study_id = b.study_id 
 join BASE_PT_REDCAP_20250115 p on a.study_id = p.study_id

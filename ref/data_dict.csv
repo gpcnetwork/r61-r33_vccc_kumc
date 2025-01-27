@@ -322,28 +322,40 @@ CEN_AREALAND_SQM_TRACT,Geography,Geography,Land area in square miles,CEN
 CEN_POPDENSITY_TRACT,Geography,Geography,Population density (Census Tract),CEN
 COUNTY,Geography,Geography,County name,CEN
 STATE,Geography,Geography,State name,CEN
-AGE,baseline,baseline,age at enrollment,REDCAP
-BASE_SBP,baseline,baseline,baseline SBP,REDCAP
-BSBP_GROUP,baseline,baseline,baseline SBP group,REDCAP
-DELTA_DAYS,baseline,baseline,days of baseline SBP since enrollment,REDCAP
-DELTA_SBP,baseline,baseline,delta between eligible SBP and baseline SBP,REDCAP
-DELTA_SBP_GROUP,baseline,baseline,delta grouping between eligible SBP and baseline SBP,REDCAP
-DISP_DATE,baseline,baseline,Date of Disposition Status,REDCAP
-DISP_STATUS,baseline,baseline,Disposition Status,REDCAP
-ELIG_DATE,baseline,baseline,date of eligibility visit,REDCAP
-ELIG_SBP,baseline,baseline,in-clinic eligibility SBP,REDCAP
-ELIG_SINCE_INDEX,baseline,baseline,eligibility visit since enrollment,REDCAP
-ENROLL_DATE,baseline,baseline,enrollment date,REDCAP
-ESBP_GROUP,baseline,baseline,eligibility SBP group,REDCAP
-ETHN_STR,baseline,baseline,ethnicity label,REDCAP
-ETHNICITY,baseline,baseline,ethnicity code,REDCAP
+AGE,baseline,age,age at enrollment,REDCAP
+BASE_SBP,baseline,sbp,baseline SBP,REDCAP
+BSBP_GROUP,baseline,sbp,baseline SBP group,REDCAP
+DELTA_DAYS,baseline,visit,days of baseline SBP since enrollment,REDCAP
+DELTA_SBP,baseline,sbp,delta between eligible SBP and baseline SBP,REDCAP
+DELTA_SBP_GROUP,baseline,sbp,delta grouping between eligible SBP and baseline SBP,REDCAP
+DISP_DATE,baseline,visit,Date of Disposition Status,REDCAP
+DISP_STATUS,baseline,visit,Disposition Status,REDCAP
+ELIG_DATE,baseline,visit,date of eligibility visit,REDCAP
+ELIG_SBP,baseline,sbp,in-clinic eligibility SBP,REDCAP
+ELIG_SINCE_INDEX,baseline,visit,eligibility visit since enrollment,REDCAP
+ENROLL_DATE,baseline,visit,enrollment date,REDCAP
+ESBP_GROUP,baseline,sbp,eligibility SBP group,REDCAP
+ETHN_STR,baseline,ethnicity,ethnicity label,REDCAP
+ETHNICITY,baseline,ethnicity,ethnicity code,REDCAP
+ETHN_FAC0,baseline,ethnicity,ethnicity = Unknown,REDCAP
+ETHN_FAC1,baseline,ethnicity,ethnicity = Hispanic,REDCAP
+ETHN_FAC2,baseline,ethnicity,ethnicity = Non-Hispanic,REDCAP
 PATID,baseline,baseline,CDM patid,REDCAP
-RACE,baseline,baseline,race code,REDCAP
-RACE_STR,baseline,baseline,race label,REDCAP
-SEX,baseline,baseline,sex code,REDCAP
-SEX_STR,baseline,baseline,sex label,REDCAP
-SITE,baseline,baseline,site,REDCAP
-STUDY_ID,baseline,baseline,study id,REDCAP
+RACE,baseline,race,race code,REDCAP
+RACE_STR,baseline,race,race label,REDCAP
+RACE_FAC0,baseline,race,race = Unknown,REDCAP
+RACE_FAC1,baseline,race,race = AIAN,REDCAP
+RACE_FAC2,baseline,race,race = Asian,REDCAP
+RACE_FAC3,baseline,race,race = Black,REDCAP
+RACE_FAC4,baseline,race,race = NHPI,REDCAP
+RACE_FAC5,baseline,race,race = White,REDCAP
+RACE_FAC6,baseline,race,race = Multi,REDCAP
+SEX,baseline,sex,sex code,REDCAP
+SEX_STR,baseline,sex,sex label,REDCAP
+SEX_FAC1,baseline,sex,sex = Male,REDCAP
+SEX_FAC2,baseline,sex,sex = Female,REDCAP
+SITE,baseline,site,site,REDCAP
+STUDY_ID,baseline,id,study id,REDCAP
 T01,Tcog,Tcog,MoCA Blind Total Raw Score Uncorrected,REDCAP
 T02,Tcog,Tcog,Rey Auditory Verbal Learning - Immediate Trial 1 - Total Recall,REDCAP
 T03,Tcog,Tcog,Rey Auditory Verbal Learning - Immediate Trial 2 - Total Recall,REDCAP
