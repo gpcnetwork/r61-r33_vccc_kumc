@@ -38,10 +38,17 @@ var_tcog_disc<-var_tcog[!grepl("N",var_tcog)]
 var_tcog_cont<-var_tcog[grepl("N",var_tcog)&!grepl("NE",var_tcog)]
 
 #====quick summary====
-var_base_lbl<-c("AGE","SEX_STR","RACE_STR","ETHN_STR","URM_IND","ELIG_SBP","ESBP_GROUP","BASE_SBP","BSBP_GROUP","STATE_GROUP","COUNTY_GROUP","SITE")
+var_base_lbl<-c(
+  "AGE","SEX_STR","RACE_STR","ETHN_STR","URM_IND",
+  "ELIG_SBP","ESBP_GROUP","BASE_SBP","BSBP_GROUP","BASE_DBP","BASE_HR",
+  "STATE_GROUP","COUNTY_GROUP","SITE"
+)
 var_sdh<-dd %>% filter(DATA_SOURCE %in% c('ACS','ADI','RUCA')) %>% select(VAR) %>% unlist
 var_all<-c(var_base_lbl,var_tcog,var_sdh)
-facvar_all<-c("SEX_STR","RACE_STR","ETHN_STR","URM_IND","ESBP_GROUP","BSBP_GROUP","STATE_GROUP","COUNTY_GROUP","SITE","RUCA_PRIMARY_GRP","RUCA_PRIMARY_NONMETRO_IND")
+facvar_all<-c(
+  "SEX_STR","RACE_STR","ETHN_STR","URM_IND","ESBP_GROUP","BSBP_GROUP",
+  "STATE_GROUP","COUNTY_GROUP","SITE","RUCA_PRIMARY_GRP","RUCA_PRIMARY_NONMETRO_IND"
+)
 var_lbl_df <- dd %>% mutate(var=VAR,var_lbl=VARIABLE_LABEL) %>% select(var,var_lbl)
 
 cohort_summ<-univar_analysis_mixed(
@@ -59,9 +66,9 @@ cohort_summ %>%
 
 #====baseline model====
 var_base_mod_lst<-list(
-  basevar0 = c("BSBP_GROUP"),
-  basevar1 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP"),
-  basevar2 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BSBP_GROUP","ADI_NATRANK","RUCA_PRIMARY_NONMETRO_IND")
+  basevar0 = c("BASE_SBP"),
+  basevar1 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_DBP","BASE_HR","BASE_SBP"),
+  basevar2 = c("AGE","SEX_FAC","RACE_FAC","ETHN_FAC","BASE_DBP","BASE_HR","BASE_SBP","ADI_NATRANK","RUCA_PRIMARY_NONMETRO_IND")
 )
 fm_lst<-c(
    'gaussian'

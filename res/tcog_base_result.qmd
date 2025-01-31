@@ -279,3 +279,73 @@ kbl(
   collapse_rows(columns = 1:1, valign = "top")
 ```
 
+
+```{r}
+#| label: outcomewide-dbp
+#| fig.height: 5
+#| fig.width: 8 
+
+which_var<-"dbp"
+ggplot(
+  data = dt_plt %>% filter(varlst_idx==2) %>% filter(TOPIC==which_var),
+  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
+)+
+  geom_point()+geom_hline(yintercept = 0,linetype = 2)+
+  geom_errorbar(aes(ymin=coef_lower, ymax=coef_upper),width=0.5,cex=0.8)+
+  scale_x_discrete(labels = label_wrap(20)) +
+  # geom_text_repel(aes(label = var))+
+  labs(x='Tcog Tests',y="Coefficient (95% CI)")+
+  facet_wrap(~ VARIABLE_LABEL,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dt_plt %>% filter(varlst_idx==2) %>% filter(TOPIC==which_var) %>% 
+    filter(coef_sign != 'nonsig') %>%
+    select(VARIABLE_LABEL, y_lbl, coef_w_95ci, pval_lbl)
+) %>%
+  kable_classic(full_width = T) %>%
+  footnote(general=which_var,general_title="Variable: ") %>%
+  collapse_rows(columns = 1:1, valign = "top")
+```
+
+```{r}
+#| label: outcomewide-hr
+#| fig.height: 5
+#| fig.width: 8 
+
+which_var<-"hr"
+ggplot(
+  data = dt_plt %>% filter(varlst_idx==2) %>% filter(TOPIC==which_var),
+  aes(x = y, y = coef, ymin = coef_lower, ymax = coef_upper, color = coef_sign)
+)+
+  geom_point()+geom_hline(yintercept = 0,linetype = 2)+
+  geom_errorbar(aes(ymin=coef_lower, ymax=coef_upper),width=0.5,cex=0.8)+
+  scale_x_discrete(labels = label_wrap(20)) +
+  # geom_text_repel(aes(label = var))+
+  labs(x='Tcog Tests',y="Coefficient (95% CI)")+
+  facet_wrap(~ VARIABLE_LABEL,strip.position="left",nrow=9,scales = "free_y") +
+  theme(
+    plot.title=element_text(size=16,face="bold"),
+    axis.ticks.y=element_blank(),
+    axis.text.x=element_text(face="bold"),
+    axis.title=element_text(size=12,face="bold"),
+    strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")
+  )+
+  coord_flip()
+
+kbl(
+  dt_plt %>% filter(varlst_idx==2) %>% filter(TOPIC==which_var) %>% 
+    filter(coef_sign != 'nonsig') %>%
+    select(VARIABLE_LABEL, y_lbl, coef_w_95ci, pval_lbl)
+) %>%
+  kable_classic(full_width = T) %>%
+  footnote(general=which_var,general_title="Variable: ") %>%
+  collapse_rows(columns = 1:1, valign = "top")
+```

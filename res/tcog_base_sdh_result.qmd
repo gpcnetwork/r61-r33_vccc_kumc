@@ -63,8 +63,6 @@ dt_plt<-dt$coef_sel %>% filter(y %in% c(
   )
 ```
 
-
-
 ```{r}
 #| label: outcomewide-ruca
 #| fig.height: 5
@@ -99,8 +97,6 @@ kbl(
   footnote(general=which_var,general_title="Variable: ") %>%
   collapse_rows(columns = 1:1, valign = "top")
 ```
-
-
 
 ```{r}
 #| label: outcomewide-adi

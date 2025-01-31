@@ -324,6 +324,8 @@ COUNTY,Geography,Geography,County name,CEN
 STATE,Geography,Geography,State name,CEN
 AGE,baseline,age,age at enrollment,REDCAP
 BASE_SBP,baseline,sbp,baseline SBP,REDCAP
+BASE_DBP,baseline,dbp,baseline DBP,REDCAP
+BASE_HR,baseline,hr,baseline HR,REDCAP
 BSBP_GROUP,baseline,sbp,baseline SBP group,REDCAP
 BSBP_GROUPbsbp0,baseline,sbp,baseline SBP <= 130,REDCAP
 BSBP_GROUPbsbp1,baseline,sbp,baseline SBP between 130 and 140,REDCAP
