@@ -59,16 +59,29 @@ select count(distinct study_id) from ELIG_BP;
 -- 1000
 
 create or replace table BASE_BP as 
-select upper(study_id) as study_id, 
-       round(result) as base_sbp,
-       bp_date as base_sbp_date
-from (
-    select a.*, row_number() over (partition by a.study_id, a.measure order by a.bp_date) rn
-    from BASE_BP_REDCAP_20250123 a
-    where a.measure = 'SBP'
+with cte as (
+    select upper(study_id) as study_id, 
+           bp_date as base_date,
+           measure,
+           result
+    from (
+        select a.*, row_number() over (partition by a.study_id, a.measure order by a.bp_date) rn
+        from BASE_BP_REDCAP_20250123 a
+    )
+    where rn = 1
 )
-where rn = 1
+select study_id,
+       base_date,
+       round(dbp) as base_dbp,
+       round(sbp) as base_sbp,
+       round(hr) as base_hr 
+from cte 
+pivot (
+    avg(result) for measure in (any order by measure)
+) as p(study_id,base_date,DBP,HR,SBP)
 ;
+
+select * from BASE_BP;
 
 select count(distinct study_id) from base_bp;
 -- 1000
@@ -181,13 +194,15 @@ select upper(a.study_id) as study_id,
        p.site,
        a.elig_sbp,
        a.elig_date,
+       b.base_hr,
+       b.base_dbp,
        b.base_sbp,
        b.base_sbp - a.elig_sbp as delta_sbp,
        case when b.base_sbp - try_to_number(a.elig_sbp) < 0 and b.base_sbp<130 then 'deltasbp1'
             when b.base_sbp - try_to_number(a.elig_sbp) < 0 and b.base_sbp>=130 and b.base_sbp<140 then 'deltasbp2'
             else 'deltasbp3'
        end as delta_sbp_group,
-       datediff(day,b.base_sbp_date,a.elig_date) as delta_days,
+       datediff(day,b.base_date,a.elig_date) as delta_days,
        case when try_to_number(a.elig_sbp) >=140 and try_to_number(a.elig_sbp) <150 then 'esbp1'
             when try_to_number(a.elig_sbp) >=150 and try_to_number(a.elig_sbp) <160 then 'esbp2'
             when try_to_number(a.elig_sbp) >=160 then 'esbp3'
