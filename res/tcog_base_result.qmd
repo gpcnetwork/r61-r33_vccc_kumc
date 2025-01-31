@@ -63,7 +63,6 @@ dt_plt<-dt$coef_sel %>% filter(y %in% c(
   )
 ```
 
-
 ## Univariate Regression of Normalized Tcog score against Baseline SBP
 
 ```{r}
@@ -100,7 +99,6 @@ kbl(
   footnote(general=which_var,general_title="Variable: ") %>%
   collapse_rows(columns = 1:1, valign = "top")
 ```
-
 
 ## Multiple regression of raw and normalized Tcog scores against baseline characteristics
 
@@ -139,7 +137,6 @@ kbl(
   collapse_rows(columns = 1:1, valign = "top")
 ```
 
-
 ```{r}
 #| label: outcomewide-sex
 
@@ -172,7 +169,6 @@ kbl(
   footnote(general=which_var,general_title="Variable: ") %>%
   collapse_rows(columns = 1:1, valign = "top")
 ```
-
 
 ```{r}
 #| label: outcomewide-race
@@ -278,7 +274,6 @@ kbl(
   footnote(general=which_var,general_title="Variable: ") %>%
   collapse_rows(columns = 1:1, valign = "top")
 ```
-
 
 ```{r}
 #| label: outcomewide-dbp
