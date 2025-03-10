@@ -109,29 +109,8 @@ select substr(study_id,1,2), count(distinct study_id)
 from VCCC_UNMAPPED
 group by substr(study_id,1,2)
 ;
--- null	74
+-- KU	9
 
--- select distinct study_id
--- from VCCC_UNMAPPED
--- where lower(substr(study_id,1,2)) = 'ut'
--- ;
--- -- 8
-
--- select distinct study_id
--- from VCCC_UNMAPPED
--- where lower(substr(study_id,1,2)) = 'ku'
--- order by study_id
--- ;
--- -- 74
-
--- select distinct a.study_id, b.patid
--- from ELIG_BP_REDCAP_20241120 a 
--- join GROUSE_DB_DEV.PCORNET_CDM_KUMC.PCORNET_TRIAL b on a.study_id = b.participantid
--- join GROUSE_DB_DEV.PCORNET_CDM_KUMC.DEMOGRAPHIC d on b.patid = d.patid
--- where b.TRIALID = 'vccc' and 
---       d.birth_date is null
--- ;
--- 10
 
 create or replace table OC_TCOG as 
 with clean_cte as (
@@ -255,9 +234,6 @@ left join STUDYID_MAPPING c on a.study_id = c.participantid
 order by a.study_id
 ;
 
-select count(distinct census_tract_id_2020) from VCCC_BASE_BP_TCOG_SDH;
-select count(distinct census_track_deid) from VCCC_BASE_BP_TCOG_SDH;
-
 select adi_staterank, count(distinct patid)
 from VCCC_BASE_BP_TCOG_SDH
 group by adi_staterank
@@ -319,7 +295,9 @@ select * from Z_MED_RXCUI_REF_AH;
 create or replace table VCCC_MED_LONG_RAW as 
 select  a.patid,
         vccc.study_id,
-        vccc.elig_since_index,
+        vccc.enroll_date,
+        vccc.elig_date,
+        datediff(day,vccc.enroll_date,vccc.elig_date) as elig_since_index,
         a.prescribingid,
         try_to_number(a.RXNORM_CUI) as RXNORM_CUI, 
         a.raw_rx_med_name,
@@ -356,17 +334,19 @@ select  a.patid,
         e.discharge_date::date as discharge_date,
         e.discharge_disposition,
         e.discharge_status,
-        vccc.trial_enroll_date as index_date,
-        datediff(day,vccc.trial_enroll_date,coalesce(a.rx_start_date,a.rx_order_date)) as rx_start_since_index        
+        vccc.enroll_date as index_date,
+        datediff(day,vccc.enroll_date,coalesce(a.rx_start_date,a.rx_order_date)) as rx_start_since_index        
 from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PRESCRIBING a 
-join VCCC_BASE_BP vccc on a.patid = vccc.patid
+join VCCC_BASE_BP_TCOG_SDH vccc on a.patid = vccc.patid
 left join GROUSE_DB_DEV.PCORNET_CDM_KUMC.ENCOUNTER e on a.patid = e.patid 
 left join Z_MED_RXCUI_REF_AH m on try_to_number(a.RXNORM_CUI) = m.RXNORM_CUI 
 where vccc.site = 'KUMC'
 union all
 select  a.patid,
         vccc.study_id,
-        vccc.elig_since_index,
+        vccc.enroll_date,
+        vccc.elig_date,
+        datediff(day,vccc.enroll_date,vccc.elig_date) as elig_since_index,
         a.prescribingid,
         try_to_number(a.RXNORM_CUI) as RXNORM_CUI, 
         a.raw_rx_med_name,
@@ -403,17 +383,14 @@ select  a.patid,
         e.discharge_date::date as discharge_date,
         e.discharge_disposition,
         e.discharge_status,
-        vccc.trial_enroll_date as index_date,
-        datediff(day,vccc.trial_enroll_date,coalesce(a.rx_start_date,a.rx_order_date)) as rx_start_since_index           
+        vccc.enroll_date as index_date,
+        datediff(day,vccc.enroll_date,coalesce(a.rx_start_date,a.rx_order_date)) as rx_start_since_index           
 from GROUSE_DB_DEV.PCORNET_CDM_UU.PRESCRIBING a 
-join VCCC_BASE_BP vccc on a.patid = vccc.patid
+join VCCC_BASE_BP_TCOG_SDH vccc on a.patid = vccc.patid
 left join GROUSE_DB_DEV.PCORNET_CDM_UU.ENCOUNTER e on a.patid = e.patid 
 left join Z_MED_RXCUI_REF_AH m on a.RXNORM_CUI = m.RXNORM_CUI 
 where vccc.site = 'UU'
-;
-
--- KUMC as missing RXNORM_CUI
---         
+;         
 
 create or replace table VCCC_MED_LONG as
 with dur_calc as(
@@ -457,12 +434,10 @@ from dur_calc
 
 select * from VCCC_MED_LONG limit 5;
 
-
 create or replace procedure get_clinic_bp_long(
-    TRIALID string,
     TRIAL_REF string,
     SITES array,
-    TGT_TBL string,
+    TGT_LONG_TBL string,
     DRY_RUN boolean,
     DRY_RUN_AT string
 )
@@ -471,10 +446,9 @@ language javascript
 as
 $$
 /**
- * @param {string} TRIALID: designated trial identifier (e.g. vccc)
- * @param {string} TRIAL_REF: name of trial participant id list
+ * @param {string} TRIAL_REF: name of trial participant id list (1 pat/row, key = PATID)
  * @param {array} SITES: an array of site acronyms (matching schema name suffix)
- * @param {string} TGT_BASE_TBL: target table name for 
+ * @param {string} TGT_LONG_TBL: target long table with clinical BP records 
  * @param {boolean} DRY_RUN: dry run indicator. If true, only sql script will be created and stored in dev.sp_out table
  * @param {boolean} DRY_RUN_AT: A temporary location to store the generated sql query for debugging purpose. 
                                 When DRY_RUN = True, provide absolute path to the table; when DRY_RUN = False, provide NULL 
@@ -487,37 +461,80 @@ if (DRY_RUN) {
 
 var i;
 for(i=0; i<SITES.length; i++){
+    // parameter
     var site = SITES[i].toString();
+    var site_cdm = `GROUSE_DB_DEV.PCORNET_CDM_`+ site +``;
     
     // dynamic query
-    var sqlstmt_par_dx = `
-        INSERT INTO `+ TGT_BASE_TBL +`
-        SELECT  a.patid,
-                'DX' AS event_type,
-                NVL(a.dx_date,a.admit_date) AS event_date,
-                round(datediff(day,b.birth_date,NVL(a.dx_date,a.admit_date))/365.25) AS age_at_event,
-                '`+ site +`'
-        FROM GROUSE_DB.`+ site_cdm +`.LDS_DIAGNOSIS a
-        JOIN GROUSE_DB.`+ site_cdm +`.LDS_DEMOGRAPHIC b ON a.patid = b.patid
-        WHERE a.dx LIKE '335.20%' OR a.dx LIKE 'G12.21%';`;
+    var sqlstmt_par = `
+        INSERT INTO `+ TGT_LONG_TBL +`
+            -- SBP and DBP from VITAL table
+            with multi_cte as (
+                select * from
+                (
+                    select   distinct
+                             r.PATID
+                            ,v.SYSTOLIC
+                            ,v.DIASTOLIC
+                            ,v.MEASURE_DATE
+                        from `+ TRIAL_REF +` r 
+                        join `+ site_cdm +`.VITAL v on r.patid = v.patid
+                        where v.SYSTOLIC is not null
+                )
+                unpivot (
+                VITAL_VAL for VITAL_TYPE in (SYSTOLIC, DIASTOLIC)
+                )
+                union all
+                -- SBP from OBS_CLIN table
+                select   distinct 
+                         r.PATID
+                        ,os.OBSCLIN_START_DATE
+                        ,'SYSTOLIC' as VITAL_TYPE
+                        ,os.OBSCLIN_RESULT_NUM as VITAL_VAL
+                    from `+ TRIAL_REF +` r
+                    join `+ site_cdm +`.OBS_CLIN os on r.patid = os.patid
+                    where
+                        -- os.OBSCLIN_TYPE = 'LC' and 
+                        os.OBSCLIN_CODE in ( '8460-8' --standing
+                                            ,'8459-0' --sitting
+                                            ,'8461-6' --supine
+                                            ,'8479-8' --palpation
+                                            ,'8480-6' --general
+                                            )
+                union all
+                -- DBP from OBS_CLIN table
+                select   distinct 
+                         r.PATID
+                        ,os.OBSCLIN_START_DATE
+                        ,'DIASTOLIC' as VITAL_TYPE
+                        ,os.OBSCLIN_RESULT_NUM as VITAL_VAL
+                    from `+ TRIAL_REF +` r
+                    join `+ site_cdm +`.OBS_CLIN os on r.patid = os.patid
+                    where
+                        -- os.OBSCLIN_TYPE = 'LC' and 
+                        os.OBSCLIN_CODE in ( '8454-1' --standing
+                                            ,'8453-3' --sitting
+                                            ,'8455-8' --supine
+                                            ,'8462-4' --general
+                                            )
+            )
+            select * from multi_cte
+            pivot 
+            (  
+                max(VITAL_VAL) for VITAL_TYPE in ('SYSTOLIC','DIASTOLIC')
+            )
+            as p(PATID, MEASURE_DATE, SBP, DBP)
+            ;`;
 
     if (DRY_RUN) {
         // preview of the generated dynamic SQL scripts - comment it out when perform actual execution
         var log_stmt = snowflake.createStatement({
                         sqlText: `INSERT INTO `+ DRY_RUN_AT +` (qry) values (:1);`,
-                        binds: [sqlstmt_par_dx]});
+                        binds: [sqlstmt_par]});
         log_stmt.execute(); 
     } else {
         // run dynamic dml query
-        var run_sqlstmt_par_dx = snowflake.createStatement({sqlText: sqlstmt_par_dx}); run_sqlstmt_par_dx.execute();
-        var run_sqlstmt_par_drx = snowflake.createStatement({sqlText: sqlstmt_par_drx}); run_sqlstmt_par_drx.execute();
-        var run_sqlstmt_par_px = snowflake.createStatement({sqlText: sqlstmt_par_px}); run_sqlstmt_par_px.execute();
-        
-        if(site === 'CMS'){
-            var run_sqlstmt_par_enr = snowflake.createStatement({sqlText: sqlstmt_par_enr}); run_sqlstmt_par_enr.execute();
-        }else{
-            var run_sqlstmt_par_prx = snowflake.createStatement({sqlText: sqlstmt_par_prx}); run_sqlstmt_par_prx.execute();
-        }
+        var run_sqlstmt_par = snowflake.createStatement({sqlText: sqlstmt_par}); run_sqlstmt_par.execute();
         var commit_txn = snowflake.createStatement({sqlText: `commit;`}); 
         commit_txn.execute();
     }
@@ -525,28 +542,37 @@ for(i=0; i<SITES.length; i++){
 $$
 ;
 
+create or replace table BP_EVENT_LONG (
+    PATID varchar(50) NOT NULL,
+    MEASURE_DATE date,     
+    SBP integer,
+    DBP integer
+);
+
 /*test*/
--- call get_als_event_long(
+-- call get_clinic_bp_long(
+--     'VCCC_BASE_BP_TCOG_SDH',
 --     array_construct(
 --          'KUMC'
 --         ,'UU'
 --     ),
+--     'BP_EVENT_LONG',
 --     TRUE,'TMP_SP_OUTPUT'
 -- )
 -- ;
 -- select * from TMP_SP_OUTPUT;
 
-create or replace table BP_EVENT_LONG (
-    PATID varchar(50) NOT NULL,
-    EVENT_TYPE varchar(20),
-    EVENT_DATE date,     
-    AGE_AT_EVENT integer,
-    EVENT_SRC varchar(10)
-);
-call get_als_event_long(
+
+call get_clinic_bp_long(
+    'VCCC_BASE_BP_TCOG_SDH',
     array_construct(
          'KUMC'
         ,'UU'
-    ), 
+    ),
+    'BP_EVENT_LONG',
     FALSE, NULL
 );
+
+select * from BP_EVENT_LONG limit 5;
+
+select count(distinct patid) from BP_EVENT_LONG;
