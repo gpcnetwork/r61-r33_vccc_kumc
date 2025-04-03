@@ -434,6 +434,9 @@ from dur_calc
 
 select * from VCCC_MED_LONG limit 5;
 
+select count(distinct patid) from VCCC_MED_LONG;
+-- 723
+
 create or replace procedure get_clinic_bp_long(
     TRIAL_REF string,
     SITES array,
@@ -474,9 +477,11 @@ for(i=0; i<SITES.length; i++){
                 (
                     select   distinct
                              r.PATID
+                            ,r.STUDY_ID
                             ,v.SYSTOLIC
                             ,v.DIASTOLIC
                             ,v.MEASURE_DATE
+                            ,datediff(day,r.enroll_date,v.measure_date) as DAYS_SINCE_INDEX
                         from `+ TRIAL_REF +` r 
                         join `+ site_cdm +`.VITAL v on r.patid = v.patid
                         where v.SYSTOLIC is not null
@@ -488,7 +493,9 @@ for(i=0; i<SITES.length; i++){
                 -- SBP from OBS_CLIN table
                 select   distinct 
                          r.PATID
+                        ,r.STUDY_ID
                         ,os.OBSCLIN_START_DATE
+                        ,datediff(day,r.enroll_date,os.OBSCLIN_START_DATE) as DAYS_SINCE_INDEX
                         ,'SYSTOLIC' as VITAL_TYPE
                         ,os.OBSCLIN_RESULT_NUM as VITAL_VAL
                     from `+ TRIAL_REF +` r
@@ -505,7 +512,9 @@ for(i=0; i<SITES.length; i++){
                 -- DBP from OBS_CLIN table
                 select   distinct 
                          r.PATID
+                        ,r.STUDY_ID
                         ,os.OBSCLIN_START_DATE
+                        ,datediff(day,r.enroll_date,os.OBSCLIN_START_DATE) as DAYS_SINCE_INDEX
                         ,'DIASTOLIC' as VITAL_TYPE
                         ,os.OBSCLIN_RESULT_NUM as VITAL_VAL
                     from `+ TRIAL_REF +` r
@@ -523,7 +532,7 @@ for(i=0; i<SITES.length; i++){
             (  
                 max(VITAL_VAL) for VITAL_TYPE in ('SYSTOLIC','DIASTOLIC')
             )
-            as p(PATID, MEASURE_DATE, SBP, DBP)
+            as p(PATID, STUDY_ID, MEASURE_DATE, DAYS_SINCE_INDEX, SBP, DBP)
             ;`;
 
     if (DRY_RUN) {
@@ -542,9 +551,11 @@ for(i=0; i<SITES.length; i++){
 $$
 ;
 
-create or replace table BP_EVENT_LONG (
+create or replace table VCCC_CLINIC_BP_LONG (
     PATID varchar(50) NOT NULL,
+    STUDY_ID varchar(50) NOT NULL,
     MEASURE_DATE date,     
+    DAYS_SINCE_INDEX number,
     SBP integer,
     DBP integer
 );
@@ -556,7 +567,7 @@ create or replace table BP_EVENT_LONG (
 --          'KUMC'
 --         ,'UU'
 --     ),
---     'BP_EVENT_LONG',
+--     'VCCC_CLINIC_BP_LONG',
 --     TRUE,'TMP_SP_OUTPUT'
 -- )
 -- ;
@@ -569,10 +580,172 @@ call get_clinic_bp_long(
          'KUMC'
         ,'UU'
     ),
-    'BP_EVENT_LONG',
+    'VCCC_CLINIC_BP_LONG',
     FALSE, NULL
 );
 
-select * from BP_EVENT_LONG limit 5;
+select * from VCCC_CLINIC_BP_LONG limit 5;
+select count(distinct patid) from VCCC_CLINIC_BP_LONG;
+-- 989
+select count(distinct patid) from VCCC_CLINIC_BP_LONG
+where days_since_index < 0;
+-- 989
 
-select count(distinct patid) from BP_EVENT_LONG;
+create or replace procedure get_vccc_cci_long(
+    TRIAL_REF string,
+    SITES array,
+    TGT_LONG_TBL string,
+    DRY_RUN boolean,
+    DRY_RUN_AT string
+)
+returns variant
+language javascript
+as
+$$
+/**
+ * @param {string} TRIAL_REF: name of trial participant id list (1 pat/row, key = PATID)
+ * @param {array} SITES: an array of site acronyms (matching schema name suffix)
+ * @param {string} TGT_LONG_TBL: target long table with clinical BP records 
+ * @param {boolean} DRY_RUN: dry run indicator. If true, only sql script will be created and stored in dev.sp_out table
+ * @param {boolean} DRY_RUN_AT: A temporary location to store the generated sql query for debugging purpose. 
+                                When DRY_RUN = True, provide absolute path to the table; when DRY_RUN = False, provide NULL 
+**/
+if (DRY_RUN) {
+    var log_stmt = snowflake.createStatement({
+        sqlText: `CREATE OR REPLACE TEMPORARY TABLE `+ DRY_RUN_AT +`(QRY VARCHAR);`});
+    log_stmt.execute(); 
+}
+
+var i;
+for(i=0; i<SITES.length; i++){
+       var site = SITES[i].toString();
+       var site_cdm = (site === 'CMS') ? 'CMS_PCORNET_CDM' : 'PCORNET_CDM_' + site;
+
+       // collect all diagnosis codes
+       sqlstmt = `
+              INSERT INTO `+ TGT_LONG_TBL +`
+              select  distinct
+                      a.PATID
+                     ,datediff(day,a.enroll_date,NVL(d.DX_DATE::date,d.ADMIT_DATE::date)) as DAYS_SINCE_INDEX
+                     ,d.DX
+                     ,d.PDX
+                     ,d.DX_DATE
+                     ,d.ADMIT_DATE
+                     ,d.ENC_TYPE
+                     ,cci.code_grp
+                     ,cci.score
+              from `+ TRIAL_REF +` a
+              join GROUSE_DB_DEV.`+ site_cdm +`.DIAGNOSIS d 
+                     on a.PATID = d.PATID
+              join Z_CCI_REF cci
+              on d.dx like cci.code||'%' and d.dx_type = cci.code_type
+              where NVL(d.DX_DATE::date,d.ADMIT_DATE::date)<=a.enroll_date
+              ;`;
+
+       if (DRY_RUN) {
+              // preview of the generated dynamic SQL scripts - comment it out when perform actual execution
+              var log_stmt = snowflake.createStatement({
+                            sqlText: `INSERT INTO `+ DRY_RUN_AT +` (qry) values (:1);`,
+                            binds: [sqlstmt]});
+        log_stmt.execute(); 
+       } else {
+              // run dynamic dml query
+              var run_sqlstmt = snowflake.createStatement({sqlText: sqlstmt}); run_sqlstmt.execute();
+              var commit_txn = snowflake.createStatement({sqlText: `commit;`}); commit_txn.execute();
+       }
+}
+$$
+;
+
+create or replace table CCI_DX_LONG (
+    PATID varchar(50) NOT NULL,
+    DAYS_SINCE_INDEX number,
+    DX varchar(20),
+    PDX varchar(20),
+    DX_DATE date,
+    ADMIT_DATE date,
+    ENC_TYPE varchar(20),
+    CCI_GRP varchar(11),
+    CCI_SCORE integer
+);
+/*test*/
+-- call get_vccc_cci_long(
+--     'VCCC_BASE_BP_TCOG_SDH',
+--     array_construct(
+--          'KUMC'
+--         ,'UU'
+--     ),
+--     'CCI_DX_LONG',
+--     TRUE,'TMP_SP_OUTPUT'
+-- )
+-- ;
+-- select * from TMP_SP_OUTPUT;
+
+
+call get_vccc_cci_long(
+    'VCCC_BASE_BP_TCOG_SDH',
+    array_construct(
+         'KUMC'
+        ,'UU'
+    ),
+    'CCI_DX_LONG',
+    FALSE, NULL
+);
+
+select * from CCI_DX_LONG limit 5;
+
+select count(distinct patid) from CCI_DX_LONG;
+-- 781
+
+create or replace table VCCC_BASE_CCI as
+with cci_uni as (
+    select patid, CCI_GRP, cci_score
+    from (
+        select a.*, row_number() over (partition by a.patid, a.CCI_GRP order by a.days_since_index desc) rn
+        from CCI_DX_LONG a
+    )
+    where rn = 1
+)
+, cci_tot as (
+    select patid, sum(cci_score) as cci_total
+    from cci_uni
+    group by patid
+)
+, cci_ind as (
+    select * from (
+        select patid, CCI_GRP, 1 as ind from cci_uni
+    )
+    pivot (
+        max(ind) for CCI_GRP in (
+            'aids',
+            'canc',
+            'cevd',
+            'chf',
+            'cpd',
+            'dementia',
+            'diab',
+            'diabwc',
+            'hp',
+            'metacanc',
+            'mi',
+            'mld',
+            'msld',
+            'pud',
+            'pvd',
+            'rend',
+            'rheumd'
+        )
+        DEFAULT ON NULL (0)
+    )
+    as p(patid,aids,canc,cevd,chf,cpd,dementia,diab,diabwc,hp,metacanc,mi,mld,msld,pud,pvd,rend,rheumd)
+)
+select b.*,
+       a.cci_total
+from cci_tot a
+join cci_ind b
+on a.patid = b.patid
+; 
+
+select * from VCCC_BASE_CCI limit 5;
+
+select count(distinct patid), count(*) from VCCC_BASE_CCI;

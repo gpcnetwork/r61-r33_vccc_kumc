@@ -19,7 +19,6 @@ clinicaltrial.gov sites:
 Principle Investigators:
 - [Jeff Burn](mailto:jburns2@kumc.edu)
 - [Aditi Gupta](mailto:agupta@kumc.edu)
-- [Russ Waitman](mailto:russ.waitman@health.missouri.edu)
 
 KUMC Study Team Key Personnel: 
 - [Diego Mazzoti](mailto:droblesmazzotti@kumc.edu)
@@ -32,12 +31,15 @@ KUMC Study Team Key Personnel:
 - [Alexandra Dahlgren](mailto:adahlgren@kumc.edu)
 
 UU Study Team Key Personnel: 
-- [Srinivasan Beddhu](mailto:srinivasan.beddhu@hsc.utah.edu)
-- [Ainsley Huffman](mailto:Ainsley.Huffman@hsc.utah.edu)
-- [Dan Burnham](mailto:dan.burnham@hsc.utah.edu)
+- [Mark Supiano](mailto:u0507532@umail.utah.edu)
+- [Molly Conroy](mailto:molly.conroy@hsc.utah.edu)
+- [Jordan King](mailto:jordan.king@hsc.utah.edu)
+- [Haddy Bah](mailto:haddy.bah@utah.edu)
+- [Jackson Barlocker](mailto:jackson.barlocker@hsc.utah.edu)
 
 MU Study Team Key Personnel: 
 - [Xing Song](mailto:xsm7f@health.missouri.edu)
+- [Amir Habibdoust Lafmajani](mailto:ahb3b@umsystem.edu)
 
 
 
