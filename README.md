@@ -34,7 +34,7 @@ UU Study Team Key Personnel:
 - [Mark Supiano](mailto:u0507532@umail.utah.edu)
 - [Molly Conroy](mailto:molly.conroy@hsc.utah.edu)
 - [Jordan King](mailto:jordan.king@hsc.utah.edu)
-- [Haddy Bah](mailto:haddy.bah@utah.edu)
+- [Megan Douros](mailto:megan.douros@hsc.utah.edu)
 - [Jackson Barlocker](mailto:jackson.barlocker@hsc.utah.edu)
 
 MU Study Team Key Personnel: 
