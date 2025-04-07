@@ -585,11 +585,780 @@ call get_clinic_bp_long(
 );
 
 select * from VCCC_CLINIC_BP_LONG limit 5;
-select count(distinct patid) from VCCC_CLINIC_BP_LONG;
+
+select substr(study_id,1,2), count(distinct patid) 
+from VCCC_CLINIC_BP_LONG
+where days_since_index < 0
+group by substr(study_id,1,2)
+;
 -- 989
-select count(distinct patid) from VCCC_CLINIC_BP_LONG
-where days_since_index < 0;
--- 989
+-- UT	266
+-- KU	723 -> 734
+
+select substr(study_id,1,2),count(distinct patid), 
+count(distinct study_id), count(*)
+from VCCC_BASE_BP_TCOG_SDH
+group by substr(study_id,1,2);
+
+
+/* healthcare visits */
+create or replace procedure get_visits_long(
+    TRIAL_REF string,
+    SITES array,
+    TGT_LONG_TBL string,
+    DRY_RUN boolean,
+    DRY_RUN_AT string
+)
+returns variant
+language javascript
+as
+$$
+/**
+ * @param {string} TRIAL_REF: name of trial participant id list (1 pat/row, key = PATID)
+ * @param {array} SITES: an array of site acronyms (matching schema name suffix)
+ * @param {string} TGT_LONG_TBL: target long table with clinical BP records 
+ * @param {boolean} DRY_RUN: dry run indicator. If true, only sql script will be created and stored in dev.sp_out table
+ * @param {boolean} DRY_RUN_AT: A temporary location to store the generated sql query for debugging purpose. 
+                                When DRY_RUN = True, provide absolute path to the table; when DRY_RUN = False, provide NULL 
+**/
+if (DRY_RUN) {
+    var log_stmt = snowflake.createStatement({
+        sqlText: `CREATE OR REPLACE TEMPORARY TABLE `+ DRY_RUN_AT +`(QRY VARCHAR);`});
+    log_stmt.execute(); 
+}
+
+var i;
+for(i=0; i<SITES.length; i++){
+    // parameter
+    var site = SITES[i].toString();
+    var site_cdm = `GROUSE_DB_DEV.PCORNET_CDM_`+ site +``;
+    
+    // dynamic query
+    var sqlstmt_par = `
+        INSERT INTO `+ TGT_LONG_TBL +`
+           select distinct
+                 r.PATID
+                ,r.STUDY_ID
+                ,enc.ENC_TYPE
+                ,enc.ADMIT_DATE
+                ,enc.DISCHARGE_DATE
+                ,enc.DISCHARGE_STATUS
+                ,enc.DISCHARGE_DISPOSITION
+                ,enc.DRG
+                ,enc.FACILITYID
+                ,enc.FACILITY_LOCATION
+                ,enc.FACILITY_TYPE
+                ,enc.PAYER_TYPE_PRIMARY
+                ,enc.RAW_PAYER_TYPE_PRIMARY
+                ,enc.RAW_PAYER_ID_PRIMARY   
+                ,enc.PROVIDERID
+                ,prov.PROVIDER_SPECIALTY_PRIMARY
+                ,prov.PROVIDER_NPI
+                ,prov.RAW_PROVIDER_SPECIALTY_PRIMARY
+                -- ,prov.RAW_PROV_NAME
+                -- ,prov.RAW_PROV_TYPE            
+                ,datediff(day,r.enroll_date,enc.admit_date) as DAYS_SINCE_INDEX
+            from `+ TRIAL_REF +` r 
+            join `+ site_cdm +`.ENCOUNTER enc on r.patid = enc.patid
+            left join `+ site_cdm +`.PROVIDER prov on enc.providerid = prov.providerid
+            ;`;
+
+    if (DRY_RUN) {
+        // preview of the generated dynamic SQL scripts - comment it out when perform actual execution
+        var log_stmt = snowflake.createStatement({
+                        sqlText: `INSERT INTO `+ DRY_RUN_AT +` (qry) values (:1);`,
+                        binds: [sqlstmt_par]});
+        log_stmt.execute(); 
+    } else {
+        // run dynamic dml query
+        var run_sqlstmt_par = snowflake.createStatement({sqlText: sqlstmt_par}); run_sqlstmt_par.execute();
+        var commit_txn = snowflake.createStatement({sqlText: `commit;`}); 
+        commit_txn.execute();
+    }
+}
+$$
+;
+
+create or replace table VCCC_VISITS_LONG (
+     PATID varchar(50) NOT NULL
+    ,STUDY_ID varchar(50) NOT NULL
+    ,ENC_TYPE varchar(5)
+    ,ADMIT_DATE date
+    ,DISCHARGE_DATE date
+    ,DISCHARGE_STATUS varchar(50)
+    ,DISCHARGE_DISPOSITION varchar(50)
+    ,DRG varchar(50)
+    ,FACILITYID varchar(50)
+    ,FACILITY_LOCATION varchar(50)
+    ,FACILITY_TYPE varchar(50)
+    ,PAYER_TYPE_PRIMARY varchar(50)
+    ,RAW_PAYER_TYPE_PRIMARY varchar(50)
+    ,RAW_PAYER_ID_PRIMARY varchar(50)  
+    ,PROVIDERID varchar(50)
+    ,PROVIDER_SPECIALTY_PRIMARY varchar(50)
+    ,PROVIDER_NPI varchar(50)
+    ,RAW_PROVIDER_SPECIALTY_PRIMARY varchar(50)
+    -- ,RAW_PROV_NAME varchar(50)
+    -- ,RAW_PROV_TYPE varchar(50)           
+    ,DAYS_SINCE_INDEX number
+);
+
+/*test*/
+-- call get_visits_long(
+--     'VCCC_BASE_BP_TCOG_SDH',
+--     array_construct(
+--          'KUMC'
+--         ,'UU'
+--     ),
+--     'VCCC_VISITS_LONG',
+--     TRUE,'TMP_SP_OUTPUT'
+-- )
+-- ;
+-- select * from TMP_SP_OUTPUT;
+
+
+call get_visits_long(
+    'VCCC_BASE_BP_TCOG_SDH',
+    array_construct(
+         'KUMC'
+        ,'UU'
+    ),
+    'VCCC_VISITS_LONG',
+    FALSE, NULL
+);
+
+select * from GROUSE_DB_DEV.PCORNET_CDM_KUMC.PROVIDER
+where PROVIDER_SPECIALTY_PRIMARY is not null and trim(PROVIDER_SPECIALTY_PRIMARY) <> '';
+
+select substr(STUDY_ID,1,2), 
+       count(distinct admit_date) as enc_cnt,
+       count(distinct STUDY_ID) as pat_cnt
+from VCCC_VISITS_LONG
+where enc_type in ('ED','EI') and DAYS_SINCE_INDEX between -730 and -1
+group by substr(STUDY_ID,1,2)
+;
+-- UT	95	60
+-- KU	179	124
+
+select substr(STUDY_ID,1,2), 
+       count(distinct admit_date) as enc_cnt,
+       count(distinct STUDY_ID) as pat_cnt
+from VCCC_VISITS_LONG
+where enc_type in ('IP','EI') and DAYS_SINCE_INDEX between -730 and -1
+group by substr(STUDY_ID,1,2)
+;
+-- UT	68	37
+-- KU	255	142
+
+create or replace procedure get_anthro_long(
+    TRIAL_REF string,
+    SITES array,
+    TGT_LONG_TBL string,
+    DRY_RUN boolean,
+    DRY_RUN_AT string
+)
+returns variant
+language javascript
+as
+$$
+/**
+ * @param {string} TRIAL_REF: name of trial participant id list (1 pat/row, key = PATID)
+ * @param {array} SITES: an array of site acronyms (matching schema name suffix)
+ * @param {string} TGT_LONG_TBL: target long table with clinical BP records 
+ * @param {boolean} DRY_RUN: dry run indicator. If true, only sql script will be created and stored in dev.sp_out table
+ * @param {boolean} DRY_RUN_AT: A temporary location to store the generated sql query for debugging purpose. 
+                                When DRY_RUN = True, provide absolute path to the table; when DRY_RUN = False, provide NULL 
+**/
+if (DRY_RUN) {
+    var log_stmt = snowflake.createStatement({
+        sqlText: `CREATE OR REPLACE TEMPORARY TABLE `+ DRY_RUN_AT +`(QRY VARCHAR);`});
+    log_stmt.execute(); 
+}
+
+var i;
+for(i=0; i<SITES.length; i++){
+    // parameter
+    var site = SITES[i].toString();
+    var site_cdm = `GROUSE_DB_DEV.PCORNET_CDM_`+ site +``;
+    
+    // dynamic query
+    var sqlstmt_par = `
+        INSERT INTO `+ TGT_LONG_TBL +` 
+          -- height (m)--
+          SELECT r.patid,
+                 r.study_id,
+                 b.measure_date::date,
+                 round(datediff(day,r.enroll_date,b.measure_date::date)/365.25),
+                 'HT',b.ht/39.37 -- default at 'in'
+          FROM `+ TRIAL_REF +` r
+          JOIN `+ site_cdm +`.VITAL b 
+          ON r.patid = b.patid
+          WHERE b.ht is not null
+          UNION
+          select r.patid,
+                 r.study_id,
+                 oc.OBSCLIN_START_DATE::date,
+                 round(datediff(day,r.enroll_date,oc.OBSCLIN_START_DATE::date)/365.25),'HT',
+                 case when lower(oc.OBSCLIN_RESULT_UNIT) like '%cm%' then oc.OBSCLIN_RESULT_NUM/100
+                      else oc.OBSCLIN_RESULT_NUM/39.37 end
+          FROM `+ TRIAL_REF +` r
+          JOIN `+ site_cdm +`.OBS_CLIN oc 
+          ON r.patid = oc.patid AND
+             oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '8302-2'
+          UNION
+          -- weight (kg)--
+          SELECT r.patid,
+                 r.study_id,
+                 b.measure_date::date,
+                 round(datediff(day,r.enroll_date,b.measure_date::date)/365.25),
+                 'WT',b.wt/2.205 -- default at 'lb'
+          FROM `+ TRIAL_REF +` r
+          JOIN `+ site_cdm +`.VITAL b 
+          ON r.patid = b.patid
+          WHERE b.wt is not null
+          UNION
+          select r.patid,
+                 r.study_id,
+                 oc.OBSCLIN_START_DATE::date,
+                 round(datediff(day,r.enroll_date,oc.OBSCLIN_START_DATE::date)/365.25),'WT',
+                 case when lower(oc.OBSCLIN_RESULT_UNIT) like 'g%' then oc.OBSCLIN_RESULT_NUM/1000
+                      when lower(oc.OBSCLIN_RESULT_UNIT) like '%kg%' then oc.OBSCLIN_RESULT_NUM
+                      else oc.OBSCLIN_RESULT_NUM/2.205 end
+          FROM `+ TRIAL_REF +` r
+          JOIN `+ site_cdm +`.OBS_CLIN oc 
+          ON r.patid = oc.patid AND
+             oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '29463-7'
+          UNION
+          -- bmi (kg/m2)--
+          SELECT r.patid,
+                 r.study_id,
+                 b.measure_date::date,
+                 round(datediff(day,r.enroll_date,b.measure_date::date)/365.25),
+                 'BMI',b.ORIGINAL_BMI
+          FROM `+ TRIAL_REF +` r
+          JOIN `+ site_cdm +`.VITAL b 
+          ON r.patid = b.patid
+          WHERE b.ORIGINAL_BMI is not null
+          UNION
+          select r.patid,
+                 r.study_id,
+                 oc.OBSCLIN_START_DATE::date,
+                 round(datediff(day,r.enroll_date,oc.OBSCLIN_START_DATE::date)/365.25),
+                 'BMI',oc.OBSCLIN_RESULT_NUM 
+          FROM `+ TRIAL_REF +` r
+          JOIN `+ site_cdm +`.OBS_CLIN oc 
+          ON r.patid = oc.patid AND
+             oc.OBSCLIN_TYPE = 'LC' and oc.OBSCLIN_CODE = '39156-5'
+          ;
+    `;
+
+    if (DRY_RUN) {
+        // preview of the generated dynamic SQL scripts - comment it out when perform actual execution
+        var log_stmt = snowflake.createStatement({
+                        sqlText: `INSERT INTO `+ DRY_RUN_AT +` (qry) values (:1);`,
+                        binds: [sqlstmt_par]});
+        log_stmt.execute(); 
+    } else {
+        // run dynamic dml query
+        var run_sqlstmt_par = snowflake.createStatement({sqlText: sqlstmt_par}); run_sqlstmt_par.execute();
+        var commit_txn = snowflake.createStatement({sqlText: `commit;`}); 
+        commit_txn.execute();
+    }
+}
+$$
+;
+
+create or replace table VCCC_ANTHRO_LONG (
+    PATID varchar(50) NOT NULL,
+    STUDY_ID varchar(50) NOT NULL,
+    MEASURE_DATE date,      -- date of first HT/WT/BMI record
+    DAYS_SINCE_INDEX integer,
+    MEASURE_TYPE varchar(4),
+    MEASURE_NUM double -- ht:m; wt:kg
+);
+
+/*test*/
+-- call get_anthro_long(
+--     'VCCC_BASE_BP_TCOG_SDH',
+--     array_construct(
+--          'KUMC'
+--         ,'UU'
+--     ),
+--     'VCCC_ANTHRO_LONG',
+--     TRUE,'TMP_SP_OUTPUT'
+-- )
+-- ;
+-- select * from TMP_SP_OUTPUT;
+
+call get_anthro_long(
+    'VCCC_BASE_BP_TCOG_SDH',
+    array_construct(
+         'KUMC'
+        ,'UU'
+    ),
+    'VCCC_ANTHRO_LONG',
+    FALSE, NULL
+);
+
+create or replace table VCCC_ANTHRO_TS as
+with daily_agg as(
+    select patid,study_id,measure_date,HT,WT,days_since_index,
+           case when BMI>100 then NULL else BMI end as BMI,
+           case when HT = 0 or WT = 0 or round(WT/(HT*HT))>100 then NULL
+                else round(WT/(HT*HT)) 
+           end as BMI_CALCULATED
+    from (
+        select patid,
+               study_id,
+               measure_type, 
+               measure_date::date as measure_date, 
+               days_since_index, 
+               median(measure_num) as measure_num
+    from VCCC_ANTHRO_LONG
+    group by patid, study_id, measure_type, measure_date::date,days_since_index
+    ) 
+    pivot(
+        median(measure_num) 
+        for measure_type in ('HT','WT','BMI')
+    ) as p(patid,study_id,measure_date,days_since_index,HT,WT,BMI)
+    where (WT is not null and HT is not null and WT>0 and HT>0) or
+          (BMI is not null and BMI > 0)
+)
+select patid,
+       study_id,
+       measure_date,
+       days_since_index,
+       round(ht,2) as ht,
+       round(wt,2) as wt,
+       NVL(bmi_calculated,bmi) as bmi,
+       dense_rank() over (partition by patid order by measure_date) as t_discrete,
+       row_number() over (partition by patid order by measure_date) as rn
+from daily_agg
+where NVL(BMI,BMI_CALCULATED) is not null and NVL(BMI,BMI_CALCULATED)>0
+;
+
+select * from VCCC_ANTHRO_TS limit 5;
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_ANTHRO_TS
+where days_since_index = 0
+group by substr(study_id,1,2)
+;
+-- UT	259
+-- KU	695
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_ANTHRO_TS
+where days_since_index between -14 and 0
+group by substr(study_id,1,2)
+;
+-- UT	266
+-- KU	723 -> 734
+-- study_id sent to KUMC
+
+-- labs
+create or replace procedure get_labs_long(
+    TRIAL_REF string,
+    SITES array,
+    TGT_LONG_TBL string,
+    DRY_RUN boolean,
+    DRY_RUN_AT string
+)
+returns variant
+language javascript
+as
+$$
+/**
+ * @param {string} TRIAL_REF: name of trial participant id list (1 pat/row, key = PATID)
+ * @param {array} SITES: an array of site acronyms (matching schema name suffix)
+ * @param {string} TGT_LONG_TBL: target long table with clinical BP records 
+ * @param {boolean} DRY_RUN: dry run indicator. If true, only sql script will be created and stored in dev.sp_out table
+ * @param {boolean} DRY_RUN_AT: A temporary location to store the generated sql query for debugging purpose. 
+                                When DRY_RUN = True, provide absolute path to the table; when DRY_RUN = False, provide NULL 
+**/
+if (DRY_RUN) {
+    var log_stmt = snowflake.createStatement({
+        sqlText: `CREATE OR REPLACE TEMPORARY TABLE `+ DRY_RUN_AT +`(QRY VARCHAR);`});
+    log_stmt.execute(); 
+}
+
+var i;
+for(i=0; i<SITES.length; i++){
+    // parameter
+    var site = SITES[i].toString();
+    var site_cdm = `GROUSE_DB_DEV.PCORNET_CDM_`+ site +``;
+    
+    // dynamic query
+    var sqlstmt_par = `
+        INSERT INTO `+ TGT_LONG_TBL +`
+           select distinct
+                 a.PATID
+                ,a.STUDY_ID
+                ,coalesce(b.specimen_date, b.lab_order_date, b.result_date) as OBS_DATE
+                ,datediff(day,a.enroll_date,coalesce(b.specimen_date, b.lab_order_date, b.result_date)) as DAYS_SINCE_INDEX
+                ,b.lab_loinc as OBS_CODE
+                ,coalesce(c.component,b.raw_lab_name) as OBS_NAME
+                ,b.result_num as OBS_NUM
+                ,b.result_unit as OBS_UNIT
+                ,b.norm_range_low as OBS_REF_LOW
+                ,b.norm_range_high as OBS_REF_HIGH
+                ,b.result_qual as OBS_QUAL
+              from `+ TRIAL_REF +` a
+              join `+ site_cdm +`.LAB_RESULT_CM b
+              on a.patid = b.patid
+              left join ONTOLOGY.LOINC.LOINC_V2_17 c
+              on b.lab_loinc = c.loinc_num
+            ;`;
+
+    if (DRY_RUN) {
+        // preview of the generated dynamic SQL scripts - comment it out when perform actual execution
+        var log_stmt = snowflake.createStatement({
+                        sqlText: `INSERT INTO `+ DRY_RUN_AT +` (qry) values (:1);`,
+                        binds: [sqlstmt_par]});
+        log_stmt.execute(); 
+    } else {
+        // run dynamic dml query
+        var run_sqlstmt_par = snowflake.createStatement({sqlText: sqlstmt_par}); run_sqlstmt_par.execute();
+        var commit_txn = snowflake.createStatement({sqlText: `commit;`}); 
+        commit_txn.execute();
+    }
+}
+$$
+;
+
+create or replace table VCCC_LABS_LONG (
+     PATID varchar(50) NOT NULL
+    ,STUDY_ID varchar(50) NOT NULL
+    ,OBS_DATE date
+    ,DAYS_SINCE_INDEX number
+    ,OBS_CODE varchar(100)
+    ,OBS_NAME varchar(500)
+    ,OBS_NUM number 
+    ,OBS_UNIT varchar(50)
+    ,OBS_REF_LOW varchar(100)
+    ,OBS_REF_HIGH varchar(100) 
+    ,OBS_QUAL varchar(100)
+);
+
+/*test*/
+-- call get_labs_long(
+--     'VCCC_BASE_BP_TCOG_SDH',
+--     array_construct(
+--          'KUMC'
+--         ,'UU'
+--     ),
+--     'VCCC_LABS_LONG',
+--     TRUE,'TMP_SP_OUTPUT'
+-- )
+-- ;
+-- select * from TMP_SP_OUTPUT;
+
+
+call get_labs_long(
+    'VCCC_BASE_BP_TCOG_SDH',
+    array_construct(
+         'KUMC'
+        ,'UU'
+    ),
+    'VCCC_LABS_LONG',
+    FALSE, NULL
+);
+
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%creat%' and days_since_index between -731 and 0
+group by substr(study_id,1,2)
+;
+-- UT	262
+-- KU	706
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%urea nitrogen%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	260
+-- KU	706
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%potassium%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	261
+-- KU	706
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%sodium%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	260
+-- KU	706
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%albumin%' and days_since_index <= 0
+group by substr(study_id,1,2)
+; -- urine
+-- UT	260
+-- KU	694
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%albumin%creat%' and days_since_index between -731 and 0
+group by substr(study_id,1,2)
+;
+-- UT	49
+-- KU	75
+-- urine
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%protein%creat%' and days_since_index between -731 and 0
+group by substr(study_id,1,2)
+;
+-- UT	8
+-- KU	44
+-- urine
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%calcium%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	260
+-- KU	706
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like 'protein' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	258
+-- KU	693
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%aspartate%aminotransferase%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	255
+-- KU	693
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%alkaline%phosphatase%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	255
+-- KU	694
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%hemoglobin%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	260
+-- KU	703
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%mean%corpuscular%volume%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	252
+-- KU	695
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%hemoglobin%a1c%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	248
+-- KU	496
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%cholesterol%' and days_since_index <= 0 and 
+      lower(obs_name) not like '%hdl%' and lower(obs_name) not like '%ldl%'
+group by substr(study_id,1,2)
+;
+-- UT	254
+-- KU	685
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%hdl%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	253
+-- KU	685
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%ldl%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	251
+-- KU	685
+
+select substr(study_id,1,2), count(distinct study_id)
+from VCCC_LABS_LONG
+where lower(obs_name) like '%triglyceride%' and days_since_index <= 0
+group by substr(study_id,1,2)
+;
+-- UT	253
+-- KU	685
+
+
+create or replace procedure get_sdoh_long(
+    TRIAL_REF string,
+    SITES array,
+    TGT_LONG_TBL string,
+    DRY_RUN boolean,
+    DRY_RUN_AT string
+)
+returns variant
+language javascript
+as
+$$
+/**
+ * @param {string} TRIAL_REF: name of trial participant id list (1 pat/row, key = PATID)
+ * @param {array} SITES: an array of site acronyms (matching schema name suffix)
+ * @param {string} TGT_LONG_TBL: target long table with clinical BP records 
+ * @param {boolean} DRY_RUN: dry run indicator. If true, only sql script will be created and stored in dev.sp_out table
+ * @param {boolean} DRY_RUN_AT: A temporary location to store the generated sql query for debugging purpose. 
+                                When DRY_RUN = True, provide absolute path to the table; when DRY_RUN = False, provide NULL 
+**/
+if (DRY_RUN) {
+    var log_stmt = snowflake.createStatement({
+        sqlText: `CREATE OR REPLACE TEMPORARY TABLE `+ DRY_RUN_AT +`(QRY VARCHAR);`});
+    log_stmt.execute(); 
+}
+
+var i;
+for(i=0; i<SITES.length; i++){
+    // parameter
+    var site = SITES[i].toString();
+    var site_cdm = `GROUSE_DB_DEV.PCORNET_CDM_`+ site +``;
+    
+    // dynamic query
+    var sqlstmt_par = `
+        INSERT INTO `+ TGT_LONG_TBL +`
+            -- SBP and DBP from VITAL table
+            with multi_cte as (
+                select * from
+                (
+                    select   distinct
+                             r.PATID
+                            ,r.STUDY_ID
+                            ,v.SMOKING
+                            ,v.MEASURE_DATE
+                            ,datediff(day,r.enroll_date,v.measure_date) as DAYS_SINCE_INDEX
+                        from `+ TRIAL_REF +` r 
+                        join `+ site_cdm +`.VITAL v on r.patid = v.patid
+                        where v.SYSTOLIC is not null
+                )
+                unpivot (
+                VITAL_VAL for VITAL_TYPE in (SYSTOLIC, DIASTOLIC)
+                )
+                union all
+                -- SBP from OBS_CLIN table
+                select   distinct 
+                         r.PATID
+                        ,r.STUDY_ID
+                        ,os.OBSCLIN_START_DATE
+                        ,datediff(day,r.enroll_date,os.OBSCLIN_START_DATE) as DAYS_SINCE_INDEX
+                        ,'SYSTOLIC' as VITAL_TYPE
+                        ,os.OBSCLIN_RESULT_NUM as VITAL_VAL
+                    from `+ TRIAL_REF +` r
+                    join `+ site_cdm +`.OBS_CLIN os on r.patid = os.patid
+                    where
+                        -- os.OBSCLIN_TYPE = 'LC' and 
+                        os.OBSCLIN_CODE in ( '8460-8' --standing
+                                            ,'8459-0' --sitting
+                                            ,'8461-6' --supine
+                                            ,'8479-8' --palpation
+                                            ,'8480-6' --general
+                                            )
+                union all
+                -- DBP from OBS_CLIN table
+                select   distinct 
+                         r.PATID
+                        ,r.STUDY_ID
+                        ,os.OBSCLIN_START_DATE
+                        ,datediff(day,r.enroll_date,os.OBSCLIN_START_DATE) as DAYS_SINCE_INDEX
+                        ,'DIASTOLIC' as VITAL_TYPE
+                        ,os.OBSCLIN_RESULT_NUM as VITAL_VAL
+                    from `+ TRIAL_REF +` r
+                    join `+ site_cdm +`.OBS_CLIN os on r.patid = os.patid
+                    where
+                        -- os.OBSCLIN_TYPE = 'LC' and 
+                        os.OBSCLIN_CODE in ( '8454-1' --standing
+                                            ,'8453-3' --sitting
+                                            ,'8455-8' --supine
+                                            ,'8462-4' --general
+                                            )
+            )
+            select * from multi_cte
+            pivot 
+            (  
+                max(VITAL_VAL) for VITAL_TYPE in ('SYSTOLIC','DIASTOLIC')
+            )
+            as p(PATID, STUDY_ID, MEASURE_DATE, DAYS_SINCE_INDEX, SBP, DBP)
+            ;`;
+
+    if (DRY_RUN) {
+        // preview of the generated dynamic SQL scripts - comment it out when perform actual execution
+        var log_stmt = snowflake.createStatement({
+                        sqlText: `INSERT INTO `+ DRY_RUN_AT +` (qry) values (:1);`,
+                        binds: [sqlstmt_par]});
+        log_stmt.execute(); 
+    } else {
+        // run dynamic dml query
+        var run_sqlstmt_par = snowflake.createStatement({sqlText: sqlstmt_par}); run_sqlstmt_par.execute();
+        var commit_txn = snowflake.createStatement({sqlText: `commit;`}); 
+        commit_txn.execute();
+    }
+}
+$$
+;
+
+create or replace table VCCC_CLINIC_BP_LONG (
+    PATID varchar(50) NOT NULL,
+    STUDY_ID varchar(50) NOT NULL,
+    MEASURE_DATE date,     
+    DAYS_SINCE_INDEX number,
+    SBP integer,
+    DBP integer
+);
+
+/*test*/
+-- call get_clinic_bp_long(
+--     'VCCC_BASE_BP_TCOG_SDH',
+--     array_construct(
+--          'KUMC'
+--         ,'UU'
+--     ),
+--     'VCCC_CLINIC_BP_LONG',
+--     TRUE,'TMP_SP_OUTPUT'
+-- )
+-- ;
+-- select * from TMP_SP_OUTPUT;
+
+
+call get_clinic_bp_long(
+    'VCCC_BASE_BP_TCOG_SDH',
+    array_construct(
+         'KUMC'
+        ,'UU'
+    ),
+    'VCCC_CLINIC_BP_LONG',
+    FALSE, NULL
+);
+
+select * from VCCC_CLINIC_BP_LONG limit 5;
+
 
 create or replace procedure get_vccc_cci_long(
     TRIAL_REF string,
