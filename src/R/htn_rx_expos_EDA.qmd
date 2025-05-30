@@ -59,7 +59,19 @@ Run-in period is defined as the time gap between eligibility clinic visit and ba
 ```{r, warning=F}
 #| label: bp-baseline-plot
 
-baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda'))
+baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda')) %>%
+  mutate(
+    RACE_STR = case_when(
+      RACE_STR %in% c('white','black','asian','aian','multi') ~ RACE_STR,
+      TRUE ~ 'other'
+    ),
+    RACE_STR = fct_relevel(RACE_STR,'white'),
+    ETHN_STR = case_when(
+      ETHN_STR == "hispanic" ~ "hispanic",
+      TRUE ~ 'non-hispanic'
+    ),
+    ETHN_STR = fct_relevel(ETHN_STR,'non-hispanic')
+  )
 
 N<-length(unique(baseline_aset$STUDY_ID))
 ggplot(
@@ -275,7 +287,7 @@ for (vari in varsel$VAR){
       p_value=summ.fit$coefficients[-1,4])
 }
 odds_ratio<-odds_ratio %>% 
-  filter(p_value<0.05) %>%
+  filter(p_value<0.05|var1 %in% c("antihtn_delta_med")) %>%
   arrange(p_value)
 
 odds_ratio
@@ -290,18 +302,18 @@ CreateTableOne(
   factorVars = facvar_sel
 )
 
-base_uni<-univar_analysis_mixed(
-  df = baseline_aset,
-  id_col ="STUDY_ID",
-  var_lst = var_sel,
-  grp = baseline_aset$sig_decr_ind1,
-  facvar_lst  = facvar_sel,
-  pretty = T
-)
-base_uni %>%
-  save_kable(
-    file.path(path_to_res,'by_eligdrift.html')
-  )
+# base_uni<-univar_analysis_mixed(
+#   df = baseline_aset,
+#   id_col ="STUDY_ID",
+#   var_lst = var_sel,
+#   grp = baseline_aset$sig_decr_ind1,
+#   facvar_lst  = facvar_sel,
+#   pretty = T
+# )
+# base_uni %>%
+#   save_kable(
+#     file.path(path_to_res,'by_eligdrift.html')
+#   )
 ```
 
 ```{r}
@@ -408,6 +420,12 @@ facvar_ckd<-var_ckd[!var_ckd %in% c(
   "BMI",
   "CCI_TOTAL"
 )]
+
+CreateTableOne(
+  data = baseline_aset,
+  vars = var_ckd,
+  factorVars = facvar_ckd
+)
 
 CreateTableOne(
   data = baseline_aset,
