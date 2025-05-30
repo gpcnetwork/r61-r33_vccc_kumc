@@ -1,0 +1,664 @@
+﻿CODE_GRP,FULL_NAME,CODE,CODE_TYPE
+ANE,Anemia,D50.0,10
+ANE,Anemia,D50.8,10
+ANE,Anemia,D50.9,10
+ANE,Anemia,D51,10
+ANE,Anemia,D52,10
+ANE,Anemia,D53,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M05,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M06,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M15,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M16,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M17,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M18,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M19,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M31.5,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M32,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M33,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M34,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M35.1,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M35.3,10
+ARTH,Arthritis - Rheumatoid or Osteoarthritis,M36,10
+AFIB,Atrial fibrillation,I48.0,10
+AFIB,Atrial fibrillation,I48.1,10
+AFIB,Atrial fibrillation,I48.2,10
+AFIB,Atrial fibrillation,I48.91,10
+BLID,Blindness or other vision deficit,H52,10
+BLID,Blindness or other vision deficit,H53,10
+BLID,Blindness or other vision deficit,H54,10
+BLID,Blindness or other vision deficit,R48.3,10
+BLID,Blindness or other vision deficit,Z97.3,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C00,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C01,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C02,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C03,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C04,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C05,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C06,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C07,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C08,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C09,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C10,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C11,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C12,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C13,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C14,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C15,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C16,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C17,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C18,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C19,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C20,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C21,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C22,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C23,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C24,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C25,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C26,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C27,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C28,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C29,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C30,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C31,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C32,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C33,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C34,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C38,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C39,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C40,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C41,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C47,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C48,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C49,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.019,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.029,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.119,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.219,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.319,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.419,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.519,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.619,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.819,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.919,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C50.929,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C51,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C62,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C63.2,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C63.3,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C63.4,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C63.5,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C63.6,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C63.7,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C63.8,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C63.9,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C64.9,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C65.9,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C66.9,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.0,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.1,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.2,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.3,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.4,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.5,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.6,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.7,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.8,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C67.9,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C68.0,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C68.1,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C68.8,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C68.9,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C70,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C71,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C72.0,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C72.1,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C72.50,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C72.9,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C73,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C76.0,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.010,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.011,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.012,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.019,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.020,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.021,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.022,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.023,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.024,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.025,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.026,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.029,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.090,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.092,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",C7A.093,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D00,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D01,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D02,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D05.90,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D06.9,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D07,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D09.0,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D09.10,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",D09.19,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",E31.22,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",E31.23,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R85.610,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R85.611,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R85.612,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R85.613,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R85.614,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R85.619,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R87.610,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R87.611,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R87.612,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R87.613,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R87.614,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R87.619,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",R87.624,10
+CANC,"Cancer (excluding melamona, leukemia, lymphoma or MM)",Z85,10
+CKD,Chronic Kidney Disease,I12.0,10
+CKD,Chronic Kidney Disease,I13.1,10
+CKD,Chronic Kidney Disease,N03.2,10
+CKD,Chronic Kidney Disease,N03.3,10
+CKD,Chronic Kidney Disease,N03.4,10
+CKD,Chronic Kidney Disease,N03.5,10
+CKD,Chronic Kidney Disease,N03.6,10
+CKD,Chronic Kidney Disease,N03.7,10
+CKD,Chronic Kidney Disease,N05.2,10
+CKD,Chronic Kidney Disease,N05.3,10
+CKD,Chronic Kidney Disease,N05.4,10
+CKD,Chronic Kidney Disease,N05.5,10
+CKD,Chronic Kidney Disease,N05.6,10
+CKD,Chronic Kidney Disease,N05.7,10
+CKD,Chronic Kidney Disease,N18,10
+CKD,Chronic Kidney Disease,N19,10
+CKD,Chronic Kidney Disease,N25.0,10
+CKD,Chronic Kidney Disease,Z49.0,10
+CKD,Chronic Kidney Disease,Z49.1,10
+CKD,Chronic Kidney Disease,Z49.2,10
+CKD,Chronic Kidney Disease,Z94.0,10
+CKD,Chronic Kidney Disease,Z99.2,10
+CP,Chronic Pain,F45.4,10
+CP,Chronic Pain,M08.1,10
+CP,Chronic Pain,M25.50,10
+CP,Chronic Pain,M25.51,10
+CP,Chronic Pain,M25.55,10
+CP,Chronic Pain,M25.56,10
+CP,Chronic Pain,M25.57,10
+CP,Chronic Pain,M43.2-,10
+CP,Chronic Pain,M43.3,10
+CP,Chronic Pain,M43.4,10
+CP,Chronic Pain,M43.5,10
+CP,Chronic Pain,M43.6,10
+CP,Chronic Pain,M45,10
+CP,Chronic Pain,M46.1,10
+CP,Chronic Pain,M46.3,10
+CP,Chronic Pain,M46.4,10
+CP,Chronic Pain,M46.9,10
+CP,Chronic Pain,M47,10
+CP,Chronic Pain,M48.0,10
+CP,Chronic Pain,M48.1,10
+CP,Chronic Pain,M48.8,10
+CP,Chronic Pain,M48.9,10
+CP,Chronic Pain,M50.8,10
+CP,Chronic Pain,M50.9,10
+CP,Chronic Pain,M51,10
+CP,Chronic Pain,M53.1,10
+CP,Chronic Pain,M53.2,10
+CP,Chronic Pain,M53.3,10
+CP,Chronic Pain,M53.8,10
+CP,Chronic Pain,M53.9,10
+CP,Chronic Pain,M54,10
+CP,Chronic Pain,M60.8,10
+CP,Chronic Pain,M60.9,10
+CP,Chronic Pain,M63.3,10
+CP,Chronic Pain,M79.0,10
+CP,Chronic Pain,M79.1,10
+CP,Chronic Pain,M79.2,10
+CP,Chronic Pain,M79.6,10
+CP,Chronic Pain,M79.7,10
+CP,Chronic Pain,M96.1,10
+CHF,Congestive heart failure,I09.9,10
+CHF,Congestive heart failure,I11.0,10
+CHF,Congestive heart failure,I13.0,10
+CHF,Congestive heart failure,I13.2,10
+CHF,Congestive heart failure,I25.5,10
+CHF,Congestive heart failure,I42.0,10
+CHF,Congestive heart failure,I42.5,10
+CHF,Congestive heart failure,I42.6,10
+CHF,Congestive heart failure,I42.7,10
+CHF,Congestive heart failure,I42.8,10
+CHF,Congestive heart failure,I42.9,10
+CHF,Congestive heart failure,I43,10
+CHF,Congestive heart failure,I50,10
+CHF,Congestive heart failure,P29.0,10
+CAD,Coronary artery disease or other heart disease,I20,10
+CAD,Coronary artery disease or other heart disease,I24,10
+CAD,Coronary artery disease or other heart disease,I25,10
+CAD,Coronary artery disease or other heart disease,Z95.1,10
+CAD,Coronary artery disease or other heart disease,Z98.61,10
+DEM,Dementia,F00,10
+DEM,Dementia,F01,10
+DEM,Dementia,F02,10
+DEM,Dementia,F03,10
+DEM,Dementia,F05.1,10
+DEM,Dementia,G30,10
+DEM,Dementia,G31.1,10
+DEP,Depression,F20.4,10
+DEP,Depression,F31.3,10
+DEP,Depression,F31.4,10
+DEP,Depression,F31.5,10
+DEP,Depression,F32,10
+DEP,Depression,F33,10
+DEP,Depression,F34.1,10
+DEP,Depression,F41.2,10
+DEP,Depression,F43.2,10
+DIA,Diabetes,E10,10
+DIA,Diabetes,E11,10
+DIA,Diabetes,E12,10
+DIA,Diabetes,E13,10
+DIA,Diabetes,E14,10
+DIZ,Dizziness/ Vertigo,H81.09,10
+DIZ,Dizziness/ Vertigo,H81.13,10
+DIZ,Dizziness/ Vertigo,H81.23,10
+DIZ,Dizziness/ Vertigo,H81.319,10
+DIZ,Dizziness/ Vertigo,H81.399,10
+DIZ,Dizziness/ Vertigo,H81.49,10
+DIZ,Dizziness/ Vertigo,H81.8X9,10
+DIZ,Dizziness/ Vertigo,H81.93,10
+DIZ,Dizziness/ Vertigo,H82.9,10
+DIZ,Dizziness/ Vertigo,H83.09,10
+DIZ,Dizziness/ Vertigo,H83.19,10
+DIZ,Dizziness/ Vertigo,H83.2X9,10
+DIZ,Dizziness/ Vertigo,H83.8X9,10
+DIZ,Dizziness/ Vertigo,H83.93,10
+DIZ,Dizziness/ Vertigo,R42,10
+DYS,Dyspnea,R06.00,10
+DYS,Dyspnea,R06.01,10
+DYS,Dyspnea,R06.02,10
+DYS,Dyspnea,R06.09,10
+DYS,Dyspnea,R06.2,10
+DYS,Dyspnea,R06.3,10
+DYS,Dyspnea,R06.4,10
+DYS,Dyspnea,R06.8,10
+DYS,Dyspnea,R06.9,10
+FALL,Falls,V00.111A,10
+FALL,Falls,V00.131A,10
+FALL,Falls,V00.141A,10
+FALL,Falls,V00.151A,10
+FALL,Falls,V00.312A,10
+FALL,Falls,V00.321A,10
+FALL,Falls,V00.388A,10
+FALL,Falls,W01.110A,10
+FALL,Falls,W01.198A,10
+FALL,Falls,W03.XXXA,10
+FALL,Falls,W05.0XXA,10
+FALL,Falls,W05.1XXA,10
+FALL,Falls,W05.2XXA,10
+FALL,Falls,W06.XXXA,10
+FALL,Falls,W07.XXXA,10
+FALL,Falls,W08.XXXA,10
+FALL,Falls,W09.8XXA,10
+FALL,Falls,W10.0XXA,10
+FALL,Falls,W10.1XXA,10
+FALL,Falls,W10.8XXA,10
+FALL,Falls,W11.XXXA,10
+FALL,Falls,W12.XXXA,10
+FALL,Falls,W13.9XXA,10
+FALL,Falls,W14.XXXA,10
+FALL,Falls,W15.XXXA,10
+FALL,Falls,W16.92XA,10
+FALL,Falls,W17.0XXA,10
+FALL,Falls,W17.1XXA,10
+FALL,Falls,W17.2XXA,10
+FALL,Falls,W17.81XA,10
+FALL,Falls,W17.89XA,10
+FALL,Falls,W18.11XA,10
+FALL,Falls,W18.30XA,10
+FALL,Falls,W18.49XA,10
+FALL,Falls,W19.XXXA,10
+FALL,Falls,Y01.XXXA,10
+FALL,Falls,Y30.XXX,10
+FRA,Fragility or Fracture,M48.5,10
+FRA,Fragility or Fracture,M80.0,10
+FRA,Fragility or Fracture,M80.8,10
+FRA,Fragility or Fracture,M84.3,10
+FRA,Fragility or Fracture,M84.4,10
+FRA,Fragility or Fracture,M84.5,10
+FRA,Fragility or Fracture,M84.6,10
+FRA,Fragility or Fracture,M84.7,10
+FRA,Fragility or Fracture,S02,10
+FRA,Fragility or Fracture,S12,10
+FRA,Fragility or Fracture,S22,10
+FRA,Fragility or Fracture,S32,10
+FRA,Fragility or Fracture,S42,10
+FRA,Fragility or Fracture,S52,10
+FRA,Fragility or Fracture,S62,10
+FRA,Fragility or Fracture,S72,10
+FRA,Fragility or Fracture,S82,10
+FRA,Fragility or Fracture,S92,10
+HEAR,Hearing impairment,G96.0,10
+HEAR,Hearing impairment,H60.0,10
+HEAR,Hearing impairment,H60.1,10
+HEAR,Hearing impairment,H60.2,10
+HEAR,Hearing impairment,H60.3,10
+HEAR,Hearing impairment,H60.4,10
+HEAR,Hearing impairment,H60.5,10
+HEAR,Hearing impairment,H60.6,10
+HEAR,Hearing impairment,H60.8X,10
+HEAR,Hearing impairment,H60.9,10
+HEAR,Hearing impairment,H61,10
+HEAR,Hearing impairment,H62,10
+HEAR,Hearing impairment,H71,10
+HEAR,Hearing impairment,H73.0,10
+HEAR,Hearing impairment,H73.1,10
+HEAR,Hearing impairment,H74.4,10
+HEAR,Hearing impairment,H74.5,10
+HEAR,Hearing impairment,H74.6,10
+HEAR,Hearing impairment,H74.7,10
+HEAR,Hearing impairment,H74.8,10
+HEAR,Hearing impairment,H74.9,10
+HEAR,Hearing impairment,H83.3,10
+HEAR,Hearing impairment,H90,10
+HEAR,Hearing impairment,H91,10
+HEAR,Hearing impairment,H92,10
+HEAR,Hearing impairment,H93,10
+HEAR,Hearing impairment,Z01.110,10
+HEAR,Hearing impairment,Z01.12,10
+HEAR,Hearing impairment,Z46.1,10
+HEAR,Hearing impairment,Z73.82,10
+HYPTN,Hypertension,I10,10
+HYPTN,Hypertension,I11,10
+HYPTN,Hypertension,I12,10
+HYPTN,Hypertension,I13,10
+HYPTN,Hypertension,I15,10
+SYNCO,Hypotension/ Syncope,I95.1,10
+SYNCO,Hypotension/ Syncope,I95.89,10
+SYNCO,Hypotension/ Syncope,I95.9,10
+SYNCO,Hypotension/ Syncope,R55,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C81,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C82.9,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.10,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.1,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.2,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.3,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.4,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.5,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.6,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.7,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C83.8,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.0,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.1,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.2,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.3,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.4,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.5,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.6,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.7,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C84.93,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C85.8,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C88.8,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C90.0,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C90.1,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C90.2,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C90.3,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C91.0,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C91.1,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C91.4,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C91.9,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C91.Z,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C92.0,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C92.1,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C92.2,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C92.3,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C92.4,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C92.5,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C92.9,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C92.Z,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C93.0,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C93.1,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C93.9,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C93.Z,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C94.0,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C94.2,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C94.3,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C94.8,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C95.0,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C95.1,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C95.9,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C96.4,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C96.9,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,C96.Z,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,D45,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,Z85.6,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,Z85.71,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,Z85.79,10
+LEUK,Leukemia/ Lymphoma/ Multiple myeloma,Z85.831,10
+MLD,"Liver disease, mild",B18,10
+MLD,"Liver disease, mild",K70.0,10
+MLD,"Liver disease, mild",K70.1,10
+MLD,"Liver disease, mild",K70.2,10
+MLD,"Liver disease, mild",K70.3,10
+MLD,"Liver disease, mild",K70.9,10
+MLD,"Liver disease, mild",K71.3,10
+MLD,"Liver disease, mild",K71.4,10
+MLD,"Liver disease, mild",K71.5,10
+MLD,"Liver disease, mild",K71.7,10
+MLD,"Liver disease, mild",K73,10
+MLD,"Liver disease, mild",K74,10
+MLD,"Liver disease, mild",K76.0,10
+MLD,"Liver disease, mild",K76.2,10
+MLD,"Liver disease, mild",K76.3,10
+MLD,"Liver disease, mild",K76.4,10
+MLD,"Liver disease, mild",K76.8,10
+MLD,"Liver disease, mild",K76.9,10
+MLD,"Liver disease, mild",Z94.4,10
+MSLD,"Liver disease, moderate to severe",I85.0,10
+MSLD,"Liver disease, moderate to severe",I85.9,10
+MSLD,"Liver disease, moderate to severe",I86.4,10
+MSLD,"Liver disease, moderate to severe",I98.2,10
+MSLD,"Liver disease, moderate to severe",K70.4,10
+MSLD,"Liver disease, moderate to severe",K71.1,10
+MSLD,"Liver disease, moderate to severe",K72.1,10
+MSLD,"Liver disease, moderate to severe",K72.9,10
+MSLD,"Liver disease, moderate to severe",K76.5,10
+MSLD,"Liver disease, moderate to severe",K76.6,10
+MSLD,"Liver disease, moderate to severe",K76.7,10
+MEL,Melanoma,C43,10
+MEL,Melanoma,D03,10
+MEL,Melanoma,Z85.820,10
+MI,Myocardial infarction,I21,10
+MI,Myocardial infarction,I22,10
+MI,Myocardial infarction,I25.2,10
+OST,Osteoporosis,M81.0,10
+OST,Osteoporosis,M81.8,10
+PD,Parkinson's disease,G20,10
+PD,Parkinson's disease,G21.11,10
+PD,Parkinson's disease,G21.19,10
+PD,Parkinson's disease,G21.8,10
+PUD,Peptic ulcer disease,K25,10
+PUD,Peptic ulcer disease,K26,10
+PUD,Peptic ulcer disease,K27,10
+PUD,Peptic ulcer disease,K28,10
+PVD,Peripheral vascular disease,I70,10
+PVD,Peripheral vascular disease,I71,10
+PVD,Peripheral vascular disease,I73.1,10
+PVD,Peripheral vascular disease,I73.8,10
+PVD,Peripheral vascular disease,I73.9,10
+PVD,Peripheral vascular disease,I77.1,10
+PVD,Peripheral vascular disease,I79.0,10
+PVD,Peripheral vascular disease,I79.2,10
+PVD,Peripheral vascular disease,K55.1,10
+PVD,Peripheral vascular disease,K55.8,10
+PVD,Peripheral vascular disease,K55.9,10
+PVD,Peripheral vascular disease,Z95.8,10
+PVD,Peripheral vascular disease,Z95.9,10
+PULM,Pulmonary disease,I27.8,10
+PULM,Pulmonary disease,I27.9,10
+PULM,Pulmonary disease,J40,10
+PULM,Pulmonary disease,J41,10
+PULM,Pulmonary disease,J42,10
+PULM,Pulmonary disease,J43,10
+PULM,Pulmonary disease,J44,10
+PULM,Pulmonary disease,J45,10
+PULM,Pulmonary disease,J46,10
+PULM,Pulmonary disease,J47,10
+PULM,Pulmonary disease,J60,10
+PULM,Pulmonary disease,J61,10
+PULM,Pulmonary disease,J62,10
+PULM,Pulmonary disease,J63,10
+PULM,Pulmonary disease,J64,10
+PULM,Pulmonary disease,J65,10
+PULM,Pulmonary disease,J66,10
+PULM,Pulmonary disease,J67,10
+PULM,Pulmonary disease,J68.4,10
+PULM,Pulmonary disease,J70.1,10
+PULM,Pulmonary disease,J70.3,10
+SU,Skin ulcer,L89,10
+SU,Skin ulcer,L97,10
+SU,Skin ulcer,L98.4,10
+STROKE,Stroke or Transient ischemic attack,G45.0,10
+STROKE,Stroke or Transient ischemic attack,G45.1,10
+STROKE,Stroke or Transient ischemic attack,G45.2,10
+STROKE,Stroke or Transient ischemic attack,G45.3,10
+STROKE,Stroke or Transient ischemic attack,G45.8,10
+STROKE,Stroke or Transient ischemic attack,G45.9,10
+STROKE,Stroke or Transient ischemic attack,H34.1,10
+STROKE,Stroke or Transient ischemic attack,I60,10
+STROKE,Stroke or Transient ischemic attack,I61,10
+STROKE,Stroke or Transient ischemic attack,I63,10
+STROKE,Stroke or Transient ischemic attack,I64,10
+TD,Thyroid disease,E00.9,10
+TD,Thyroid disease,E01.2,10
+TD,Thyroid disease,E01.8,10
+TD,Thyroid disease,E03.2,10
+TD,Thyroid disease,E03.4,10
+TD,Thyroid disease,E03.8,10
+TD,Thyroid disease,E03.9,10
+TD,Thyroid disease,E04,10
+TD,Thyroid disease,E05,10
+TD,Thyroid disease,E06.0,10
+TD,Thyroid disease,E06.1,10
+TD,Thyroid disease,E06.3,10
+TD,Thyroid disease,E06.4,10
+TD,Thyroid disease,E06.5,10
+TD,Thyroid disease,E06.6,10
+TD,Thyroid disease,E06.7,10
+TD,Thyroid disease,E06.8,10
+TD,Thyroid disease,E06.9,10
+TD,Thyroid disease,E07,10
+TD,Thyroid disease,E89.0,10
+TD,Thyroid disease,R94.6,10
+UI,Urinary incontinence,R32,10
+USD,Urinary system disease,F52.9,10
+USD,Urinary system disease,N13,10
+USD,Urinary system disease,N20,10
+USD,Urinary system disease,N21,10
+USD,Urinary system disease,N23,10
+USD,Urinary system disease,N25,10
+USD,Urinary system disease,N27,10
+USD,Urinary system disease,N28,10
+USD,Urinary system disease,N31,10
+USD,Urinary system disease,N32,10
+USD,Urinary system disease,N35,10
+USD,Urinary system disease,N36,10
+USD,Urinary system disease,N39,10
+USD,Urinary system disease,N99.110,10
+USD,Urinary system disease,R30,10
+USD,Urinary system disease,R31,10
+USD,Urinary system disease,R33.8,10
+USD,Urinary system disease,R33.9,10
+USD,Urinary system disease,R34,10
+USD,Urinary system disease,R35,10
+USD,Urinary system disease,R36.0,10
+USD,Urinary system disease,R36.9,10
+USD,Urinary system disease,R39,10
+USD,Urinary system disease,R80,10
+USD,Urinary system disease,R82.0,10
+USD,Urinary system disease,R82.1,10
+USD,Urinary system disease,R82.2,10
+USD,Urinary system disease,R82.3,10
+USD,Urinary system disease,R82.5,10
+USD,Urinary system disease,R93.4,10
+USD,Urinary system disease,R94.4,10
+USD,Urinary system disease,Z43.5,10
+USD,Urinary system disease,Z43.6,10
+USD,Urinary system disease,Z46.6,10
+USD,Urinary system disease,Z87.4,10
+USD,Urinary system disease,Z93.5,10
+USD,Urinary system disease,Z93.6,10
+USD,Urinary system disease,Z96.0,10
+VALV,Valvular disease,A52.0,10
+VALV,Valvular disease,I05,10
+VALV,Valvular disease,I06,10
+VALV,Valvular disease,I07,10
+VALV,Valvular disease,I08,10
+VALV,Valvular disease,I09.1,10
+VALV,Valvular disease,I09.8,10
+VALV,Valvular disease,I34,10
+VALV,Valvular disease,I35,10
+VALV,Valvular disease,I36,10
+VALV,Valvular disease,I37,10
+VALV,Valvular disease,I38,10
+VALV,Valvular disease,I39,10
+VALV,Valvular disease,Q23.0,10
+VALV,Valvular disease,Q23.1,10
+VALV,Valvular disease,Q23.2,10
+VALV,Valvular disease,Q23.3,10
+VALV,Valvular disease,Z95.2,10
+VALV,Valvular disease,Z95.3,10
+VALV,Valvular disease,Z95.4,10
+WTLOS,Weight loss,E40,10
+WTLOS,Weight loss,E41,10
+WTLOS,Weight loss,E43,10
+WTLOS,Weight loss,E44.0,10
+WTLOS,Weight loss,E44.1,10
+WTLOS,Weight loss,E45,10
+WTLOS,Weight loss,E46,10
+WTLOS,Weight loss,R63.4,10
+WTLOS,Weight loss,R63.6,10
+WTLOS,Weight loss,R64,10
+AIDS,AIDS/HIV,B20,10
+AIDS,AIDS/HIV,B21,10
+AIDS,AIDS/HIV,B22,10
+AIDS,AIDS/HIV,B23,10
+AIDS,AIDS/HIV,B24,10
+CTD,Connective Tissue Disorder,M32,10
+CTD,Connective Tissue Disorder,M34,10
+CTD,Connective Tissue Disorder,M332,10
+CTD,Connective Tissue Disorder,M053,10
+CTD,Connective Tissue Disorder,M058,10
+CTD,Connective Tissue Disorder,M059,10
+CTD,Connective Tissue Disorder,M060,10
+CTD,Connective Tissue Disorder,M063,10
+CTD,Connective Tissue Disorder,M069,10
+CTD,Connective Tissue Disorder,M050,10
+CTD,Connective Tissue Disorder,M052,10
+CTD,Connective Tissue Disorder,M051,10
+CTD,Connective Tissue Disorder,M353,10
+DKD,Diebetic Kidney disease,E08.22,10
+DKD,Diebetic Kidney disease,E09.22,10
+DKD,Diebetic Kidney disease,E10.22,10
+DKD,Diebetic Kidney disease,E11.22,10
+DKD,Diebetic Kidney disease,E13.22,10
+ADPKD,Autosomal Dominant Polycystic Kidney Disease,Q61.2,10
+ADPKD,Autosomal Dominant Polycystic Kidney Disease,Q61.3,10
+GN,Glomerulonephritis,N01,10
+GN,Glomerulonephritis,N02,10
+GN,Glomerulonephritis,N03,10
+GN,Glomerulonephritis,N04,10
+GN,Glomerulonephritis,N05,10
+GN,Glomerulonephritis,N06,10
+GN,Glomerulonephritis,N07,10
+GN,Glomerulonephritis,N08,10
+GN,Glomerulonephritis,M32.14,10
+TIN,Tubulo-interstitial,N11,10
+TIN,Tubulo-interstitial,N14,10
+TIN,Tubulo-interstitial,N15,10
+TIN,Tubulo-interstitial,N16,10
+TIN,Tubulo-interstitial,M32.15,10
+URO,Urological,N13.7,10
+URO,Urological,N13.8,10
+URO,Urological,N13.9,10
+URO,Urological,N26,10
+URO,Urological,N27,10
