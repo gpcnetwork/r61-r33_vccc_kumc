@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -30,14 +30,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="htn_rx_expos_EDA_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="htn_rx_expos_EDA_files/libs/quarto-html/anchor.min.js"></script>
 <link href="htn_rx_expos_EDA_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="htn_rx_expos_EDA_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="htn_rx_expos_EDA_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="htn_rx_expos_EDA_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="htn_rx_expos_EDA_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="htn_rx_expos_EDA_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<script src="htn_rx_expos_EDA_files/libs/kePrint-0.0.1/kePrint.js"></script>
-
-<link href="htn_rx_expos_EDA_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
-
+<link href="htn_rx_expos_EDA_files/libs/bootstrap/bootstrap-1bc8a17f135ab3d594c857e9f48e611b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -73,18 +69,12 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="data-availability-coverage" class="level1">
-<h1>Data Availability &amp; Coverage</h1>
-<ul>
-<li><code>baseline</code>: BP extracts from Qardio at baseline visit, serving as <em>index_date</em></li>
-<li><code>clinic</code>: BP collected at visits which got transformed into CDM VITAL table (excluding IP, ED, EI)</li>
-<li><code>elig</code>: BP collected at two adjacent visits when eligibility criteria was satisfied</li>
-<li><code>visit</code>: daily Qardio extracts for taken at home</li>
-</ul>
-<p>Let’s take a look at a few BP trajectory examples of these different types:</p>
 <section id="clinic-bp-vs.-home-bp-at-baseline" class="level2">
 <h2 class="anchored" data-anchor-id="clinic-bp-vs.-home-bp-at-baseline">Clinic BP vs.&nbsp;Home BP at Baseline</h2>
-<p>We define the following stratification groups: 1. based on eligibility sbp:</p>
+<p>Run-in period is defined as the time gap between eligibility clinic visit and baseline visit. We define the following stratification groups:</p>
+<ol type="1">
+<li>based on eligibility sbp:</li>
+</ol>
 <ul>
 <li>esbp1: 140 - 150</li>
 <li>esbp2: 150 - 160</li>
@@ -121,23 +111,21 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 </div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="htn_rx_expos_EDA_files/figure-html/bp-baseline-plot-3.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 3 × 4
-  gap_sign_label                    cnt     N  prop
-  &lt;chr&gt;                           &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
-1 1.decrease-to-normal              183   516 0.355
-2 2.decrease-to-uneligible          123   516 0.238
-3 3.decrease-but-eligible-or-same   210   516 0.407</code></pre>
+<pre><code># A tibble: 9 × 5
+  SITE  DELTA_SBP_GROUP     N   cnt  prop
+  &lt;chr&gt; &lt;chr&gt;           &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+1 KUMC  deltasbp1         734   277 0.377
+2 KUMC  deltasbp2         734   169 0.23 
+3 KUMC  deltasbp3         734   288 0.392
+4 Utah  deltasbp1         266   118 0.444
+5 Utah  deltasbp2         266    62 0.233
+6 Utah  deltasbp3         266    86 0.323
+7 ALL   deltasbp1        1000   395 0.395
+8 ALL   deltasbp2        1000   231 0.231
+9 ALL   deltasbp3        1000   374 0.374</code></pre>
 </div>
 </div>
-<p>As shown above, the run-in period duration averaged around 35 (21.9) days, and we identified about 36% with significant eligibility drift (to below 130 at baseline).</p>
 </section>
 <section id="investigation-how-much-of-the-eligibility-drift-can-be-explained-by-anti-hypertensive-medication-use-during-the-run-in-period" class="level2">
 <h2 class="anchored" data-anchor-id="investigation-how-much-of-the-eligibility-drift-can-be-explained-by-anti-hypertensive-medication-use-during-the-run-in-period">Investigation: How much of the eligibility drift can be explained by anti-hypertensive medication use during the run-in period?</h2>
@@ -159,1058 +147,2312 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <section id="analysis-i-using-systematic-explanatory-feature-screening-to-investigate-what-are-the-explanatory-factors-for-significant-bp-drop" class="level3">
 <h3 class="anchored" data-anchor-id="analysis-i-using-systematic-explanatory-feature-screening-to-investigate-what-are-the-explanatory-factors-for-significant-bp-drop">Analysis I: Using systematic explanatory feature screening to investigate what are the explanatory factors for significant BP drop</h3>
-<p>Using prescription data, we included 160 factors that includes:</p>
-<ul>
-<li>41 anti-hyptertensive drug use pattern (generic name &amp; class) indicators suggesting a drug started before and continued during the run-in period;</li>
-<li>28 anti-hyptertensive drug use pattern (generic name &amp; class) indicators suggesting a drug started during the run-in period;</li>
-<li>65 anti-hyptertensive drug use pattern (generic name &amp; class) indicators suggesting a drug started before but no new prescription was observed during the run-in period;</li>
-<li>11 anti-hyptertensive drug use pattern indicators suggesting a dose increase of a generic drug</li>
-<li>age at baseline, sex, race, ethnicity, eligibility SBP</li>
-</ul>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                    Stratified by antihtn_delta_med
-                                     antihtn_add antihtn_mt antihtn_rm 
-  n                                  88          30         268        
-  gap_sign_label (%)                                                   
-     1.decrease-to-normal            39 (44.3)   12 (40.0)   93 (34.7) 
-     2.decrease-to-uneligible        20 (22.7)    7 (23.3)   60 (22.4) 
-     3.decrease-but-eligible-or-same 29 (33.0)   11 (36.7)  115 (42.9) 
-                                    Stratified by antihtn_delta_med
-                                     antihtn_runin untreated   p      test
-  n                                  54            102                    
-  gap_sign_label (%)                                            0.691     
-     1.decrease-to-normal            17 (31.5)      32 (31.4)             
-     2.decrease-to-uneligible        14 (25.9)      28 (27.5)             
-     3.decrease-but-eligible-or-same 23 (42.6)      42 (41.2)             </code></pre>
+<pre><code>                     Stratified by antihtn_delta_med
+                      UNEXPLD     RUNIN_MT    RUNIN_RXUP p      test
+  n                   395         531         74                    
+  DELTA_SBP_GROUP (%)                                     0.148     
+     deltasbp1        164 (41.5)  195 (36.7)  36 (48.6)             
+     deltasbp2         96 (24.3)  121 (22.8)  14 (18.9)             
+     deltasbp3        135 (34.2)  215 (40.5)  24 (32.4)             </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       Stratified by DELTA_SBP_GROUP
+                        deltasbp1   deltasbp2   deltasbp3   p      test
+  n                     395         231         374                    
+  antihtn_delta_med (%)                                      0.148     
+     UNEXPLD            164 (41.5)   96 (41.6)  135 (36.1)             
+     RUNIN_MT           195 (49.4)  121 (52.4)  215 (57.5)             
+     RUNIN_RXUP          36 ( 9.1)   14 ( 6.1)   24 ( 6.4)             </code></pre>
+</div>
+</div>
+<section id="univariate-filtering" class="level4">
+<h4 class="anchored" data-anchor-id="univariate-filtering">Univariate filtering</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: SITE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ELIG_SBP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: BASE_SBP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: DELTA_DAYS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ESBP_GROUP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ELIG_SINCE_INDEX </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: SEX_STR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RACE_STR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ETHN_STR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: URM_IND </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: AGE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_POP_WT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_POP_US_ABOVE1 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_POP_ABOVE5 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_POP_ABOVE15 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_POP_ABOVE16 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_POP_16_19 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_POP_ABOVE25 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_CIVIL_POP_ABOVE18 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_CIVIL_VET_POP_ABOVE25 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_OWN_CHILD_BELOW17 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_CIVILIAN_LABOR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_CIVIL_EMPLOY_POP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_WORKER_HH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_WORKER_NWFH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_CIVIL_NONINST_POP_POV </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_CIVIL_POP_POV </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_POP_POV </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_GRANDCHILDREN_GP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_HU </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_HH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_AVG_HH_SIZE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_CIVIL_NONINST_POP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_TOT_CIVIL_VET_POP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_CHILD_DISAB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_DISABLE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NONVET_DISABLE_18_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VET_DISABLE_18_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_CTZ_ABOVE18 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_CTZ_NATURALIZED </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_CTZ_NONUS_BORN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_CTZ_US_BORN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_FOREIGN_BORN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NON_CITIZEN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NONCTN_1990 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NONCTN_1999 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NONCTN_2000 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NONCTN_2010 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_API_LANG </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ENGL_NOT_ALL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ENGL_NOT_WELL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ENGL_VERY_WELL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ENGL_WELL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ENGLISH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_LIMIT_ENGLISH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OTH_EURP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OTH_LANG </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_SPANISH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GULFWAR_1990_2001 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GULFWAR_2001 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GULFWAR_VIETNAM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VET </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VIETNAM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_AGE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_AGE_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_AGE_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_0_4 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_5_9 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_10_14 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_15_17 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_0_17 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_18_29 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_18_44 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_30_44 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_45_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_50_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_ABOVE65 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AGE_ABOVE80 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AIAN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AIAN_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AIAN_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AIAN_NONHISP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ASIAN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ASIAN_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ASIAN_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ASIAN_NONHISP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_BLACK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_BLACK_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_BLACK_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_BLACK_NONHISP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HISP_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HISP_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HISPANIC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MULT_RACE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MULT_RACE_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MULT_RACE_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MULT_RACE_NONHISP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NHPI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NHPI_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NHPI_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NHPI_NONHISP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OTHER_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OTHER_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OTHER_NONHISP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OTHER_RACE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WHITE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WHITE_FEMALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WHITE_MALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WHITE_NONHISP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HOUSEHOLDER_WHITE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HOUSEHOLDER_BLACK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HOUSEHOLDER_AIAN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HOUSEHOLDER_ASIAN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HOUSEHOLDER_NHPI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HOUSEHOLDER_OTHER </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HOUSEHOLDER_MULT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_AIAN_COMB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ASIAN_COMB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_BLACK_COMB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NHPI_COMB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WHITE_COMB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_NO_COMP_DEV </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_SMARTPHONE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_SMARTPHONE_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_TABLET </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_TABLET_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_PC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_PC_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_OTHER_COMP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_OTHER_COMP_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_INTERNET </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_INTERNET_NO_SUBS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_BROADBAND </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_BROADBAND_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_BROADBAND_ANY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_CELLULAR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_CELLULAR_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_NO_INTERNET </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_SAT_INTERNET </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_DIAL_INTERNET_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_CHILD_1FAM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_CHILDREN_GRANDPARENT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GRANDP_RESPS_NO_P </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GRANDP_RESPS_P </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GRANDP_NO_RESPS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_KID_1PRNT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_DIVORCED_F </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_DIVORCED_M </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MARRIED_SP_AB_F </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MARRIED_SP_AB_M </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MARRIED_SP_PR_F </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MARRIED_SP_PR_M </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NVR_MARRIED_F </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NVR_MARRIED_M </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WIDOWED_F </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WIDOWED_M </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POP_SAME_SEX_UNMRD_P </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POP_SAME_SEX_SPOUSE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ADMIN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ARMED_FORCES </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_ART </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_CONSTRUCT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_EDUC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_EMPLOYED </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_FINANCE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GOVT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_INFORM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MANUFACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NATURE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NOT_LABOR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OTHER </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PROFESS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PVT_NONPROFIT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PVT_PROFIT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_RETAIL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_TRANSPORT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_UNEMPLOY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VET_LABOR_FORCE_18_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VET_UNEMPL_18_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WHOLESALE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WORK_RES_F </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WORK_RES_M </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_GINI_INDEX </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MDN_GRNDPRNT_NO_PRNT_INC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MDN_GRNDPRNT_INC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC_AIAN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC_ASIAN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC_BLACK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC_HISP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC_MULTI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC_NHPI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC_OTHER </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC_WHITE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HH_INC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_INC_F </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_INC_M </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_NONVET_INC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_VET_INC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_INC50_ABOVE65 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_INC50_BELOW17 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HEALTH_INC_BELOW137 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HEALTH_INC_138_199 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HEALTH_INC_200_399 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HEALTH_INC_ABOVE400 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_INC_10000 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_INC_100000 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_INC_14999 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_INC_24999 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_INC_49999 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_INC_99999 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_INC50 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NONVET_POV_18_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VET_POV_18_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PERSON_INC_100_124 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PERSON_INC_125_199 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PERSON_INC_ABOVE200 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PERSON_INC_BELOW99 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PER_CAPITA_INC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POV_AIAN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POV_ASIAN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POV_BLACK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POV_HISPANIC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POV_MULTI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POV_NHPI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POV_OTHER </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POV_WHITE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_1FAM_FOOD_STMP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_FOOD_STMP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_FOOD_STMP_BLW_POV </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_NO_FD_STMP_BLW_POV </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_PUB_ASSIST </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_COLLEGE_ASSOCIATE_DGR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_BACHELOR_DGR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_NO_WORK_NO_SCHL_16_19 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GRADUATE_DGR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HS_GRADUATE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_LT_HS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_POSTHS_ED </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VET_BACHELOR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VET_COLLEGE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VET_HS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_HOME_VALUE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_RENT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MDN_OWNER_COST_MORTGAGE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MDN_OWNER_COST_NO_MORTG </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_MEDIAN_YEAR_BUILT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_10UNITS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_1UP_OWNER_1ROOM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_1UP_PERS_1ROOM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_1UP_RENT_1ROOM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_BUILT_1979 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_DIF_STATE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_GRP_QRT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_1PERS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_ABOVE65 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HH_ALONE_ABOVE65 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_NO_FUEL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_UTILITY_GAS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_BOT_TANK_LP_GAS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_OIL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_WOOD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_COAL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_OTHER </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_ELEC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_SOLAR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_IN_COUNTY_MOVE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_IN_STATE_MOVE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_KITCHEN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_MOBILE_HOME </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OWNER_HU </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OWNER_HU_COST_30PCT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OWNER_HU_COST_50PCT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OWNER_HU_CHILD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_PLUMBING </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_RENTER_HU_COST_30PCT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_RENTER_HU_COST_50PCT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_RENTER_HU </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_RENTER_HU_ABOVE65 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_RENTER_HU_CHILD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_VACANT_HU </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_COMMT_15MIN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_COMMT_29MIN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_COMMT_59MIN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_COMMT_60MINUP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_DRIVE_2WORK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_HU_NO_VEH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PUB_COMMT_15MIN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PUB_COMMT_29MIN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PUB_COMMT_59MIN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PUB_COMMT_60MINUP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PUBL_TRANSIT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_TAXICAB_2WORK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WALK_2WORK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_WORK_NO_CAR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MEDICAID_ANY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MEDICAID_ANY_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_MEDICARE_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_OTHER_INS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PVT_EMPL_DRCT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PVT_EMPL_DRCT_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_ANY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_ANY_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_EMPL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_EMPL_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_MDCR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_MDCR_35_64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_OTHER </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_OTHER_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_SELF </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PRIVATE_SELF_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PUBLIC_ONLY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PUBLIC_OTHER </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_PUBLIC_OTHER_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_SELF_MDCR_ABOVE35 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_TRICARE_VA </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_TRICARE_VA_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_UNINSURED </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACS_PCT_UNINSURED_BELOW64 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CEN_AREALAND_SQM_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CEN_POPDENSITY_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: WUSTL_AVG_PM25 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: HIFLD_DIST_UC_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: POS_DIST_ED_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: POS_DIST_MEDSURG_ICU_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: POS_DIST_TRAUMA_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: POS_DIST_PED_ICU_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: POS_DIST_OBSTETRICS_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: POS_DIST_CLINIC_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: POS_DIST_ALC_TRACT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CEN_AIAN_NH_IND </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ADI_NATRANK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ADI_STATERANK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUCA_PRIMARY </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUCA_PRIMARY_GRP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUCA_PRIMARY_NONMETRO_IND </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: SMOKER_IND </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: AV_CNT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: TH_CNT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ED_CNT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: IP_CNT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: HT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: WT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: BMI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_ANE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_ARTH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_AFIB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_BLID </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_CANC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_CKD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_CP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_CHF </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_CAD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_DEM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_DEP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_DIA </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_DIZ </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_DYS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_FALL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_FRA </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_HEAR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_HYPTN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_SYNCO </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_LEUK </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_MLD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_MSLD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_MEL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_MI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_OST </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_PD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_PUD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_PVD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_PULM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_SU </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_STROKE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_TD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_UI </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_USD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_VALV </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_WTLOS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_AIDS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_CTD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_DKD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_ADPKD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_GN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_TIN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EFI_URO </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CCI_TOTAL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CCI_TOTAL_GRP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_CR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_BUN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_EGFR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_EGFR2 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EGFR_CNT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: EGFR_MULTI_IND </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_POT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_SOD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_URALB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_URCR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_URALBCR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_URALBCR2 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: URALBCR_CNT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_URPROT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_URPROTCR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_URPROTCR2 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: URPROTCR_CNT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: ACRPCR_MULTI_IND </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_CAL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_ALB </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_CHOL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_LDL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_HDL </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_TRIG </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_AST </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_ALP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_HEM </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_HBA1C </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_MCV </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: LAB_URACID </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CKD_TS_NO </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CKD_TS_EITHER </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CKD_TS_BOTH </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CKD_TS_EGFR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CKD_TS_ACRPCR </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: CKD_TS_GRP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: MED_CNT_IN </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: MED_CNT_CLS </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: POLYRX_IN_GRP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUNIN_ST </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUNIN_MT </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUNIN_INC </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUNIN_ADD </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUNIN_CHANGE </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: RUNIN_RXUP </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>test variable: antihtn_delta_med </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                        var1                      var2 odds_ratio   ci_lower
+1                    SEX_STR             SEX_STRFemale 2.06582360 1.57902174
+2                         HT                        HT 0.03797926 0.01023795
+3                         WT                        WT 0.98645721 0.97975813
+4                    EFI_DEP                   EFI_DEP 1.54945055 1.18760550
+5                    LAB_AST                   LAB_AST 0.97196359 0.95321810
+6                   ELIG_SBP                  ELIG_SBP 0.97813977 0.96351188
+7                   EFI_BLID                  EFI_BLID 1.51184386 1.12816240
+8                    EFI_OST                   EFI_OST 1.51610064 1.12810977
+9                   EFI_ARTH                  EFI_ARTH 1.41983097 1.09865173
+10                ESBP_GROUP           ESBP_GROUPesbp3 0.63559322 0.43302833
+11              ACS_PCT_MALE              ACS_PCT_MALE 0.96094078 0.92896005
+12            ACS_PCT_FEMALE            ACS_PCT_FEMALE 1.04064686 1.00641049
+13                    LAB_CR                    LAB_CR 0.51241552 0.27309067
+14                   LAB_HDL                   LAB_HDL 1.00870369 1.00091339
+15      ACS_PCT_PRIVATE_MDCR      ACS_PCT_PRIVATE_MDCR 1.07634613 1.00780190
+16 POS_DIST_OBSTETRICS_TRACT POS_DIST_OBSTETRICS_TRACT 0.95469124 0.91355061
+17                   EFI_DIZ                   EFI_DIZ 1.39793412 1.02676114
+18                    EFI_CP                    EFI_CP 1.39177852 1.02845298
+19               MED_CNT_CLS               MED_CNT_CLS 0.91342365 0.83701544
+20                ESBP_GROUP           ESBP_GROUPesbp2 0.73946167 0.55263108
+21                MED_CNT_IN                MED_CNT_IN 0.92074133 0.84954854
+22                  EFI_VALV                  EFI_VALV 1.49700897 1.01052576
+23                SMOKER_IND                SMOKER_IND 0.51025737 0.25121241
+24              ACS_PCT_GOVT              ACS_PCT_GOVT 1.02167770 1.00004731
+    ci_upper      p_value
+1  2.7139377 1.485372e-07
+2  0.1372256 7.661349e-07
+3  0.9930333 7.031847e-05
+4  2.0218701 1.248237e-03
+5  0.9901947 3.351813e-03
+6  0.9924690 3.386251e-03
+7  2.0251121 5.577820e-03
+8  2.0365971 5.716170e-03
+9  1.8379067 7.548545e-03
+10 0.9233233 1.875955e-02
+11 0.9936303 2.017285e-02
+12 1.0764726 2.017285e-02
+13 0.9100660 2.825364e-02
+14 1.0165953 2.864776e-02
+15 1.1502840 2.878051e-02
+16 0.9934505 2.962639e-02
+17 1.9009830 3.284447e-02
+18 1.8945977 3.373096e-02
+19 0.9952342 4.012245e-02
+20 0.9865543 4.106208e-02
+21 0.9960121 4.156573e-02
+22 2.2149660 4.340626e-02
+23 0.9680186 4.846914e-02
+24 1.0438353 4.949202e-02</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                       Stratified by sig_decr_ind1
+                                        0              1              p     
+  n                                        605            395               
+  SEX_STR = Female (%)                     331 (54.7)     282 (71.4)  &lt;0.001
+  HT (mean (SD))                          1.71 (0.11)    1.67 (0.09)  &lt;0.001
+  WT (mean (SD))                         87.11 (20.55)  81.90 (18.66) &lt;0.001
+  EFI_DEP = 1 (%)                          182 (30.1)     158 (40.0)   0.002
+  LAB_AST (mean (SD))                    22.99 (8.30)   21.49 (6.12)   0.003
+  ELIG_SBP (mean (SD))                  151.68 (9.62)  149.94 (8.16)   0.003
+  EFI_BLID = 1 (%)                         128 (21.2)     114 (28.9)   0.007
+  EFI_OST = 1 (%)                          124 (20.5)     111 (28.1)   0.007
+  EFI_ARTH = 1 (%)                         314 (51.9)     239 (60.5)   0.009
+  ESBP_GROUP (%)                                                       0.021
+     esbp1                                 309 (51.1)     236 (59.7)        
+     esbp2                                 193 (31.9)     109 (27.6)        
+     esbp3                                 103 (17.0)      50 (12.7)        
+  ACS_PCT_MALE (mean (SD))               49.49 (3.82)   48.92 (3.80)   0.020
+  ACS_PCT_FEMALE (mean (SD))             50.51 (3.82)   51.08 (3.80)   0.020
+  LAB_CR (mean (SD))                      1.06 (0.27)    1.03 (0.18)   0.025
+  LAB_HDL (mean (SD))                    55.87 (16.06)  58.43 (18.57)  0.028
+  ACS_PCT_PRIVATE_MDCR (mean (SD))        2.77 (1.79)    3.04 (2.09)   0.028
+  POS_DIST_OBSTETRICS_TRACT (mean (SD))   3.54 (3.85)    3.03 (2.84)   0.027
+  EFI_DIZ = 1 (%)                          113 (18.7)      96 (24.3)   0.039
+  EFI_CP = 1 (%)                           447 (73.9)     315 (79.7)   0.040
+  MED_CNT_CLS (mean (SD))                 1.67 (1.57)    1.47 (1.37)   0.040
+  MED_CNT_IN (mean (SD))                  1.74 (1.73)    1.53 (1.49)   0.041
+  EFI_VALV = 1 (%)                          59 ( 9.8)      55 (13.9)   0.054
+  SMOKER_IND = 1 (%)                        35 ( 5.8)      12 ( 3.0)   0.064
+  ACS_PCT_GOVT (mean (SD))               12.50 (5.76)   13.25 (6.09)   0.049
+                                       Stratified by sig_decr_ind1
+                                        test
+  n                                         
+  SEX_STR = Female (%)                      
+  HT (mean (SD))                            
+  WT (mean (SD))                            
+  EFI_DEP = 1 (%)                           
+  LAB_AST (mean (SD))                       
+  ELIG_SBP (mean (SD))                      
+  EFI_BLID = 1 (%)                          
+  EFI_OST = 1 (%)                           
+  EFI_ARTH = 1 (%)                          
+  ESBP_GROUP (%)                            
+     esbp1                                  
+     esbp2                                  
+     esbp3                                  
+  ACS_PCT_MALE (mean (SD))                  
+  ACS_PCT_FEMALE (mean (SD))                
+  LAB_CR (mean (SD))                        
+  LAB_HDL (mean (SD))                       
+  ACS_PCT_PRIVATE_MDCR (mean (SD))          
+  POS_DIST_OBSTETRICS_TRACT (mean (SD))     
+  EFI_DIZ = 1 (%)                           
+  EFI_CP = 1 (%)                            
+  MED_CNT_CLS (mean (SD))                   
+  MED_CNT_IN (mean (SD))                    
+  EFI_VALV = 1 (%)                          
+  SMOKER_IND = 1 (%)                        
+  ACS_PCT_GOVT (mean (SD))                  </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 35 × 5
+   var                  cat                         `0`            `1`   p.value
+   &lt;chr&gt;                &lt;chr&gt;                       &lt;chr&gt;          &lt;chr&gt;   &lt;dbl&gt;
+ 1 n                    ""                          605            395   NA     
+ 2 ACS_PCT_FEMALE       "mean(sd); med(iqr) [miss]" 50.5 (3.8);50… 51.1…  0.0198
+ 3 ACS_PCT_GOVT         "mean(sd); med(iqr) [miss]" 12.5 (5.8);11… 13.3…  0.0489
+ 4 ACS_PCT_MALE         "mean(sd); med(iqr) [miss]" 49.5 (3.8);49… 48.9…  0.0198
+ 5 ACS_PCT_PRIVATE_MDCR "mean(sd); med(iqr) [miss]" 2.8 (1.8);2.5… 3 (2…  0.0277
+ 6 ELIG_SBP             "mean(sd); med(iqr) [miss]" 151.7 (9.6);1… 149.…  0.0031
+ 7 HT                   "mean(sd); med(iqr) [miss]" 1.7 (0.1);1.7… 1.7 …  0     
+ 8 LAB_AST              "mean(sd); med(iqr) [miss]" 23 (8.3);21(1… 21.5…  0.003 
+ 9 LAB_CR               "mean(sd); med(iqr) [miss]" 1.1 (0.3);1(1… 1 (0…  0.0255
+10 LAB_HDL              "mean(sd); med(iqr) [miss]" 55.9 (16.1);5… 58.4…  0.0281
+# ℹ 25 more rows</code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                    Stratified by antihtn_dose_inc
-                                     0           1          p      test
-  n                                  508         34                    
-  gap_sign_label (%)                                         0.896     
-     1.decrease-to-normal            182 (35.8)  11 (32.4)             
-     2.decrease-to-uneligible        120 (23.6)   9 (26.5)             
-     3.decrease-but-eligible-or-same 206 (40.6)  14 (41.2)             </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>test variable: esbp_median 
-test variable: bsbp 
-test variable: elig_since_index 
-test variable: esbp_group 
-test variable: bsbp_group 
-test variable: antihtn_delta_med 
-test variable: untreated 
-test variable: antihtn_add 
-test variable: antihtn_rm 
-test variable: antihtn_runin 
-test variable: antihtn_mt 
-test variable: amlodipine_runin_stop 
-test variable: losartan_maintain 
-test variable: hydrochlorothiazide_runin_stop 
-test variable: lisinopril_runin_stop 
-test variable: tamsulosin_runin_stop 
-test variable: sildenafil_runin_stop 
-test variable: losartan_runin_start 
-test variable: metoprolol_runin_stop 
-test variable: losartan_runin_stop 
-test variable: hydrochlorothiazide_olmesartan_runin_stop 
-test variable: furosemide_runin_stop 
-test variable: hydralazine_runin_stop 
-test variable: doxazosin_runin_stop 
-test variable: labetalol_runin_stop 
-test variable: chlorthalidone_runin_stop 
-test variable: ramipril_runin_stop 
-test variable: spironolactone_runin_stop 
-test variable: irbesartan_runin_stop 
-test variable: valsartan_runin_stop 
-test variable: hydrochlorothiazide_losartan_runin_stop 
-test variable: propranolol_runin_stop 
-test variable: amlodipine_maintain 
-test variable: quinapril_runin_stop 
-test variable: nebivolol_runin_stop 
-test variable: benazepril_hydrochlorothiazide_maintain 
-test variable: carvedilol_runin_stop 
-test variable: sotalol_runin_stop 
-test variable: tadalafil_runin_stop 
-test variable: hydrochlorothiazide_lisinopril_runin_stop 
-test variable: felodipine_runin_stop 
-test variable: lisinopril_runin_start 
-test variable: diltiazem_runin_stop 
-test variable: benazepril_runin_stop 
-test variable: atenolol_runin_stop 
-test variable: metoprolol_maintain 
-test variable: verapamil_runin_stop 
-test variable: bumetanide_runin_stop 
-test variable: carvedilol_runin_start 
-test variable: hydrochlorothiazide_losartan_maintain 
-test variable: telmisartan_runin_stop 
-test variable: prazosin_maintain 
-test variable: carvedilol_maintain 
-test variable: spironolactone_runin_start 
-test variable: clonidine_runin_stop 
-test variable: felodipine_maintain 
-test variable: bisoprolol_hydrochlorothiazide_runin_start 
-test variable: furosemide_maintain 
-test variable: hydrochlorothiazide_maintain 
-test variable: nicardipine_runin_stop 
-test variable: atenolol_runin_start 
-test variable: hydrochlorothiazide_runin_start 
-test variable: bisoprolol_hydrochlorothiazide_runin_stop 
-test variable: eplerenone_maintain 
-test variable: hydrochlorothiazide_triamterene_runin_stop 
-test variable: lisinopril_maintain 
-test variable: olmesartan_runin_stop 
-test variable: amlodipine_runin_start 
-test variable: doxazosin_maintain 
-test variable: metoprolol_runin_start 
-test variable: candesartan_runin_stop 
-test variable: propranolol_maintain 
-test variable: hydrochlorothiazide_valsartan_runin_stop 
-test variable: hydrochlorothiazide_irbesartan_runin_stop 
-test variable: aliskiren_runin_stop 
-test variable: bisoprolol_runin_stop 
-test variable: olmesartan_maintain 
-test variable: hydralazine_maintain 
-test variable: enalapril_runin_start 
-test variable: hydrochlorothiazide_telmisartan_runin_stop 
-test variable: hydrochlorothiazide_triamterene_maintain 
-test variable: torsemide_runin_stop 
-test variable: amiloride_runin_stop 
-test variable: chlorothiazide_runin_stop 
-test variable: amlodipine_olmesartan_runin_stop 
-test variable: bumetanide_runin_start 
-test variable: torsemide_maintain 
-test variable: hydrochlorothiazide_lisinopril_maintain 
-test variable: tamsulosin_maintain 
-test variable: hydrochlorothiazide_spironolactone_maintain 
-test variable: valsartan_maintain 
-test variable: alfuzosin_runin_stop 
-test variable: hydrochlorothiazide_losartan_runin_start 
-test variable: telmisartan_runin_start 
-test variable: furosemide_runin_start 
-test variable: chlorthalidone_runin_start 
-test variable: tadalafil_maintain 
-test variable: verapamil_runin_start 
-test variable: irbesartan_maintain 
-test variable: nebivolol_maintain 
-test variable: bisoprolol_maintain 
-test variable: sildenafil_maintain 
-test variable: hydralazine_runin_start 
-test variable: perindopril_runin_stop 
-test variable: acetazolamide_runin_stop 
-test variable: prazosin_runin_stop 
-test variable: telmisartan_maintain 
-test variable: candesartan_hydrochlorothiazide_runin_stop 
-test variable: esmolol_runin_stop 
-test variable: spironolactone_maintain 
-test variable: CV200_runin_stop 
-test variable: CV805_maintain 
-test variable: CV701_maintain 
-test variable: CV800_maintain 
-test variable: CV800_runin_stop 
-test variable: CV150_maintain 
-test variable: CV200_maintain 
-test variable: CV490_GU900_maintain 
-test variable: CV701_runin_stop 
-test variable: CV805_runin_start 
-test variable: CV100_maintain 
-test variable: CV100_runin_stop 
-test variable: CV805_runin_stop 
-test variable: CV400_runin_stop 
-test variable: CV702_maintain 
-test variable: CV490_runin_stop 
-test variable: CV150_runin_stop 
-test variable: CV704_runin_stop 
-test variable: CV490_maintain 
-test variable: CV704_maintain 
-test variable: CV400_maintain 
-test variable: CV490_GU900_runin_stop 
-test variable: CV800_runin_start 
-test variable: CV702_runin_stop 
-test variable: CV200_runin_start 
-test variable: CV704_runin_start 
-test variable: CV400_runin_start 
-test variable: CV100_runin_start 
-test variable: CV701_runin_start 
-test variable: CV806_runin_stop 
-test variable: CV150_runin_start 
-test variable: CV702_runin_start 
-test variable: CV490_GU900_runin_start 
-test variable: CV490_runin_start 
-test variable: CV703_maintain 
-test variable: losartan_does_inc 
-test variable: amlodipine_does_inc 
-test variable: metoprolol_does_inc 
-test variable: doxazosin_does_inc 
-test variable: olmesartan_does_inc 
-test variable: carvedilol_does_inc 
-test variable: furosemide_does_inc 
-test variable: valsartan_does_inc 
-test variable: lisinopril_does_inc 
-test variable: hydrochlorothiazide_losartan_does_inc 
-test variable: hydrochlorothiazide_does_inc 
-test variable: antihtn_dose_inc 
-test variable: sex 
-test variable: race 
-test variable: ethnicity 
-test variable: age </code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                        var1                       var2 odds_ratio    ci_lower
-1                        sex                       sex2  1.9558106 1.337776257
-2      tamsulosin_runin_stop      tamsulosin_runin_stop  0.2991453 0.120424534
-3             CV150_maintain             CV150_maintain  0.3291358 0.121971829
-4     hydralazine_runin_stop     hydralazine_runin_stop  2.0079099 1.040708653
-5        atenolol_runin_stop        atenolol_runin_stop  0.1159722 0.006388378
-6     propranolol_runin_stop     propranolol_runin_stop  9.2553191 1.478621928
-7     lisinopril_runin_start     lisinopril_runin_start  9.2553191 1.478621928
-8        amlodipine_maintain        amlodipine_maintain  2.0087395 1.006446694
-9           CV400_runin_stop           CV400_runin_stop  0.5121547 0.251449379
-10          CV150_runin_stop           CV150_runin_stop  0.4902420 0.225382300
-11            CV800_maintain             CV800_maintain  0.5744474 0.318267704
-12               antihtn_add                antihtn_add  1.5504903 0.972035259
-13         antihtn_delta_med antihtn_delta_meduntreated  0.5743590 0.315793140
-14       furosemide_maintain        furosemide_maintain  4.6143617 0.984313507
-15         CV100_runin_start          CV100_runin_start  2.2832723 0.928324539
-16                esbp_group            esbp_groupesbp2  0.7136583 0.482456453
-17 chlorthalidone_runin_stop  chlorthalidone_runin_stop  0.3891828 0.111191402
-      ci_upper     p_value
-1    2.8892468 0.000626310
-2    0.6425920 0.004134568
-3    0.7504711 0.014684187
-4    3.8872468 0.036782146
-5    0.5788565 0.037706375
-6  178.0160602 0.042926946
-7  178.0160602 0.042926946
-8    4.0259861 0.046814797
-9    0.9728452 0.050532629
-10   0.9776885 0.054306071
-11   0.9942297 0.055084157
-12   2.4611796 0.063545332
-13   1.0368698 0.066910735
-14  32.4346102 0.069201830
-15   5.7609506 0.071911886
-16   1.0512978 0.089210213
-17   1.0611318 0.092090760</code></pre>
-</div>
-<div class="cell-output-display">
-<table class="lightable-material lightable-striped lightable-hover lightable-classic caption-top table table-sm table-striped small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">var</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">cat</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">exposure=0</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">exposure=1</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">p.value</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">var_lbl</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">n</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">333</td>
-<td style="text-align: left;">183</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">n</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">sex</td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">137 (41.1%) [0]</td>
-<td style="text-align: left;">48 (26.2%) [0]</td>
-<td style="text-align: left;">0.002</td>
-<td style="text-align: left;">sex</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">2,n(%) [miss]</td>
-<td style="text-align: left;">196 (58.9%) [0]</td>
-<td style="text-align: left;">135 (73.8%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">tamsulosin_runin_stop</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">298 (89.5%) [0]</td>
-<td style="text-align: left;">176 (96.2%) [0]</td>
-<td style="text-align: left;">0.003</td>
-<td style="text-align: left;">tamsulosin_runin_stop</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">35 (10.5%) [0]</td>
-<td style="text-align: left;">7 (3.8%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">CV150_maintain</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">304 (91.3%) [0]</td>
-<td style="text-align: left;">177 (96.7%) [0]</td>
-<td style="text-align: left;">0.0125</td>
-<td style="text-align: left;">CV150_maintain</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">29 (8.7%) [0]</td>
-<td style="text-align: left;">6 (3.3%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">hydralazine_runin_stop</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">315 (94.6%) [0]</td>
-<td style="text-align: left;">168 (91.8%) [0]</td>
-<td style="text-align: left;">0.0415</td>
-<td style="text-align: left;">hydralazine_runin_stop</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">18 (5.4%) [0]</td>
-<td style="text-align: left;">15 (8.2%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">atenolol_runin_stop</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">321 (96.4%) [0]</td>
-<td style="text-align: left;">182 (99.4%) [0]</td>
-<td style="text-align: left;">0.012</td>
-<td style="text-align: left;">atenolol_runin_stop</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">12 (3.6%) [0]</td>
-<td style="text-align: left;">1 (0.5%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">propranolol_runin_stop</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">332 (99.7%) [0]</td>
-<td style="text-align: left;">178 (97.3%) [0]</td>
-<td style="text-align: left;">0.03</td>
-<td style="text-align: left;">propranolol_runin_stop</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">1 (0.3%) [0]</td>
-<td style="text-align: left;">5 (2.7%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">lisinopril_runin_start</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">332 (99.7%) [0]</td>
-<td style="text-align: left;">179 (97.8%) [0]</td>
-<td style="text-align: left;">0.02</td>
-<td style="text-align: left;">lisinopril_runin_start</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">1 (0.3%) [0]</td>
-<td style="text-align: left;">4 (2.2%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">amlodipine_maintain</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">318 (95.5%) [0]</td>
-<td style="text-align: left;">170 (92.9%) [0]</td>
-<td style="text-align: left;">0.0415</td>
-<td style="text-align: left;">amlodipine_maintain</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">15 (4.5%) [0]</td>
-<td style="text-align: left;">13 (7.1%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">CV400_runin_stop</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">295 (88.6%) [0]</td>
-<td style="text-align: left;">171 (93.4%) [0]</td>
-<td style="text-align: left;">0.0475</td>
-<td style="text-align: left;">CV400_runin_stop</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">38 (11.4%) [0]</td>
-<td style="text-align: left;">12 (6.6%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">CV150_runin_stop</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">301 (90.4%) [0]</td>
-<td style="text-align: left;">173 (94.5%) [0]</td>
-<td style="text-align: left;">0.0475</td>
-<td style="text-align: left;">CV150_runin_stop</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">32 (9.6%) [0]</td>
-<td style="text-align: left;">10 (5.5%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">CV800_maintain</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">285 (85.6%) [0]</td>
-<td style="text-align: left;">165 (90.2%) [0]</td>
-<td style="text-align: left;">0.0645</td>
-<td style="text-align: left;">CV800_maintain</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">48 (14.4%) [0]</td>
-<td style="text-align: left;">18 (9.8%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">antihtn_add</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">284 (85.3%) [0]</td>
-<td style="text-align: left;">144 (78.7%) [0]</td>
-<td style="text-align: left;">0.0655</td>
-<td style="text-align: left;">antihtn_add</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">49 (14.7%) [0]</td>
-<td style="text-align: left;">39 (21.3%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">antihtn_delta_med</td>
-<td style="text-align: left;">antihtn_add,n(%) [miss]</td>
-<td style="text-align: left;">49 (14.7%) [0]</td>
-<td style="text-align: left;">39 (21.3%) [0]</td>
-<td style="text-align: left;">0.3618</td>
-<td style="text-align: left;">antihtn_delta_med</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">antihtn_mt,n(%) [miss]</td>
-<td style="text-align: left;">18 (5.4%) [0]</td>
-<td style="text-align: left;">12 (6.6%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">antihtn_rm,n(%) [miss]</td>
-<td style="text-align: left;">175 (52.5%) [0]</td>
-<td style="text-align: left;">93 (50.8%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">antihtn_runin,n(%) [miss]</td>
-<td style="text-align: left;">37 (11.1%) [0]</td>
-<td style="text-align: left;">17 (9.3%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">untreated,n(%) [miss]</td>
-<td style="text-align: left;">70 (21%) [0]</td>
-<td style="text-align: left;">32 (17.5%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">furosemide_maintain</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">331 (99.4%) [0]</td>
-<td style="text-align: left;">179 (97.8%) [0]</td>
-<td style="text-align: left;">0.059</td>
-<td style="text-align: left;">furosemide_maintain</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">2 (0.6%) [0]</td>
-<td style="text-align: left;">4 (2.2%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">CV100_runin_start</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">325 (97.6%) [0]</td>
-<td style="text-align: left;">174 (95.1%) [0]</td>
-<td style="text-align: left;">0.092</td>
-<td style="text-align: left;">CV100_runin_start</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">8 (2.4%) [0]</td>
-<td style="text-align: left;">9 (4.9%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">esbp_group</td>
-<td style="text-align: left;">esbp1,n(%) [miss]</td>
-<td style="text-align: left;">143 (42.9%) [0]</td>
-<td style="text-align: left;">97 (53%) [0]</td>
-<td style="text-align: left;">0.1829</td>
-<td style="text-align: left;">esbp_group</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">esbp2,n(%) [miss]</td>
-<td style="text-align: left;">131 (39.3%) [0]</td>
-<td style="text-align: left;">60 (32.8%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">esbp3,n(%) [miss]</td>
-<td style="text-align: left;">59 (17.7%) [0]</td>
-<td style="text-align: left;">26 (14.2%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">chlorthalidone_runin_stop</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">316 (94.9%) [0]</td>
-<td style="text-align: left;">179 (97.8%) [0]</td>
-<td style="text-align: left;">0.1174</td>
-<td style="text-align: left;">chlorthalidone_runin_stop</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">17 (5.1%) [0]</td>
-<td style="text-align: left;">4 (2.2%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-</tbody>
-</table>
-
-
-</div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>Start:  AIC=707.83
+<pre><code>Start:  AIC=1314.08
 sig_decr_ind1 ~ 1
 
-                            Df Deviance    AIC
-+ sex                        1   693.66 697.66
-+ tamsulosin_runin_stop      1   695.51 699.51
-+ atenolol_runin_stop        1   697.86 701.86
-+ CV150_maintain             1   698.50 702.50
-+ propranolol_runin_stop     1   699.96 703.96
-+ lisinopril_runin_start     1   699.96 703.96
-+ hydralazine_runin_stop     1   701.51 705.51
-+ CV400_runin_stop           1   701.64 705.64
-+ CV150_runin_stop           1   701.72 705.72
-+ CV800_maintain             1   701.90 705.90
-+ amlodipine_maintain        1   701.92 705.92
-+ furosemide_maintain        1   702.07 706.07
-+ antihtn_add                1   702.44 706.44
-+ chlorthalidone_runin_stop  1   702.46 706.46
-+ CV100_runin_start          1   702.59 706.59
-&lt;none&gt;                           705.83 707.83
-+ esbp_group                 2   702.37 708.37
-+ antihtn_delta_med          4   701.44 711.44
+                    Df Deviance    AIC
++ SEX_STR            1   1285.8 1289.8
++ WT                 1   1297.0 1301.0
++ EFI_DEP            1   1301.4 1305.4
++ ELIG_SBP           1   1301.7 1305.7
++ LAB_AST            1   1303.4 1307.4
++ EFI_BLID           1   1304.0 1308.0
++ EFI_OST            1   1305.4 1309.4
++ LAB_CR             1   1306.9 1310.9
++ EFI_CP             1   1307.3 1311.3
++ MED_CNT_IN         1   1307.7 1311.7
++ LAB_HDL            1   1307.8 1311.8
++ EFI_VALV           1   1308.1 1312.1
++ SMOKER_IND         1   1308.3 1312.3
++ EFI_DIZ            1   1308.3 1312.3
++ antihtn_delta_med  2   1306.8 1312.8
+&lt;none&gt;                   1312.1 1314.1
 
-Step:  AIC=697.66
-sig_decr_ind1 ~ sex
+Step:  AIC=1289.81
+sig_decr_ind1 ~ SEX_STR
 
-                            Df Deviance    AIC
-+ atenolol_runin_stop        1   687.47 693.47
-+ lisinopril_runin_start     1   688.40 694.40
-+ hydralazine_runin_stop     1   688.52 694.52
-+ tamsulosin_runin_stop      1   688.93 694.93
-+ propranolol_runin_stop     1   689.00 695.00
-+ CV100_runin_start          1   689.18 695.18
-+ CV400_runin_stop           1   689.61 695.61
-+ CV800_maintain             1   690.02 696.02
-+ furosemide_maintain        1   690.06 696.06
-+ CV150_maintain             1   690.30 696.30
-+ antihtn_add                1   690.41 696.41
-+ amlodipine_maintain        1   690.42 696.42
-+ chlorthalidone_runin_stop  1   690.48 696.48
-&lt;none&gt;                           693.66 697.66
-+ CV150_runin_stop           1   692.95 698.95
-+ esbp_group                 2   691.18 699.18
-+ antihtn_delta_med          4   688.92 700.92
-- sex                        1   705.83 707.83
+                    Df Deviance    AIC
++ ELIG_SBP           1   1275.0 1281.0
++ EFI_BLID           1   1278.1 1284.1
++ LAB_AST            1   1279.2 1285.2
++ EFI_DEP            1   1279.4 1285.4
++ EFI_VALV           1   1280.2 1286.2
++ antihtn_delta_med  2   1279.2 1287.2
++ SMOKER_IND         1   1281.5 1287.5
++ WT                 1   1281.7 1287.7
++ EFI_DIZ            1   1281.9 1287.9
++ EFI_CP             1   1282.7 1288.7
++ MED_CNT_IN         1   1282.9 1288.9
++ LAB_CR             1   1283.3 1289.3
+&lt;none&gt;                   1285.8 1289.8
++ EFI_OST            1   1284.8 1290.8
++ LAB_HDL            1   1285.6 1291.6
+- SEX_STR            1   1312.1 1314.1
 
-Step:  AIC=693.47
-sig_decr_ind1 ~ sex + atenolol_runin_stop
+Step:  AIC=1281
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP
 
-                            Df Deviance    AIC
-+ hydralazine_runin_stop     1   682.28 690.28
-+ lisinopril_runin_start     1   682.35 690.35
-+ propranolol_runin_stop     1   682.90 690.90
-+ CV400_runin_stop           1   683.18 691.18
-+ tamsulosin_runin_stop      1   683.19 691.19
-+ CV100_runin_start          1   683.38 691.38
-+ antihtn_add                1   683.75 691.75
-+ CV800_maintain             1   683.90 691.90
-+ chlorthalidone_runin_stop  1   684.01 692.01
-+ furosemide_maintain        1   684.02 692.02
-+ amlodipine_maintain        1   684.07 692.07
-+ CV150_maintain             1   684.10 692.10
-&lt;none&gt;                           687.47 693.47
-+ CV150_runin_stop           1   687.06 695.06
-+ esbp_group                 2   685.27 695.27
-+ antihtn_delta_med          4   682.45 696.45
-- atenolol_runin_stop        1   693.66 697.66
-- sex                        1   697.86 701.86
+                    Df Deviance    AIC
++ EFI_BLID           1   1266.3 1274.3
++ LAB_AST            1   1268.0 1276.0
++ EFI_VALV           1   1269.0 1277.0
++ WT                 1   1269.4 1277.4
++ antihtn_delta_med  2   1267.4 1277.4
++ EFI_DEP            1   1269.7 1277.7
++ SMOKER_IND         1   1271.1 1279.1
++ EFI_DIZ            1   1271.6 1279.6
++ MED_CNT_IN         1   1272.4 1280.4
++ EFI_CP             1   1272.4 1280.4
++ LAB_CR             1   1272.9 1280.9
+&lt;none&gt;                   1275.0 1281.0
++ EFI_OST            1   1273.9 1281.9
++ LAB_HDL            1   1274.7 1282.7
+- ELIG_SBP           1   1285.8 1289.8
+- SEX_STR            1   1301.7 1305.7
 
-Step:  AIC=690.28
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop
+Step:  AIC=1274.33
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID
 
-                            Df Deviance    AIC
-+ propranolol_runin_stop     1   677.46 687.46
-+ CV400_runin_stop           1   677.57 687.57
-+ CV150_maintain             1   678.02 688.02
-+ lisinopril_runin_start     1   678.06 688.06
-+ tamsulosin_runin_stop      1   678.13 688.13
-+ CV800_maintain             1   678.34 688.34
-+ chlorthalidone_runin_stop  1   678.37 688.37
-+ antihtn_add                1   678.68 688.68
-+ CV100_runin_start          1   679.23 689.23
-+ furosemide_maintain        1   679.50 689.50
-+ amlodipine_maintain        1   679.87 689.87
-&lt;none&gt;                           682.28 690.28
-+ esbp_group                 2   678.99 690.99
-+ CV150_runin_stop           1   681.75 691.75
-- hydralazine_runin_stop     1   687.47 693.47
-+ antihtn_delta_med          4   677.66 693.66
-- atenolol_runin_stop        1   688.52 694.52
-- sex                        1   693.56 699.56
+                    Df Deviance    AIC
++ LAB_AST            1   1259.7 1269.7
++ WT                 1   1260.1 1270.1
++ EFI_VALV           1   1261.4 1271.4
++ SMOKER_IND         1   1262.4 1272.4
++ antihtn_delta_med  2   1260.4 1272.4
++ EFI_DEP            1   1262.5 1272.5
++ EFI_DIZ            1   1264.1 1274.1
+&lt;none&gt;                   1266.3 1274.3
++ LAB_CR             1   1264.4 1274.4
++ MED_CNT_IN         1   1264.5 1274.5
++ EFI_CP             1   1264.7 1274.7
++ EFI_OST            1   1265.4 1275.4
++ LAB_HDL            1   1265.9 1275.9
+- EFI_BLID           1   1275.0 1281.0
+- ELIG_SBP           1   1278.1 1284.1
+- SEX_STR            1   1292.7 1298.7
 
-Step:  AIC=687.46
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop
+Step:  AIC=1269.72
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST
 
-                            Df Deviance    AIC
-+ CV150_maintain             1   672.29 684.29
-+ chlorthalidone_runin_stop  1   672.66 684.66
-+ CV400_runin_stop           1   673.06 685.06
-+ lisinopril_runin_start     1   673.12 685.12
-+ CV800_maintain             1   673.33 685.33
-+ tamsulosin_runin_stop      1   673.36 685.36
-+ antihtn_add                1   673.43 685.43
-+ CV100_runin_start          1   674.32 686.32
-+ furosemide_maintain        1   674.59 686.59
-+ amlodipine_maintain        1   674.84 686.84
-&lt;none&gt;                           677.46 687.46
-+ esbp_group                 2   673.68 687.68
-+ CV150_runin_stop           1   676.64 688.64
-- propranolol_runin_stop     1   682.28 690.28
-+ antihtn_delta_med          4   672.52 690.52
-- hydralazine_runin_stop     1   682.90 690.90
-- atenolol_runin_stop        1   683.59 691.59
-- sex                        1   687.60 695.60
+                    Df Deviance    AIC
++ WT                 1   1252.9 1264.9
++ EFI_VALV           1   1255.0 1267.0
++ EFI_DEP            1   1255.2 1267.2
++ SMOKER_IND         1   1255.2 1267.2
++ antihtn_delta_med  2   1253.3 1267.3
++ LAB_CR             1   1256.8 1268.8
++ MED_CNT_IN         1   1257.2 1269.2
++ EFI_DIZ            1   1257.3 1269.3
+&lt;none&gt;                   1259.7 1269.7
++ EFI_CP             1   1258.1 1270.1
++ EFI_OST            1   1258.5 1270.5
++ LAB_HDL            1   1258.8 1270.8
+- LAB_AST            1   1266.3 1274.3
+- EFI_BLID           1   1268.0 1276.0
+- ELIG_SBP           1   1271.8 1279.8
+- SEX_STR            1   1283.9 1291.9
 
-Step:  AIC=684.29
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop + CV150_maintain
+Step:  AIC=1264.9
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT
 
-                            Df Deviance    AIC
-+ antihtn_add                1   667.58 681.58
-+ chlorthalidone_runin_stop  1   667.96 681.96
-+ lisinopril_runin_start     1   668.21 682.21
-+ CV800_maintain             1   668.49 682.49
-+ CV400_runin_stop           1   668.51 682.51
-+ furosemide_maintain        1   669.08 683.08
-+ amlodipine_maintain        1   669.71 683.71
-+ CV100_runin_start          1   669.85 683.85
-+ esbp_group                 2   668.13 684.13
-&lt;none&gt;                           672.29 684.29
-+ tamsulosin_runin_stop      1   671.61 685.61
-+ antihtn_delta_med          4   666.27 686.27
-+ CV150_runin_stop           1   672.28 686.28
-- CV150_maintain             1   677.46 687.46
-- propranolol_runin_stop     1   678.02 688.02
-- sex                        1   678.35 688.35
-- atenolol_runin_stop        1   678.49 688.49
-- hydralazine_runin_stop     1   678.80 688.80
+                    Df Deviance    AIC
++ EFI_DEP            1   1247.3 1261.3
++ antihtn_delta_med  2   1245.9 1261.9
++ SMOKER_IND         1   1248.0 1262.0
++ EFI_VALV           1   1248.2 1262.2
++ EFI_DIZ            1   1250.5 1264.5
++ LAB_CR             1   1250.6 1264.6
++ EFI_CP             1   1250.8 1264.8
+&lt;none&gt;                   1252.9 1264.9
++ MED_CNT_IN         1   1251.1 1265.1
++ EFI_OST            1   1252.6 1266.6
++ LAB_HDL            1   1252.8 1266.8
+- WT                 1   1259.7 1269.7
+- LAB_AST            1   1260.1 1270.1
+- EFI_BLID           1   1261.8 1271.8
+- SEX_STR            1   1265.0 1275.0
+- ELIG_SBP           1   1266.8 1276.8
 
-Step:  AIC=681.58
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop + CV150_maintain + antihtn_add
+Step:  AIC=1261.32
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT + 
+    EFI_DEP
 
-                            Df Deviance    AIC
-+ CV800_maintain             1   662.93 678.93
-+ chlorthalidone_runin_stop  1   662.99 678.99
-+ lisinopril_runin_start     1   663.52 679.52
-+ CV400_runin_stop           1   664.33 680.33
-+ esbp_group                 2   663.22 681.22
-+ furosemide_maintain        1   665.25 681.25
-&lt;none&gt;                           667.58 681.58
-+ CV100_runin_start          1   666.09 682.09
-+ amlodipine_maintain        1   666.43 682.43
-+ tamsulosin_runin_stop      1   667.09 683.09
-+ CV150_runin_stop           1   667.45 683.45
-- antihtn_add                1   672.29 684.29
-- sex                        1   673.36 685.36
-- CV150_maintain             1   673.43 685.43
-- propranolol_runin_stop     1   673.87 685.87
-- hydralazine_runin_stop     1   674.06 686.06
-+ antihtn_delta_med          3   666.27 686.27
-- atenolol_runin_stop        1   674.35 686.35
+                    Df Deviance    AIC
++ SMOKER_IND         1   1241.5 1257.5
++ antihtn_delta_med  2   1241.2 1259.2
++ EFI_VALV           1   1243.2 1259.2
++ LAB_CR             1   1244.6 1260.6
++ MED_CNT_IN         1   1245.2 1261.2
+&lt;none&gt;                   1247.3 1261.3
++ EFI_DIZ            1   1245.6 1261.6
++ EFI_CP             1   1246.0 1262.0
++ LAB_HDL            1   1247.1 1263.1
++ EFI_OST            1   1247.2 1263.2
+- EFI_DEP            1   1252.9 1264.9
+- EFI_BLID           1   1254.3 1266.3
+- WT                 1   1255.2 1267.2
+- LAB_AST            1   1255.5 1267.5
+- SEX_STR            1   1256.4 1268.4
+- ELIG_SBP           1   1260.0 1272.0
 
-Step:  AIC=678.93
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain
+Step:  AIC=1257.53
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT + 
+    EFI_DEP + SMOKER_IND
 
-                            Df Deviance    AIC
-+ chlorthalidone_runin_stop  1   658.59 676.59
-+ CV400_runin_stop           1   659.17 677.17
-+ lisinopril_runin_start     1   659.23 677.23
-+ furosemide_maintain        1   660.71 678.71
-&lt;none&gt;                           662.93 678.93
-+ esbp_group                 2   659.32 679.32
-+ CV100_runin_start          1   661.60 679.60
-+ amlodipine_maintain        1   661.82 679.82
-+ tamsulosin_runin_stop      1   662.44 680.44
-+ CV150_runin_stop           1   662.79 680.79
-- CV800_maintain             1   667.58 681.58
-- CV150_maintain             1   668.45 682.45
-- antihtn_add                1   668.49 682.49
-- sex                        1   668.76 682.76
-+ antihtn_delta_med          3   661.22 683.22
-- propranolol_runin_stop     1   669.46 683.46
-- atenolol_runin_stop        1   669.60 683.60
-- hydralazine_runin_stop     1   669.82 683.82
+                    Df Deviance    AIC
++ EFI_VALV           1   1237.2 1255.2
++ antihtn_delta_med  2   1235.6 1255.6
++ LAB_CR             1   1239.2 1257.2
++ MED_CNT_IN         1   1239.4 1257.4
+&lt;none&gt;                   1241.5 1257.5
++ EFI_DIZ            1   1239.7 1257.7
++ EFI_CP             1   1240.2 1258.2
++ EFI_OST            1   1241.3 1259.3
++ LAB_HDL            1   1241.4 1259.4
+- SMOKER_IND         1   1247.3 1261.3
+- EFI_DEP            1   1248.0 1262.0
+- EFI_BLID           1   1248.5 1262.5
+- WT                 1   1249.9 1263.9
+- SEX_STR            1   1250.5 1264.5
+- LAB_AST            1   1250.5 1264.5
+- ELIG_SBP           1   1253.7 1267.7
 
-Step:  AIC=676.59
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
-    chlorthalidone_runin_stop
+Step:  AIC=1255.15
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT + 
+    EFI_DEP + SMOKER_IND + EFI_VALV
 
-                            Df Deviance    AIC
-+ CV400_runin_stop           1   654.80 674.80
-+ lisinopril_runin_start     1   655.06 675.06
-+ esbp_group                 2   654.49 676.49
-+ furosemide_maintain        1   656.56 676.56
-&lt;none&gt;                           658.59 676.59
-+ amlodipine_maintain        1   657.34 677.34
-+ CV100_runin_start          1   657.49 677.49
-+ tamsulosin_runin_stop      1   658.13 678.13
-+ CV150_runin_stop           1   658.29 678.29
-- chlorthalidone_runin_stop  1   662.93 678.93
-- CV800_maintain             1   662.99 678.99
-- CV150_maintain             1   663.73 679.73
-- sex                        1   664.32 680.32
-- antihtn_add                1   664.45 680.45
-+ antihtn_delta_med          3   656.76 680.76
-- atenolol_runin_stop        1   665.59 681.59
-- hydralazine_runin_stop     1   665.86 681.86
-- propranolol_runin_stop     1   666.05 682.05
+                    Df Deviance    AIC
++ antihtn_delta_med  2   1231.6 1253.6
++ MED_CNT_IN         1   1234.2 1254.2
++ LAB_CR             1   1234.8 1254.8
+&lt;none&gt;                   1237.2 1255.2
++ EFI_DIZ            1   1235.8 1255.8
++ EFI_CP             1   1236.0 1256.0
++ LAB_HDL            1   1237.0 1257.0
++ EFI_OST            1   1237.0 1257.0
+- EFI_VALV           1   1241.5 1257.5
+- EFI_DEP            1   1243.1 1259.1
+- SMOKER_IND         1   1243.2 1259.2
+- EFI_BLID           1   1243.2 1259.2
+- WT                 1   1245.5 1261.5
+- LAB_AST            1   1245.8 1261.8
+- SEX_STR            1   1247.1 1263.1
+- ELIG_SBP           1   1249.6 1265.6
 
-Step:  AIC=674.8
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
-    chlorthalidone_runin_stop + CV400_runin_stop
+Step:  AIC=1253.57
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT + 
+    EFI_DEP + SMOKER_IND + EFI_VALV + antihtn_delta_med
 
-                            Df Deviance    AIC
-+ lisinopril_runin_start     1   651.54 673.54
-+ esbp_group                 2   650.42 674.42
-&lt;none&gt;                           654.80 674.80
-+ furosemide_maintain        1   652.95 674.95
-+ amlodipine_maintain        1   653.52 675.52
-+ CV100_runin_start          1   653.77 675.77
-+ tamsulosin_runin_stop      1   654.38 676.38
-+ CV150_runin_stop           1   654.54 676.54
-- CV400_runin_stop           1   658.59 676.59
-- chlorthalidone_runin_stop  1   659.17 677.17
-- CV150_maintain             1   659.19 677.19
-- CV800_maintain             1   659.66 677.66
-- antihtn_add                1   660.10 678.10
-+ antihtn_delta_med          3   652.60 678.60
-- sex                        1   660.65 678.65
-- propranolol_runin_stop     1   661.81 679.81
-- atenolol_runin_stop        1   662.00 680.00
-- hydralazine_runin_stop     1   662.37 680.37
+                    Df Deviance    AIC
++ LAB_CR             1   1228.7 1252.7
++ MED_CNT_IN         1   1229.1 1253.1
+&lt;none&gt;                   1231.6 1253.6
++ EFI_DIZ            1   1230.5 1254.5
++ EFI_CP             1   1230.6 1254.6
+- antihtn_delta_med  2   1237.2 1255.2
++ LAB_HDL            1   1231.4 1255.4
++ EFI_OST            1   1231.5 1255.5
+- EFI_VALV           1   1235.6 1255.6
+- EFI_BLID           1   1236.3 1256.3
+- EFI_DEP            1   1236.7 1256.7
+- SMOKER_IND         1   1237.4 1257.4
+- WT                 1   1240.4 1260.4
+- LAB_AST            1   1240.7 1260.7
+- SEX_STR            1   1242.1 1262.1
+- ELIG_SBP           1   1245.1 1265.1
 
-Step:  AIC=673.54
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
-    chlorthalidone_runin_stop + CV400_runin_stop + lisinopril_runin_start
+Step:  AIC=1252.68
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT + 
+    EFI_DEP + SMOKER_IND + EFI_VALV + antihtn_delta_med + LAB_CR
 
-                            Df Deviance    AIC
-+ esbp_group                 2   646.63 672.63
-&lt;none&gt;                           651.54 673.54
-+ furosemide_maintain        1   649.59 673.59
-+ CV100_runin_start          1   650.37 674.37
-+ amlodipine_maintain        1   650.52 674.52
-- lisinopril_runin_start     1   654.80 674.80
-- CV400_runin_stop           1   655.06 675.06
-+ tamsulosin_runin_stop      1   651.14 675.14
-+ CV150_runin_stop           1   651.26 675.26
-- chlorthalidone_runin_stop  1   655.75 675.75
-- CV150_maintain             1   655.77 675.77
-- CV800_maintain             1   656.04 676.04
-+ antihtn_delta_med          3   648.65 676.65
-- antihtn_add                1   656.80 676.80
-- sex                        1   657.12 677.12
-- hydralazine_runin_stop     1   658.04 678.04
-- atenolol_runin_stop        1   658.58 678.58
-- propranolol_runin_stop     1   658.62 678.62
+                    Df Deviance    AIC
++ MED_CNT_IN         1   1226.6 1252.6
+&lt;none&gt;                   1228.7 1252.7
++ EFI_DIZ            1   1227.5 1253.5
+- LAB_CR             1   1231.6 1253.6
++ EFI_CP             1   1227.6 1253.6
++ LAB_HDL            1   1228.5 1254.5
++ EFI_OST            1   1228.5 1254.5
+- EFI_VALV           1   1232.6 1254.6
+- antihtn_delta_med  2   1234.8 1254.8
+- EFI_BLID           1   1233.3 1255.3
+- SMOKER_IND         1   1234.1 1256.1
+- EFI_DEP            1   1234.2 1256.2
+- WT                 1   1236.8 1258.8
+- SEX_STR            1   1237.7 1259.7
+- LAB_AST            1   1238.8 1260.8
+- ELIG_SBP           1   1241.6 1263.6
 
-Step:  AIC=672.63
-sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
-    chlorthalidone_runin_stop + CV400_runin_stop + lisinopril_runin_start + 
-    esbp_group
+Step:  AIC=1252.63
+sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT + 
+    EFI_DEP + SMOKER_IND + EFI_VALV + antihtn_delta_med + LAB_CR + 
+    MED_CNT_IN
 
-                            Df Deviance    AIC
-&lt;none&gt;                           646.63 672.63
-+ furosemide_maintain        1   644.75 672.75
-+ CV100_runin_start          1   645.37 673.37
-+ amlodipine_maintain        1   645.53 673.53
-- esbp_group                 2   651.54 673.54
-+ CV150_runin_stop           1   646.23 674.23
-- CV800_maintain             1   650.30 674.30
-+ tamsulosin_runin_stop      1   646.36 674.36
-- CV400_runin_stop           1   650.41 674.41
-- lisinopril_runin_start     1   650.42 674.42
-- CV150_maintain             1   651.17 675.17
-- sex                        1   651.20 675.20
-- chlorthalidone_runin_stop  1   651.32 675.32
-+ antihtn_delta_med          3   644.04 676.04
-- antihtn_add                1   652.08 676.08
-- atenolol_runin_stop        1   653.44 677.44
-- hydralazine_runin_stop     1   654.27 678.27
-- propranolol_runin_stop     1   654.50 678.50</code></pre>
+                    Df Deviance    AIC
+&lt;none&gt;                   1226.6 1252.6
+- MED_CNT_IN         1   1228.7 1252.7
+- LAB_CR             1   1229.1 1253.1
++ EFI_CP             1   1225.5 1253.5
++ EFI_DIZ            1   1225.5 1253.5
+- antihtn_delta_med  2   1232.4 1254.4
++ EFI_OST            1   1226.5 1254.5
++ LAB_HDL            1   1226.5 1254.5
+- EFI_VALV           1   1231.2 1255.2
+- EFI_BLID           1   1231.4 1255.4
+- SMOKER_IND         1   1232.3 1256.3
+- EFI_DEP            1   1232.8 1256.8
+- WT                 1   1233.8 1257.8
+- SEX_STR            1   1234.7 1258.7
+- LAB_AST            1   1236.7 1260.7
+- ELIG_SBP           1   1238.5 1262.5</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-glm(formula = sig_decr_ind1 ~ sex + atenolol_runin_stop + hydralazine_runin_stop + 
-    propranolol_runin_stop + CV150_maintain + antihtn_add + CV800_maintain + 
-    chlorthalidone_runin_stop + CV400_runin_stop + lisinopril_runin_start + 
-    esbp_group, family = binomial(), data = baseline_aset)
-
-Coefficients:
-                          Estimate Std. Error z value Pr(&gt;|z|)   
-(Intercept)                -0.6377     0.2168  -2.942  0.00326 **
-sex2                        0.4485     0.2118   2.117  0.03423 * 
-atenolol_runin_stop        -2.1237     1.0626  -1.999  0.04564 * 
-hydralazine_runin_stop      1.0312     0.3733   2.763  0.00573 **
-propranolol_runin_stop      2.6672     1.1397   2.340  0.01927 * 
-CV150_maintain             -0.9991     0.5054  -1.977  0.04808 * 
-antihtn_add                 0.5932     0.2530   2.345  0.01905 * 
-CV800_maintain             -0.5769     0.3101  -1.860  0.06285 . 
-chlorthalidone_runin_stop  -1.2048     0.6128  -1.966  0.04929 * 
-CV400_runin_stop           -0.6651     0.3561  -1.868  0.06181 . 
-lisinopril_runin_start      1.9026     1.1307   1.683  0.09243 . 
-esbp_groupesbp2            -0.4058     0.2124  -1.911  0.05603 . 
-esbp_groupesbp3            -0.4678     0.2811  -1.664  0.09613 . 
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 705.83  on 541  degrees of freedom
-Residual deviance: 646.63  on 529  degrees of freedom
-AIC: 672.63
-
-Number of Fisher Scoring iterations: 5</code></pre>
+<pre><code>[1] 0.06512773</code></pre>
 </div>
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="htn_rx_expos_EDA_files/figure-html/stepwise-reg-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="analysis-ii-profile-the-affected-cohort-with-reasonable-explanations" class="level3">
-<h3 class="anchored" data-anchor-id="analysis-ii-profile-the-affected-cohort-with-reasonable-explanations">Analysis II: Profile the affected cohort with reasonable explanations</h3>
-<div class="cell">
-<div class="cell-output-display">
-<table class="lightable-material lightable-striped lightable-hover lightable-classic caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<div id="yteqykexbl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yteqykexbl table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#yteqykexbl thead, #yteqykexbl tbody, #yteqykexbl tfoot, #yteqykexbl tr, #yteqykexbl td, #yteqykexbl th {
+  border-style: none;
+}
+
+#yteqykexbl p {
+  margin: 0;
+  padding: 0;
+}
+
+#yteqykexbl .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#yteqykexbl .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#yteqykexbl .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#yteqykexbl .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#yteqykexbl .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#yteqykexbl .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#yteqykexbl .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#yteqykexbl .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#yteqykexbl .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#yteqykexbl .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#yteqykexbl .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#yteqykexbl .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#yteqykexbl .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#yteqykexbl .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#yteqykexbl .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yteqykexbl .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#yteqykexbl .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#yteqykexbl .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#yteqykexbl .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yteqykexbl .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#yteqykexbl .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yteqykexbl .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#yteqykexbl .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yteqykexbl .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#yteqykexbl .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yteqykexbl .gt_left {
+  text-align: left;
+}
+
+#yteqykexbl .gt_center {
+  text-align: center;
+}
+
+#yteqykexbl .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#yteqykexbl .gt_font_normal {
+  font-weight: normal;
+}
+
+#yteqykexbl .gt_font_bold {
+  font-weight: bold;
+}
+
+#yteqykexbl .gt_font_italic {
+  font-style: italic;
+}
+
+#yteqykexbl .gt_super {
+  font-size: 65%;
+}
+
+#yteqykexbl .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#yteqykexbl .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#yteqykexbl .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#yteqykexbl .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#yteqykexbl .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#yteqykexbl .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#yteqykexbl .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#yteqykexbl .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#yteqykexbl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
 <thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">var</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">cat</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">exposure=1</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">p.value</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">var_lbl</th>
+<tr class="gt_col_headings header">
+<th id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="estimate" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>OR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="conf.low" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="p.value" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
 </tr>
 </thead>
-<tbody>
+<tbody class="gt_table_body">
 <tr class="odd">
-<td style="text-align: left;">n</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">183</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">n</td>
+<td class="gt_row gt_left" headers="label">SEX_STR</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="conf.low"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">esbp_group</td>
-<td style="text-align: left;">esbp1,n(%) [miss]</td>
-<td style="text-align: left;">97 (53%) [0]</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">esbp_group</td>
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="conf.low">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">esbp2,n(%) [miss]</td>
-<td style="text-align: left;">60 (32.8%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td class="gt_row gt_center" headers="estimate">1.58</td>
+<td class="gt_row gt_center" headers="conf.low">1.15, 2.16</td>
+<td class="gt_row gt_center" headers="p.value">0.005</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">esbp3,n(%) [miss]</td>
-<td style="text-align: left;">26 (14.2%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td class="gt_row gt_left" headers="label">ELIG_SBP</td>
+<td class="gt_row gt_center" headers="estimate">0.97</td>
+<td class="gt_row gt_center" headers="conf.low">0.96, 0.99</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">antihtn_dose_inc</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">175 (95.6%) [0]</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">antihtn_dose_inc</td>
+<td class="gt_row gt_left" headers="label">EFI_BLID</td>
+<td class="gt_row gt_center" headers="estimate">1.43</td>
+<td class="gt_row gt_center" headers="conf.low">1.04, 1.98</td>
+<td class="gt_row gt_center" headers="p.value">0.028</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">8 (4.4%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td class="gt_row gt_left" headers="label">LAB_AST</td>
+<td class="gt_row gt_center" headers="estimate">0.97</td>
+<td class="gt_row gt_center" headers="conf.low">0.95, 0.99</td>
+<td class="gt_row gt_center" headers="p.value">0.002</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">antihtn_add</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">144 (78.7%) [0]</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">antihtn_add</td>
+<td class="gt_row gt_left" headers="label">WT</td>
+<td class="gt_row gt_center" headers="estimate">0.99</td>
+<td class="gt_row gt_center" headers="conf.low">0.98, 1.00</td>
+<td class="gt_row gt_center" headers="p.value">0.008</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">39 (21.3%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td class="gt_row gt_left" headers="label">EFI_DEP</td>
+<td class="gt_row gt_center" headers="estimate">1.45</td>
+<td class="gt_row gt_center" headers="conf.low">1.08, 1.94</td>
+<td class="gt_row gt_center" headers="p.value">0.013</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">antihtn_runin</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">176 (96.2%) [0]</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">antihtn_runin</td>
+<td class="gt_row gt_left" headers="label">SMOKER_IND</td>
+<td class="gt_row gt_center" headers="estimate">0.44</td>
+<td class="gt_row gt_center" headers="conf.low">0.21, 0.87</td>
+<td class="gt_row gt_center" headers="p.value">0.023</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">17 (9.3%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td class="gt_row gt_left" headers="label">EFI_VALV</td>
+<td class="gt_row gt_center" headers="estimate">1.58</td>
+<td class="gt_row gt_center" headers="conf.low">1.04, 2.42</td>
+<td class="gt_row gt_center" headers="p.value">0.033</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">antihtn_mt</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">176 (96.2%) [0]</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">antihtn_mt</td>
+<td class="gt_row gt_left" headers="label">antihtn_delta_med</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="conf.low"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">12 (6.6%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;UNEXPLD</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="conf.low">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">antihtn_rm</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">95 (51.9%) [0]</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">antihtn_rm</td>
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;RUNIN_MT</td>
+<td class="gt_row gt_center" headers="estimate">0.96</td>
+<td class="gt_row gt_center" headers="conf.low">0.65, 1.41</td>
+<td class="gt_row gt_center" headers="p.value">0.8</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">93 (50.8%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;RUNIN_RXUP</td>
+<td class="gt_row gt_center" headers="estimate">1.84</td>
+<td class="gt_row gt_center" headers="conf.low">0.98, 3.48</td>
+<td class="gt_row gt_center" headers="p.value">0.058</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">untreated</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">151 (82.5%) [0]</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">untreated</td>
+<td class="gt_row gt_left" headers="label">LAB_CR</td>
+<td class="gt_row gt_center" headers="estimate">0.60</td>
+<td class="gt_row gt_center" headers="conf.low">0.30, 1.13</td>
+<td class="gt_row gt_center" headers="p.value">0.13</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">32 (17.5%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td class="gt_row gt_left" headers="label">MED_CNT_IN</td>
+<td class="gt_row gt_center" headers="estimate">0.92</td>
+<td class="gt_row gt_center" headers="conf.low">0.81, 1.03</td>
+<td class="gt_row gt_center" headers="p.value">0.2</td>
 </tr>
+</tbody><tfoot class="gt_footnotes">
 <tr class="odd">
-<td style="text-align: left;">expln1</td>
-<td style="text-align: left;">0,n(%) [miss]</td>
-<td style="text-align: left;">58 (31.7%) [0]</td>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">expln1</td>
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> OR = Odds Ratio, CI = Confidence Interval</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">1,n(%) [miss]</td>
-<td style="text-align: left;">130 (71%) [0]</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-</tr>
-</tbody>
+</tfoot>
+
 </table>
 
-
 </div>
 </div>
-<p>As shown in the table above, anti-hypertensive drug use and low eligibility SBP together only explains 71% of the eligibility drift.</p>
+</div>
 </section>
 </section>
 </section>
@@ -1252,18 +2494,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1295,7 +2526,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -1303,7 +2554,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
@@ -1400,7 +2651,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

@@ -33,7 +33,6 @@ path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
 path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 ```
 
-
 # Data Availability & Coverage
 
 ```{r}
@@ -216,7 +215,6 @@ elig_drift
 
 As shown above, the run-in period duration averaged around `r -round(mean(base_bp$ELIG_SINCE_INDEX))` (`r round(sd(base_bp$ELIG_SINCE_INDEX),1)`) days, and we identified about `r round(elig_drift$prop[1]*100)`% with significant eligibility drift (to below 130 at baseline).
 
-
 ## Investigation: How much of the eligibility drift can be explained by anti-hypertensive medication use during the run-in period?
 
 We set out to investigate what could be some legitimate reasons occured during the run-in period (i.e., the time period between eligibility and recruitment/randomization) to explain this eligibility drift. For this investigation, we also collected all prescription data from CDM PRESCRIBING table provided by KUMC team and identified the following anti-HTN medications (using VA classifications) as well as their timings (start before eligibility visit or during the run-in period):
@@ -294,7 +292,6 @@ CreateTableOne(
   factorVars = c("antihtn_delta_med")
 )
 ```
-
 
 ```{r}
 #| label: med-use-segment2
@@ -402,7 +399,6 @@ pROC::ggroc(pROC::roc(sel_model$y, sel_model$fitted))+
   geom_abline(intercept=1,linetype=2)+
   labs(subtitle = paste0("AUC:",round(pROC::auc(sel_model$y, sel_model$fitted),4)))
 ```
-
 
 ```{r}
 #| label: stepwise-reg
