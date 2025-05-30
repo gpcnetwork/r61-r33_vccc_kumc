@@ -290,14 +290,18 @@ CreateTableOne(
   factorVars = facvar_sel
 )
 
-univar_analysis_mixed(
+base_uni<-univar_analysis_mixed(
   df = baseline_aset,
   id_col ="STUDY_ID",
   var_lst = var_sel,
   grp = baseline_aset$sig_decr_ind1,
   facvar_lst  = facvar_sel,
-  pretty = F
+  pretty = T
 )
+base_uni %>%
+  save_kable(
+    file.path(path_to_res,'by_eligdrift.html')
+  )
 ```
 
 ```{r}
@@ -426,6 +430,7 @@ CreateTableOne(
 ### SDH Outcome-wide
 
 ```{r, warning=F}
+#| label: sdh-outcome-wide
 
 baseline_aset %<>%
   mutate(
@@ -463,5 +468,72 @@ CreateTableOne(
   factorVars = facvar_outcome,
   strata = "RUCA_PRIMARY_NONMETRO_IND"
 )
+
+```
+
+#### Enrollment descriptives
+
+```{r}
+#| label: enrol-descr
+
+var_enrol<-c(
+  "AGE",
+  "SEX_STR",
+  "RACE_STR",
+  "ETHN_STR",
+  "BMI",
+  "BASE_DBP",
+  "BASE_SBP",
+  "MED_CNT_IN",
+  "SMOKER_IND",
+  "LAB_EGFR2",
+  "LAB_URALBCR2",
+  "LAB_URPROTCR2",
+  "EFI_DIA",
+  "LAB_HBA1C",
+  "EFI_STROKE",
+  "CCI_TOTAL",
+  "CCI_TOTAL_GRP"
+)
+
+facvar_enrol<-c(
+  "SEX_STR",
+  "RACE_STR",
+  "ETHN_STR",
+  "SMOKER_IND",
+  "EFI_DIA",
+  "EFI_STROKE",
+  "CCI_TOTAL_GRP"
+)
+
+enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
+  select(!!c("PATID","PRESCREEN_STATUS",var_enrol)) %>%
+  bind_rows(
+    readRDS(file.path(path_to_data,"unenrol_aset.rda")) %>%
+      select(!!c("PATID","PRESCREEN_STATUS",var_enrol))
+  ) %>%
+  mutate(
+    LAB_EGFR2 = pmin(LAB_EGFR2,100)
+  )
+  
+CreateTableOne(
+  data = enrol_aset,
+  vars = var_enrol,
+  factorVars = facvar_enrol,
+  strata = "PRESCREEN_STATUS"
+)
+
+enrol_uni<-univar_analysis_mixed(
+  df = enrol_aset,
+  id_col ="PATID",
+  var_lst = var_enrol,
+  grp = enrol_aset$PRESCREEN_STATUS,
+  facvar_lst  = facvar_enrol,
+  pretty = T
+)
+enrol_uni %>%
+  save_kable(
+    file.path(path_to_res,'by_prescreen.html')
+  )
 
 ```
