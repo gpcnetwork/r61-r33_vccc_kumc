@@ -367,8 +367,6 @@ step_model %>% tbl_regression(exponentiate = TRUE)
 
 ```
 
-
-
 ### CKD Testing
 
 ```{r}
@@ -425,7 +423,6 @@ CreateTableOne(
   strata = "CKD_TS_GRP"
 )
 ```
-
 
 ### SDH Outcome-wide
 
@@ -514,7 +511,49 @@ enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
   ) %>%
   mutate(
     LAB_EGFR2 = pmin(LAB_EGFR2,100)
+  ) %>%
+  mutate(
+    AGE_75UP = case_when(
+      AGE >= 75 ~ 1,
+      TRUE ~ 0
+    ),
+    LAB_EGFR2_IND = as.numeric(!is.na(LAB_EGFR2)),
+    LAB_URALBCR2_IND = as.numeric(!is.na(LAB_URALBCR2)),
+    LAB_URPROTCR2_IND = as.numeric(!is.na(LAB_URPROTCR2)),
+    CKD_EGFR = case_when(
+      LAB_EGFR2 < 60 ~ 1,
+      TRUE ~ 0
+    ),
+    PU_URPROTCR = case_when(
+      LAB_URPROTCR2 > 150 ~ 1,
+      TRUE ~ 0
+    ),
+    ALBU_URALBCR = case_when(
+      LAB_URALBCR2 > 30 ~ 1,
+      TRUE ~ 0
+    ), 
   )
+
+var_enrol<-c(
+  var_enrol,
+  "AGE_75UP",
+  "LAB_EGFR2_IND",
+  "LAB_URALBCR2_IND",
+  "LAB_URPROTCR2_IND",
+  "CKD_EGFR",
+  "PU_URPROTCR",
+  "ALBU_URALBCR"
+)
+facvar_enrol<-c(
+  facvar_enrol,
+  "AGE_75UP",
+  "LAB_EGFR2_IND",
+  "LAB_URALBCR2_IND",
+  "LAB_URPROTCR2_IND",
+  "CKD_EGFR",
+  "PU_URPROTCR",
+  "ALBU_URALBCR"
+)
   
 CreateTableOne(
   data = enrol_aset,
