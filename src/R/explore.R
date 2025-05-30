@@ -23,9 +23,55 @@ baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda'))
 
 #==== CKD testing ====
 var_ckd<-c(
-  
+  # "CKD_TS_NO",
+  # "CKD_TS_EITHER",
+  # "CKD_TS_BOTH",
+  # "CKD_TS_EGFR",
+  # "CKD_TS_ACRPCR",
+  # "CKD_TS_GRP",
+  "MED_CNT_IN",
+  "AGE",
+  "SEX_STR",
+  "RACE_STR",
+  "ETHN_STR",
+  "ADI_NATRANK",
+  "ADI_STATERANK",
+  "RUCA_PRIMARY_GRP",
+  "RUCA_PRIMARY_NONMETRO_IND",
+  "SMOKER_IND",
+  "BASE_SBP",
+  "BASE_DBP",
+  "BMI",
+  "CCI_TOTAL",
+  "CCI_TOTAL_GRP",
+  "EFI_DIA",
+  "EGFR_MULTI_IND",
+  "ACRPCR_MULTI_IND"
+)
+facvar_ckd<-var_ckd[!var_ckd %in% c(
+  "MED_CNT_IN",
+  "AGE",
+  "ADI_NATRANK",
+  "ADI_STATERANK",
+  "BASE_SBP",
+  "BASE_DBP",
+  "BMI",
+  "CCI_TOTAL"
+)]
+
+CreateTableOne(
+  data = baseline_aset,
+  vars = var_ckd,
+  factorVars = facvar_ckd,
+  strata = "CKD_TS_EITHER"
 )
 
+CreateTableOne(
+  data = baseline_aset,
+  vars = var_ckd,
+  factorVars = facvar_ckd,
+  strata = "CKD_TS_GRP"
+)
 
 
 #==== SDH on BP and MEDS ==== 
@@ -95,38 +141,4 @@ baseline_aset %<>%
     BASE_SBP_BIN = as.numeric((BASE_SBP>140))
   )
 
-odds_ratio<-data.frame(
-  var1=as.character(),
-  var2=as.character(),
-  odds_ratio=as.numeric(),
-  ci_lower=as.numeric(),
-  ci_upper=as.numeric(),
-  p_value=as.numeric()
-)
 
-for (vari in var){
-  cat("test variable:",vari,"\n")
-  
-  fit<-glm(
-    as.formula(paste0("BASE_SBP_BIN ~",vari)),
-    data=baseline_aset,
-    family=binomial()
-  )
-  summ.fit<-summary(fit)
-  ci.fit<-confint(fit)
-  
-  odds_ratio<-odds_ratio %>%
-    add_row(
-      var1 = vari,
-      var2 = attr(summ.fit$coefficients,"dimnames")[[1]][-1],
-      odds_ratio=exp(summ.fit$coefficients[-1,1]), # note that the coefficient of logistic regression is the log-odds
-      ci_lower = exp(ci.fit[-1,1]),
-      ci_upper = exp(ci.fit[-1,2]),
-      p_value=summ.fit$coefficients[-1,4])
-  
-}
-odds_ratio<-odds_ratio %>% 
-  filter(p_value<0.1) %>%
-  arrange(p_value)
-
-odds_ratio

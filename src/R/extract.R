@@ -53,3 +53,14 @@ saveRDS(aset,file=file.path(path_to_data,"baseline_aset.rda"))
 #   data.frame(VAR = colnames(baseline_aset),stringsAsFactors=F),
 #   file = file.path(path_to_ref,"metadata.csv")
 # )
+
+
+# collect final aset
+unenr_aset<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_UNENR_BASELINE_FINAL")) %>% collect()
+#- data
+saveRDS(unenr_aset,file=file.path(path_to_data,"unenrol_aset.rda"))
+#- meta
+# write.csv(
+#   data.frame(VAR = colnames(baseline_aset),stringsAsFactors=F),
+#   file = file.path(path_to_ref,"metadata.csv")
+# )

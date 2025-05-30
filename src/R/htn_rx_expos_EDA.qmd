@@ -154,7 +154,6 @@ elig_drift<-baseline_aset %>%
 elig_drift
 ```
 
-
 ## Investigation: How much of the eligibility drift can be explained by anti-hypertensive medication use during the run-in period?
 
 We set out to investigate what could be some legitimate reasons occured during the run-in period (i.e., the time period between eligibility and recruitment/randomization) to explain this eligibility drift. For this investigation, we also collected all prescription data from CDM PRESCRIBING table provided by KUMC team and identified the following anti-HTN medications (using VA classifications) as well as their timings (start before eligibility visit or during the run-in period):
@@ -184,7 +183,6 @@ We set out to investigate what could be some legitimate reasons occured during t
 -   CV805: angiotensin II inhibitor
 
 -   CV806: direct renin inhibitor
-
 
 ### Analysis I: Using systematic explanatory feature screening to investigate what are the explanatory factors for significant BP drop
 
@@ -302,8 +300,6 @@ univar_analysis_mixed(
 )
 ```
 
-
-
 ```{r}
 #| label: stepwise-reg
 
@@ -368,3 +364,104 @@ step_model %>% tbl_regression(exponentiate = TRUE)
 ```
 
 
+
+### CKD Testing
+
+```{r}
+#| label: ckd-testing-descr
+
+var_ckd<-c(
+  # "CKD_TS_NO",
+  # "CKD_TS_EITHER",
+  # "CKD_TS_BOTH",
+  # "CKD_TS_EGFR",
+  # "CKD_TS_ACRPCR",
+  # "CKD_TS_GRP",
+  "MED_CNT_IN",
+  "AGE",
+  "SEX_STR",
+  "RACE_STR",
+  "ETHN_STR",
+  "ADI_NATRANK",
+  "ADI_STATERANK",
+  "RUCA_PRIMARY_GRP",
+  "RUCA_PRIMARY_NONMETRO_IND",
+  "SMOKER_IND",
+  "BASE_SBP",
+  "BASE_DBP",
+  "BMI",
+  "CCI_TOTAL",
+  "CCI_TOTAL_GRP",
+  "EFI_DIA",
+  "EGFR_MULTI_IND",
+  "ACRPCR_MULTI_IND"
+)
+facvar_ckd<-var_ckd[!var_ckd %in% c(
+  "MED_CNT_IN",
+  "AGE",
+  "ADI_NATRANK",
+  "ADI_STATERANK",
+  "BASE_SBP",
+  "BASE_DBP",
+  "BMI",
+  "CCI_TOTAL"
+)]
+
+CreateTableOne(
+  data = baseline_aset,
+  vars = var_ckd,
+  factorVars = facvar_ckd,
+  strata = "CKD_TS_EITHER"
+)
+
+CreateTableOne(
+  data = baseline_aset,
+  vars = var_ckd,
+  factorVars = facvar_ckd,
+  strata = "CKD_TS_GRP"
+)
+```
+
+
+### SDH Outcome-wide
+
+```{r, warning=F}
+
+baseline_aset %<>%
+  mutate(
+    ADI_STATERANK_GRP = case_when(
+      ADI_STATERANK %in%  c(1,2,3) ~ 'low',
+      ADI_STATERANK %in%  c(4,5,6,7) ~ 'mod',
+      ADI_STATERANK %in%  c(8,9,10) ~ 'high',
+      TRUE ~ 'unk'
+    ),
+    ADI_STATERANK_GRP = fct_relevel(ADI_STATERANK_GRP,"low"),
+    LAB_EGFR2 = pmin(LAB_EGFR2,100)
+  )
+
+var_outcome<-c(
+  "BASE_HR","BASE_DBP","BASE_SBP",
+  "AV_CNT","TH_CNT","ED_CNT","IP_CNT","BMI",
+  c(
+    read.csv(file.path(path_to_ref,"metadata.csv"),stringsAsFactors = F) %>%
+      filter(grepl("^((LAB_)|(EFI_)|(CCI_))+",VAR)) %>%
+      pull(VAR)
+  )
+)
+facvar_outcome<-var_outcome[grepl("^(EFI_)+",var_outcome)]
+
+CreateTableOne(
+  data = baseline_aset,
+  vars = var_outcome,
+  factorVars = facvar_outcome,
+  strata = "ADI_STATERANK_GRP"
+)
+
+CreateTableOne(
+  data = baseline_aset,
+  vars = var_outcome,
+  factorVars = facvar_outcome,
+  strata = "RUCA_PRIMARY_NONMETRO_IND"
+)
+
+```
