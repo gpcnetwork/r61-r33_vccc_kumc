@@ -1560,6 +1560,10 @@ ul.task-list li input[type="checkbox"] {
   EFI_VALV = 1 (%)                          59 ( 9.8)      55 (13.9)   0.054
   SMOKER_IND = 1 (%)                        35 ( 5.8)      12 ( 3.0)   0.064
   ACS_PCT_GOVT (mean (SD))               12.50 (5.76)   13.25 (6.09)   0.049
+  antihtn_delta_med (%)                                                0.083
+     UNEXPLD                               231 (38.2)     164 (41.5)        
+     RUNIN_MT                              336 (55.5)     195 (49.4)        
+     RUNIN_RXUP                             38 ( 6.3)      36 ( 9.1)        
                                        Stratified by sig_decr_ind1
                                         test
   n                                         
@@ -1588,7 +1592,11 @@ ul.task-list li input[type="checkbox"] {
   MED_CNT_IN (mean (SD))                    
   EFI_VALV = 1 (%)                          
   SMOKER_IND = 1 (%)                        
-  ACS_PCT_GOVT (mean (SD))                  </code></pre>
+  ACS_PCT_GOVT (mean (SD))                  
+  antihtn_delta_med (%)                     
+     UNEXPLD                                
+     RUNIN_MT                               
+     RUNIN_RXUP                             </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -1856,23 +1864,23 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
 <pre><code>[1] 0.06512773</code></pre>
 </div>
 <div class="cell-output-display">
-<div id="knvuensxkz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#knvuensxkz table {
+<div id="jemjedsncm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jemjedsncm table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#knvuensxkz thead, #knvuensxkz tbody, #knvuensxkz tfoot, #knvuensxkz tr, #knvuensxkz td, #knvuensxkz th {
+#jemjedsncm thead, #jemjedsncm tbody, #jemjedsncm tfoot, #jemjedsncm tr, #jemjedsncm td, #jemjedsncm th {
   border-style: none;
 }
 
-#knvuensxkz p {
+#jemjedsncm p {
   margin: 0;
   padding: 0;
 }
 
-#knvuensxkz .gt_table {
+#jemjedsncm .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1898,12 +1906,12 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-left-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_caption {
+#jemjedsncm .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#knvuensxkz .gt_title {
+#jemjedsncm .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1915,7 +1923,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-bottom-width: 0;
 }
 
-#knvuensxkz .gt_subtitle {
+#jemjedsncm .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1927,7 +1935,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-top-width: 0;
 }
 
-#knvuensxkz .gt_heading {
+#jemjedsncm .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1939,13 +1947,13 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-right-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_bottom_border {
+#jemjedsncm .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_col_headings {
+#jemjedsncm .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1960,7 +1968,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-right-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_col_heading {
+#jemjedsncm .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1980,7 +1988,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   overflow-x: hidden;
 }
 
-#knvuensxkz .gt_column_spanner_outer {
+#jemjedsncm .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1992,15 +2000,15 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   padding-right: 4px;
 }
 
-#knvuensxkz .gt_column_spanner_outer:first-child {
+#jemjedsncm .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#knvuensxkz .gt_column_spanner_outer:last-child {
+#jemjedsncm .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#knvuensxkz .gt_column_spanner {
+#jemjedsncm .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2012,11 +2020,11 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   width: 100%;
 }
 
-#knvuensxkz .gt_spanner_row {
+#jemjedsncm .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#knvuensxkz .gt_group_heading {
+#jemjedsncm .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2042,7 +2050,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   text-align: left;
 }
 
-#knvuensxkz .gt_empty_group_heading {
+#jemjedsncm .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2057,15 +2065,15 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   vertical-align: middle;
 }
 
-#knvuensxkz .gt_from_md > :first-child {
+#jemjedsncm .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#knvuensxkz .gt_from_md > :last-child {
+#jemjedsncm .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#knvuensxkz .gt_row {
+#jemjedsncm .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2084,7 +2092,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   overflow-x: hidden;
 }
 
-#knvuensxkz .gt_stub {
+#jemjedsncm .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2097,7 +2105,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   padding-right: 5px;
 }
 
-#knvuensxkz .gt_stub_row_group {
+#jemjedsncm .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2111,15 +2119,15 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   vertical-align: top;
 }
 
-#knvuensxkz .gt_row_group_first td {
+#jemjedsncm .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#knvuensxkz .gt_row_group_first th {
+#jemjedsncm .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#knvuensxkz .gt_summary_row {
+#jemjedsncm .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2129,16 +2137,16 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   padding-right: 5px;
 }
 
-#knvuensxkz .gt_first_summary_row {
+#jemjedsncm .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_first_summary_row.thick {
+#jemjedsncm .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#knvuensxkz .gt_last_summary_row {
+#jemjedsncm .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2148,7 +2156,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-bottom-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_grand_summary_row {
+#jemjedsncm .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2158,7 +2166,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   padding-right: 5px;
 }
 
-#knvuensxkz .gt_first_grand_summary_row {
+#jemjedsncm .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2168,7 +2176,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-top-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_last_grand_summary_row_top {
+#jemjedsncm .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2178,11 +2186,11 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-bottom-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_striped {
+#jemjedsncm .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#knvuensxkz .gt_table_body {
+#jemjedsncm .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2191,7 +2199,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-bottom-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_footnotes {
+#jemjedsncm .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2205,7 +2213,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-right-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_footnote {
+#jemjedsncm .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2214,7 +2222,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   padding-right: 5px;
 }
 
-#knvuensxkz .gt_sourcenotes {
+#jemjedsncm .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2228,7 +2236,7 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   border-right-color: #D3D3D3;
 }
 
-#knvuensxkz .gt_sourcenote {
+#jemjedsncm .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2236,72 +2244,72 @@ sig_decr_ind1 ~ SEX_STR + ELIG_SBP + EFI_BLID + LAB_AST + WT +
   padding-right: 5px;
 }
 
-#knvuensxkz .gt_left {
+#jemjedsncm .gt_left {
   text-align: left;
 }
 
-#knvuensxkz .gt_center {
+#jemjedsncm .gt_center {
   text-align: center;
 }
 
-#knvuensxkz .gt_right {
+#jemjedsncm .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#knvuensxkz .gt_font_normal {
+#jemjedsncm .gt_font_normal {
   font-weight: normal;
 }
 
-#knvuensxkz .gt_font_bold {
+#jemjedsncm .gt_font_bold {
   font-weight: bold;
 }
 
-#knvuensxkz .gt_font_italic {
+#jemjedsncm .gt_font_italic {
   font-style: italic;
 }
 
-#knvuensxkz .gt_super {
+#jemjedsncm .gt_super {
   font-size: 65%;
 }
 
-#knvuensxkz .gt_footnote_marks {
+#jemjedsncm .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#knvuensxkz .gt_asterisk {
+#jemjedsncm .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#knvuensxkz .gt_indent_1 {
+#jemjedsncm .gt_indent_1 {
   text-indent: 5px;
 }
 
-#knvuensxkz .gt_indent_2 {
+#jemjedsncm .gt_indent_2 {
   text-indent: 10px;
 }
 
-#knvuensxkz .gt_indent_3 {
+#jemjedsncm .gt_indent_3 {
   text-indent: 15px;
 }
 
-#knvuensxkz .gt_indent_4 {
+#jemjedsncm .gt_indent_4 {
   text-indent: 20px;
 }
 
-#knvuensxkz .gt_indent_5 {
+#jemjedsncm .gt_indent_5 {
   text-indent: 25px;
 }
 
-#knvuensxkz .katex-display {
+#jemjedsncm .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#knvuensxkz div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#jemjedsncm div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -3197,23 +3205,23 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
 <pre><code>[1] 0.03712197</code></pre>
 </div>
 <div class="cell-output-display">
-<div id="eaysenzwof" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#eaysenzwof table {
+<div id="vvhtdtebzm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vvhtdtebzm table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#eaysenzwof thead, #eaysenzwof tbody, #eaysenzwof tfoot, #eaysenzwof tr, #eaysenzwof td, #eaysenzwof th {
+#vvhtdtebzm thead, #vvhtdtebzm tbody, #vvhtdtebzm tfoot, #vvhtdtebzm tr, #vvhtdtebzm td, #vvhtdtebzm th {
   border-style: none;
 }
 
-#eaysenzwof p {
+#vvhtdtebzm p {
   margin: 0;
   padding: 0;
 }
 
-#eaysenzwof .gt_table {
+#vvhtdtebzm .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -3239,12 +3247,12 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-left-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_caption {
+#vvhtdtebzm .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#eaysenzwof .gt_title {
+#vvhtdtebzm .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3256,7 +3264,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-bottom-width: 0;
 }
 
-#eaysenzwof .gt_subtitle {
+#vvhtdtebzm .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3268,7 +3276,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-top-width: 0;
 }
 
-#eaysenzwof .gt_heading {
+#vvhtdtebzm .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3280,13 +3288,13 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-right-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_bottom_border {
+#vvhtdtebzm .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_col_headings {
+#vvhtdtebzm .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3301,7 +3309,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-right-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_col_heading {
+#vvhtdtebzm .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3321,7 +3329,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   overflow-x: hidden;
 }
 
-#eaysenzwof .gt_column_spanner_outer {
+#vvhtdtebzm .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3333,15 +3341,15 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 4px;
 }
 
-#eaysenzwof .gt_column_spanner_outer:first-child {
+#vvhtdtebzm .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#eaysenzwof .gt_column_spanner_outer:last-child {
+#vvhtdtebzm .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#eaysenzwof .gt_column_spanner {
+#vvhtdtebzm .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -3353,11 +3361,11 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   width: 100%;
 }
 
-#eaysenzwof .gt_spanner_row {
+#vvhtdtebzm .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#eaysenzwof .gt_group_heading {
+#vvhtdtebzm .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3383,7 +3391,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   text-align: left;
 }
 
-#eaysenzwof .gt_empty_group_heading {
+#vvhtdtebzm .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -3398,15 +3406,15 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   vertical-align: middle;
 }
 
-#eaysenzwof .gt_from_md > :first-child {
+#vvhtdtebzm .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#eaysenzwof .gt_from_md > :last-child {
+#vvhtdtebzm .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#eaysenzwof .gt_row {
+#vvhtdtebzm .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3425,7 +3433,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   overflow-x: hidden;
 }
 
-#eaysenzwof .gt_stub {
+#vvhtdtebzm .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3438,7 +3446,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#eaysenzwof .gt_stub_row_group {
+#vvhtdtebzm .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3452,15 +3460,15 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   vertical-align: top;
 }
 
-#eaysenzwof .gt_row_group_first td {
+#vvhtdtebzm .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#eaysenzwof .gt_row_group_first th {
+#vvhtdtebzm .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#eaysenzwof .gt_summary_row {
+#vvhtdtebzm .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3470,16 +3478,16 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#eaysenzwof .gt_first_summary_row {
+#vvhtdtebzm .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_first_summary_row.thick {
+#vvhtdtebzm .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#eaysenzwof .gt_last_summary_row {
+#vvhtdtebzm .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3489,7 +3497,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-bottom-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_grand_summary_row {
+#vvhtdtebzm .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -3499,7 +3507,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#eaysenzwof .gt_first_grand_summary_row {
+#vvhtdtebzm .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3509,7 +3517,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-top-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_last_grand_summary_row_top {
+#vvhtdtebzm .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3519,11 +3527,11 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-bottom-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_striped {
+#vvhtdtebzm .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#eaysenzwof .gt_table_body {
+#vvhtdtebzm .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -3532,7 +3540,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-bottom-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_footnotes {
+#vvhtdtebzm .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3546,7 +3554,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-right-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_footnote {
+#vvhtdtebzm .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -3555,7 +3563,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#eaysenzwof .gt_sourcenotes {
+#vvhtdtebzm .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3569,7 +3577,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-right-color: #D3D3D3;
 }
 
-#eaysenzwof .gt_sourcenote {
+#vvhtdtebzm .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -3577,72 +3585,72 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#eaysenzwof .gt_left {
+#vvhtdtebzm .gt_left {
   text-align: left;
 }
 
-#eaysenzwof .gt_center {
+#vvhtdtebzm .gt_center {
   text-align: center;
 }
 
-#eaysenzwof .gt_right {
+#vvhtdtebzm .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#eaysenzwof .gt_font_normal {
+#vvhtdtebzm .gt_font_normal {
   font-weight: normal;
 }
 
-#eaysenzwof .gt_font_bold {
+#vvhtdtebzm .gt_font_bold {
   font-weight: bold;
 }
 
-#eaysenzwof .gt_font_italic {
+#vvhtdtebzm .gt_font_italic {
   font-style: italic;
 }
 
-#eaysenzwof .gt_super {
+#vvhtdtebzm .gt_super {
   font-size: 65%;
 }
 
-#eaysenzwof .gt_footnote_marks {
+#vvhtdtebzm .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#eaysenzwof .gt_asterisk {
+#vvhtdtebzm .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#eaysenzwof .gt_indent_1 {
+#vvhtdtebzm .gt_indent_1 {
   text-indent: 5px;
 }
 
-#eaysenzwof .gt_indent_2 {
+#vvhtdtebzm .gt_indent_2 {
   text-indent: 10px;
 }
 
-#eaysenzwof .gt_indent_3 {
+#vvhtdtebzm .gt_indent_3 {
   text-indent: 15px;
 }
 
-#eaysenzwof .gt_indent_4 {
+#vvhtdtebzm .gt_indent_4 {
   text-indent: 20px;
 }
 
-#eaysenzwof .gt_indent_5 {
+#vvhtdtebzm .gt_indent_5 {
   text-indent: 25px;
 }
 
-#eaysenzwof .katex-display {
+#vvhtdtebzm .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#eaysenzwof div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#vvhtdtebzm div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -3903,23 +3911,23 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
 </div>
 </div>
 <div class="cell-output-display">
-<div id="jrmivnnnuf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#jrmivnnnuf table {
+<div id="hcngwpudka" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#hcngwpudka table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#jrmivnnnuf thead, #jrmivnnnuf tbody, #jrmivnnnuf tfoot, #jrmivnnnuf tr, #jrmivnnnuf td, #jrmivnnnuf th {
+#hcngwpudka thead, #hcngwpudka tbody, #hcngwpudka tfoot, #hcngwpudka tr, #hcngwpudka td, #hcngwpudka th {
   border-style: none;
 }
 
-#jrmivnnnuf p {
+#hcngwpudka p {
   margin: 0;
   padding: 0;
 }
 
-#jrmivnnnuf .gt_table {
+#hcngwpudka .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -3945,12 +3953,12 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-left-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_caption {
+#hcngwpudka .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#jrmivnnnuf .gt_title {
+#hcngwpudka .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -3962,7 +3970,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-bottom-width: 0;
 }
 
-#jrmivnnnuf .gt_subtitle {
+#hcngwpudka .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -3974,7 +3982,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-top-width: 0;
 }
 
-#jrmivnnnuf .gt_heading {
+#hcngwpudka .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -3986,13 +3994,13 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-right-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_bottom_border {
+#hcngwpudka .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_col_headings {
+#hcngwpudka .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4007,7 +4015,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-right-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_col_heading {
+#hcngwpudka .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4027,7 +4035,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   overflow-x: hidden;
 }
 
-#jrmivnnnuf .gt_column_spanner_outer {
+#hcngwpudka .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4039,15 +4047,15 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 4px;
 }
 
-#jrmivnnnuf .gt_column_spanner_outer:first-child {
+#hcngwpudka .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#jrmivnnnuf .gt_column_spanner_outer:last-child {
+#hcngwpudka .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#jrmivnnnuf .gt_column_spanner {
+#hcngwpudka .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -4059,11 +4067,11 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   width: 100%;
 }
 
-#jrmivnnnuf .gt_spanner_row {
+#hcngwpudka .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#jrmivnnnuf .gt_group_heading {
+#hcngwpudka .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4089,7 +4097,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   text-align: left;
 }
 
-#jrmivnnnuf .gt_empty_group_heading {
+#hcngwpudka .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -4104,15 +4112,15 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   vertical-align: middle;
 }
 
-#jrmivnnnuf .gt_from_md > :first-child {
+#hcngwpudka .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#jrmivnnnuf .gt_from_md > :last-child {
+#hcngwpudka .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#jrmivnnnuf .gt_row {
+#hcngwpudka .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4131,7 +4139,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   overflow-x: hidden;
 }
 
-#jrmivnnnuf .gt_stub {
+#hcngwpudka .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4144,7 +4152,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#jrmivnnnuf .gt_stub_row_group {
+#hcngwpudka .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -4158,15 +4166,15 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   vertical-align: top;
 }
 
-#jrmivnnnuf .gt_row_group_first td {
+#hcngwpudka .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#jrmivnnnuf .gt_row_group_first th {
+#hcngwpudka .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#jrmivnnnuf .gt_summary_row {
+#hcngwpudka .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4176,16 +4184,16 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#jrmivnnnuf .gt_first_summary_row {
+#hcngwpudka .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_first_summary_row.thick {
+#hcngwpudka .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#jrmivnnnuf .gt_last_summary_row {
+#hcngwpudka .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4195,7 +4203,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-bottom-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_grand_summary_row {
+#hcngwpudka .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -4205,7 +4213,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#jrmivnnnuf .gt_first_grand_summary_row {
+#hcngwpudka .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4215,7 +4223,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-top-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_last_grand_summary_row_top {
+#hcngwpudka .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -4225,11 +4233,11 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-bottom-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_striped {
+#hcngwpudka .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#jrmivnnnuf .gt_table_body {
+#hcngwpudka .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -4238,7 +4246,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-bottom-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_footnotes {
+#hcngwpudka .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4252,7 +4260,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-right-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_footnote {
+#hcngwpudka .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -4261,7 +4269,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#jrmivnnnuf .gt_sourcenotes {
+#hcngwpudka .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -4275,7 +4283,7 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   border-right-color: #D3D3D3;
 }
 
-#jrmivnnnuf .gt_sourcenote {
+#hcngwpudka .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -4283,72 +4291,72 @@ ENROL_IND ~ LAB_EGFR2_GRP + MED_CNT_IN_GRP + AGE_GRP + RACE_STR +
   padding-right: 5px;
 }
 
-#jrmivnnnuf .gt_left {
+#hcngwpudka .gt_left {
   text-align: left;
 }
 
-#jrmivnnnuf .gt_center {
+#hcngwpudka .gt_center {
   text-align: center;
 }
 
-#jrmivnnnuf .gt_right {
+#hcngwpudka .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#jrmivnnnuf .gt_font_normal {
+#hcngwpudka .gt_font_normal {
   font-weight: normal;
 }
 
-#jrmivnnnuf .gt_font_bold {
+#hcngwpudka .gt_font_bold {
   font-weight: bold;
 }
 
-#jrmivnnnuf .gt_font_italic {
+#hcngwpudka .gt_font_italic {
   font-style: italic;
 }
 
-#jrmivnnnuf .gt_super {
+#hcngwpudka .gt_super {
   font-size: 65%;
 }
 
-#jrmivnnnuf .gt_footnote_marks {
+#hcngwpudka .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#jrmivnnnuf .gt_asterisk {
+#hcngwpudka .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#jrmivnnnuf .gt_indent_1 {
+#hcngwpudka .gt_indent_1 {
   text-indent: 5px;
 }
 
-#jrmivnnnuf .gt_indent_2 {
+#hcngwpudka .gt_indent_2 {
   text-indent: 10px;
 }
 
-#jrmivnnnuf .gt_indent_3 {
+#hcngwpudka .gt_indent_3 {
   text-indent: 15px;
 }
 
-#jrmivnnnuf .gt_indent_4 {
+#hcngwpudka .gt_indent_4 {
   text-indent: 20px;
 }
 
-#jrmivnnnuf .gt_indent_5 {
+#hcngwpudka .gt_indent_5 {
   text-indent: 25px;
 }
 
-#jrmivnnnuf .katex-display {
+#hcngwpudka .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#jrmivnnnuf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#hcngwpudka div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>

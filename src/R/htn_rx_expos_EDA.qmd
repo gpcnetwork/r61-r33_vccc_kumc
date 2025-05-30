@@ -280,8 +280,8 @@ odds_ratio<-odds_ratio %>%
 
 odds_ratio
 
-var_sel<-unique(odds_ratio$var1)
-facvar_sel<-unique(var_sel[var_sel %in% varsel$VAR[varsel$VAR_DTYPE=="cat"]])
+var_sel<-unique(c(odds_ratio$var1,"antihtn_delta_med"))
+facvar_sel<-unique(c(var_sel[var_sel %in% varsel$VAR[varsel$VAR_DTYPE=="cat"]],"antihtn_delta_med"))
 
 CreateTableOne(
   vars = var_sel,
