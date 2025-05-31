@@ -461,10 +461,10 @@ baseline_aset %<>%
 
 var_outcome<-c(
   "BASE_HR","BASE_DBP","BASE_SBP",
-  "AV_CNT","TH_CNT","ED_CNT","IP_CNT","BMI",
+  "AV_CNT","TH_CNT","ED_CNT","IP_CNT","BMI","MED_CNT_IN","MED_CNT_CLS","POLYRX_IN_GRP",
   c(
     read.csv(file.path(path_to_ref,"metadata.csv"),stringsAsFactors = F) %>%
-      filter(grepl("^((LAB_)|(EFI_)|(CCI_))+",VAR)) %>%
+      filter(grepl("^((LAB_)|(EFI_)|(CCI_)|(CKD_))+",VAR)) %>%
       pull(VAR)
   )
 )
