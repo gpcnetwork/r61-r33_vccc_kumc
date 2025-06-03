@@ -606,7 +606,7 @@ baseline_aset %<>%
   )
 
 var_outcome<-c(
-  "BASE_HR","BASE_DBP","BASE_SBP",
+  "BASE_HR","ELIG_DBP","ELIG_SBP",
   "AV_CNT","TH_CNT","ED_CNT","IP_CNT","BMI","MED_CNT_IN","MED_CNT_CLS","POLYRX_IN_GRP",
   c(
     read.csv(file.path(path_to_ref,"metadata.csv"),stringsAsFactors = F) %>%
@@ -644,8 +644,8 @@ var_enrol<-c(
   "ETHN_STR",
   "RACE_ETHN_STR",
   "BMI",
-  "BASE_DBP",
-  "BASE_SBP",
+  "ELIG_DBP",
+  "ELIG_SBP",
   "MED_CNT_IN",
   "SMOKER_IND",
   "LAB_EGFR2",
@@ -702,6 +702,8 @@ enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
       TRUE ~ 'non-hispanic'
     ),
     ETHN_STR = fct_relevel(ETHN_STR,'non-hispanic'),
+    RACE_ETHN_STR = fct_relevel(RACE_ETHN_STR,'white'),
+    PAYER_TYPE_PRIMARY_GRP = case_when(PAYER_TYPE_PRIMARY_GRP=="other" ~ "medicare", TRUE ~ PAYER_TYPE_PRIMARY_GRP),
     PAYER_TYPE_PRIMARY_GRP  = fct_relevel(PAYER_TYPE_PRIMARY_GRP,'medicare'),
     BMI_GRP = case_when(
       BMI < 25 ~ 'bmigrp1',
@@ -711,11 +713,10 @@ enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
       BMI>=40 ~ 'bmigrp5',
       TRUE ~ 'bmigrp9'
     ),
-    BASE_SBP_GRP = case_when(
-      BASE_SBP<140 ~ 'sbpgrp1',
-      BASE_SBP>=140&BASE_SBP<150 ~ 'sbpgrp2',
-      BASE_SBP>=150&BASE_SBP<160 ~ 'sbpgrp3',
-      BASE_SBP>=160 ~ 'sbpgrp4',
+    ELIG_SBP_GRP = case_when(
+      ELIG_SBP>=140&ELIG_SBP<150 ~ 'sbpgrp1',
+      ELIG_SBP>=150&ELIG_SBP<160 ~ 'sbpgrp2',
+      ELIG_SBP>=160 ~ 'sbpgrp3',
       TRUE ~ NA_character_
     ),
     MED_CNT_IN_GRP = case_when(
@@ -759,14 +760,14 @@ enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
       TRUE ~ 0
     )
   ) %>%
-  filter(!is.na(BASE_SBP)&!is.na(AGE_GRP))
+  filter(!is.na(ELIG_SBP)&!is.na(AGE_GRP))
 
 var_enrol<-c(
   var_enrol,
   "AGE_75UP",
   "AGE_GRP",
   "BMI_GRP",
-  "BASE_SBP_GRP",
+  "ELIG_SBP_GRP",
   "MED_CNT_IN_GRP",
   "LAB_EGFR2_GRP",
   "LAB_URALBCR2_GRP",
@@ -780,7 +781,7 @@ facvar_enrol<-c(
   "AGE_75UP",
   "AGE_GRP",
   "BMI_GRP",
-  "BASE_SBP_GRP",
+  "ELIG_SBP_GRP",
   "MED_CNT_IN_GRP",
   "LAB_EGFR2_GRP",
   "LAB_URALBCR2_GRP",
@@ -832,7 +833,7 @@ var_pre<-c(
   "RACE_ETHN_STR",
   "AGE_GRP",
   "BMI_GRP",
-  "BASE_SBP_GRP",
+  "ELIG_SBP_GRP",
   "MED_CNT_IN_GRP",
   "LAB_EGFR2_GRP",
   "LAB_URALBCR2_GRP",
