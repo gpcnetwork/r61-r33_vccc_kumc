@@ -870,11 +870,9 @@ modsumm<-summary(step_model)
 with(modsumm, 1 - deviance/null.deviance)
 
 step_model |> 
-  tbl_regression(exponentiate = TRUE) |>
-  add_global_p()
+  tbl_regression(exponentiate = TRUE)
 
 full_model |> 
-  tbl_regression(exponentiate = TRUE) |>
-  add_global_p()
+  tbl_regression(exponentiate = TRUE)
 
 ```
