@@ -14,7 +14,7 @@ execute:
 ```{r}
 #| label: load-pkg
 
-rm(list=ls())
+# rm(list=ls())
 pacman::p_load(
   tidyverse,
   magrittr,
@@ -39,25 +39,7 @@ path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 
 ## Clinic BP vs. Home BP at Baseline
 
-Run-in period is defined as the time gap between eligibility clinic visit and baseline visit. We define the following stratification groups:
-
-1.  based on eligibility sbp:
-
--   esbp1: 140 - 150
--   esbp2: 150 - 160
--   esbp3: \> 160
-
-2.  based on baseline sbp:
-
--   bsbp1: 140 - 150
--   bsbp2: 150 - 160
--   bsbp3: \> 160
-
-3.  based on change from eligibility to baseline sbp:
-
--   deltasbp1: sbp decreased to below 130
--   deltasbp2: sbp decreased to between 130 and 140
--   deltasbp3: sbp decreased but remain above 140 or not decreased
+Run-in period is defined as the time gap between eligibility clinic visit and baseline visit. 
 
 ```{r, warning=F}
 #| label: bp-baseline-plot
@@ -124,49 +106,94 @@ ggplot(
 
 ggplot(
   baseline_aset %>%
-    dplyr::select(STUDY_ID,ELIG_SINCE_INDEX,DELTA_SBP,DELTA_SBP_GROUP,SITE) %>%
+    filter(ELIG_SINCE_INDEX>=-100&ELIG_SINCE_INDEX<=0) %>%
+    dplyr::select(STUDY_ID,DELTA_SBP) %>%
     unique,
-  aes(
-    x = ELIG_SINCE_INDEX,
-    y = DELTA_SBP,
-    color = DELTA_SBP_GROUP
-    )
+  aes(x=DELTA_SBP)
 )+
-  geom_point()+
-  geom_hline(yintercept=0,linetype=2)+
-  geom_vline(xintercept=0,linetype=2)+
-  geom_vline(xintercept=-30,linetype=2)+
-  geom_vline(xintercept=-60,linetype=2)+
-  geom_vline(xintercept=-90,linetype=2)+
-  labs(
-    x = 'run-in period duration', 
-    y = 'SBP difference', 
-    title = "eligibility and baseline SBP"
+  geom_histogram(
+    aes(y=..density..),
+    binwidth = 2,
+    fill="grey",
+    color="blue")+
+  geom_density(
+    aes(y = ..density..),
+    color = "red",
+    stat = 'density',
+    bw = 2,
+    size = 1.5) +
+  stat_bin(
+    aes(y = ..density..,
+        label=scales::percent(round(..density..,3))),
+    geom='text',
+    binwidth=2,
+    vjust = 1.5,
+    fontface = "bold"
   )+
-  facet_wrap(~ SITE)
+  scale_x_continuous(
+    name = "Delta SBP"
+  )+
+  scale_y_continuous(
+    name = "Percentage (%)",
+    breaks = seq(0,0.2,by=0.02),
+    labels = seq(0,0.2,by=0.02)*100,
+    sec.axis = sec_axis(
+      trans = ~ . * N,
+      name = "Count",
+      breaks = seq(0,40000,by=2000),
+      labels = seq(0,40000,by=2000))
+  )+
+  theme(
+    panel.background = element_rect(fill = "white", colour = "grey50"),
+    panel.grid.major.y = element_line(colour = "grey"),
+    text = element_text(face="bold",size=14)
+  )
 
-elig_drift<-baseline_aset %>%
-  group_by(SITE) %>%
-  mutate(n_site = length(unique(STUDY_ID))) %>%
-  ungroup %>%
-  group_by(SITE,DELTA_SBP_GROUP,n_site) %>%
-  summarise(cnt = length(unique(STUDY_ID)),.groups='drop') %>%
-  mutate(
-    N = n_site,
-    prop = round(cnt/N,3)
-  ) %>%
-  bind_rows(
-    baseline_aset %>%
-    group_by(DELTA_SBP_GROUP) %>%
-    summarise(cnt = length(unique(STUDY_ID)),.groups='drop') %>%
-    mutate(
-      SITE = 'ALL',
-      N = N,
-      prop = round(cnt/N,3)
-    )
-  ) %>%
-  dplyr::select(SITE,DELTA_SBP_GROUP, N, cnt, prop)
-elig_drift
+# ggplot(
+#   baseline_aset %>%
+#     dplyr::select(STUDY_ID,ELIG_SINCE_INDEX,DELTA_SBP,DELTA_SBP_GROUP,SITE) %>%
+#     unique,
+#   aes(
+#     x = ELIG_SINCE_INDEX,
+#     y = DELTA_SBP,
+#     color = DELTA_SBP_GROUP
+#     )
+# )+
+#   geom_point()+
+#   geom_hline(yintercept=0,linetype=2)+
+#   geom_vline(xintercept=0,linetype=2)+
+#   geom_vline(xintercept=-30,linetype=2)+
+#   geom_vline(xintercept=-60,linetype=2)+
+#   geom_vline(xintercept=-90,linetype=2)+
+#   labs(
+#     x = 'run-in period duration', 
+#     y = 'SBP difference', 
+#     title = "eligibility and baseline SBP"
+#   )+
+#   facet_wrap(~ SITE)
+# 
+# elig_drift<-baseline_aset %>%
+#   group_by(SITE) %>%
+#   mutate(n_site = length(unique(STUDY_ID))) %>%
+#   ungroup %>%
+#   group_by(SITE,DELTA_SBP_GROUP,n_site) %>%
+#   summarise(cnt = length(unique(STUDY_ID)),.groups='drop') %>%
+#   mutate(
+#     N = n_site,
+#     prop = round(cnt/N,3)
+#   ) %>%
+#   bind_rows(
+#     baseline_aset %>%
+#     group_by(DELTA_SBP_GROUP) %>%
+#     summarise(cnt = length(unique(STUDY_ID)),.groups='drop') %>%
+#     mutate(
+#       SITE = 'ALL',
+#       N = N,
+#       prop = round(cnt/N,3)
+#     )
+#   ) %>%
+#   dplyr::select(SITE,DELTA_SBP_GROUP, N, cnt, prop)
+# elig_drift
 ```
 
 ## Investigation: How much of the eligibility drift can be explained by anti-hypertensive medication use during the run-in period?
@@ -260,7 +287,22 @@ CreateTableOne(
   data = baseline_aset, 
   factorVars = c("antihtn_delta_med")
 )
+
+CreateTableOne(
+  vars = c("delta_sbp_over10"),
+  strata = "antihtn_delta_med" ,
+  data = baseline_aset,
+  factorVars = c("delta_sbp_over10")
+)
+
+CreateTableOne(
+  vars = c("antihtn_delta_med"), 
+  strata = "delta_sbp_over10" , 
+  data = baseline_aset, 
+  factorVars = c("antihtn_delta_med")
+)
 ```
+
 
 #### Univariate filtering
 
@@ -347,6 +389,13 @@ CreateTableOne(
   factorVars = facvar_sel
 )
 
+CreateTableOne(
+  vars = var_sel,
+  strata = "delta_sbp_over10",
+  data = baseline_aset,
+  factorVars = facvar_sel
+)
+
 # base_uni<-univar_analysis_mixed(
 #   df = baseline_aset,
 #   id_col ="STUDY_ID",
@@ -360,6 +409,7 @@ CreateTableOne(
 #     file.path(path_to_res,'by_eligdrift.html')
 #   )
 ```
+
 
 ```{r}
 #| label: stepwise-reg
@@ -588,7 +638,8 @@ var_enrol<-c(
   "LAB_HBA1C",
   "EFI_STROKE",
   "CCI_TOTAL",
-  "CCI_TOTAL_GRP"
+  "CCI_TOTAL_GRP",
+  "PAYER_TYPE_PRIMARY_GRP"
 )
 
 facvar_enrol<-c(
@@ -598,7 +649,8 @@ facvar_enrol<-c(
   "SMOKER_IND",
   "EFI_DIA",
   "EFI_STROKE",
-  "CCI_TOTAL_GRP"
+  "CCI_TOTAL_GRP",
+  "PAYER_TYPE_PRIMARY_GRP"
 )
 
 enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
