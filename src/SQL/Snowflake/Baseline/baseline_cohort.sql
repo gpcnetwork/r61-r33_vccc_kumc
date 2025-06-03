@@ -164,11 +164,16 @@ with combine as (
        b.base_hr,
        b.base_dbp,
        b.base_sbp,
-       b.base_sbp - a.elig_sbp as delta_sbp,
+       b.base_sbp - try_to_number(a.elig_sbp) as delta_sbp,
        case when b.base_sbp - try_to_number(a.elig_sbp) < 0 and b.base_sbp<130 then 'deltasbp1'
             when b.base_sbp - try_to_number(a.elig_sbp) < 0 and b.base_sbp>=130 and b.base_sbp<140 then 'deltasbp2'
             else 'deltasbp3'
        end as delta_sbp_group,
+       case when b.base_sbp - try_to_number(a.elig_sbp) between -10 and 10 then 0 
+            when b.base_sbp - try_to_number(a.elig_sbp) < -10 then floor((b.base_sbp - try_to_number(a.elig_sbp))/10)+1
+            when b.base_sbp - try_to_number(a.elig_sbp) > 10 then ceil((b.base_sbp - try_to_number(a.elig_sbp))/10)-1
+            else 0
+       end as delta_sbp_by10,
        datediff(day,b.base_date,a.elig_date) as delta_days,
        case when try_to_number(a.elig_sbp) >=140 and try_to_number(a.elig_sbp) <150 then 'esbp1'
             when try_to_number(a.elig_sbp) >=150 and try_to_number(a.elig_sbp) <160 then 'esbp2'
@@ -1995,7 +2000,15 @@ join VCCC_BASE_MED med on a.study_id = med.study_id
 join VCCC_RUNIN_MED runin on a.study_id = runin.study_id
 ;
 
-select * from VCCC_BASELINE_FINAL limit 5;
+select * from VCCC_BASELINE_FINAL 
+where DELTA_SBP_BY10 <-3
+limit 5;
+
+select delta_sbp_by10, count(distinct patid)
+from VCCC_BASELINE_FINAL
+group by delta_sbp_by10
+order by delta_sbp_by10
+;
 
 select count(distinct patid), count(distinct study_id), count(*) from VCCC_BASELINE_FINAL;
 
