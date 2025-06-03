@@ -159,7 +159,8 @@ with combine as (
        p.disp_date,
        p.disp_status,
        p.site,
-       try_to_double(a.elig_sbp) as elig_sbp,
+       try_to_number(a.elig_sbp) as elig_sbp,
+       try_to_number(a.elig_dbp) as elig_dbp,
        a.elig_date,
        b.base_hr,
        b.base_dbp,
@@ -200,9 +201,14 @@ with combine as (
        end as race_str,
        p.ethnicity,
        case when p.ethnicity = 1 then 'hispanic'
-            when p.ethnicity = 1 then 'non-hispanic'
+            when p.ethnicity = 2 then 'non-hispanic'
             else 'NI'
        end as ethn_str,
+       case when p.race = '3' and p.ethnicity <> 1 then 'nh-black'
+            when p.race = '5' then 'white'
+            when p.ethnicity = 1 then 'hisp'
+            else 'other'
+       end as race_ethn_str,
        p.urm_ind,
        p.age,
        c.patid,
@@ -777,6 +783,11 @@ for(i=0; i<SITES.length; i++){
                 ,enc.FACILITY_LOCATION
                 ,enc.FACILITY_TYPE
                 ,enc.PAYER_TYPE_PRIMARY
+                ,case when enc.PAYER_TYPE_PRIMARY like '1%' then 'medicare'
+                      when enc.PAYER_TYPE_PRIMARY like '5%' then 'commercial'
+                      when enc.PAYER_TYPE_PRIMARY like '82%' then 'selfpay'
+                      else 'other'
+                 end as PAYER_TYPE_PRIMARY_GRP
                 ,enc.RAW_PAYER_TYPE_PRIMARY
                 ,enc.RAW_PAYER_ID_PRIMARY   
                 ,enc.PROVIDERID
@@ -820,6 +831,7 @@ create or replace table VCCC_VISITS_LONG (
     ,FACILITY_LOCATION varchar(50)
     ,FACILITY_TYPE varchar(50)
     ,PAYER_TYPE_PRIMARY varchar(50)
+    ,PAYER_TYPE_PRIMARY_GRP varchar(50)
     ,RAW_PAYER_TYPE_PRIMARY varchar(50)
     ,RAW_PAYER_ID_PRIMARY varchar(50)  
     ,PROVIDERID varchar(50)
@@ -857,6 +869,9 @@ call get_visits_long(
 
 select * from VCCC_VISITS_LONG limit 5;
 
+select PAYER_TYPE_PRIMARY_GRP, count(distinct patid) from VCCC_VISITS_LONG 
+group by PAYER_TYPE_PRIMARY_GRP;
+
 create or replace table VCCC_VISITS_BASE as 
 with av as (
     select study_id, count(distinct admit_date) as vis_cnt 
@@ -878,17 +893,27 @@ with av as (
     from VCCC_VISITS_LONG
     where days_since_index between -730 and -1 and ENC_TYPE in ('IP','EI')
     group by study_id
+), payer as (
+    select study_id, payer_type_primary_grp from 
+    (
+        select a.*, row_number() over (partition by a.study_id order by abs(a.days_since_index)) rn
+        from VCCC_VISITS_LONG a
+        where a.enc_type = 'AV'
+    )
+    where rn = 1
 )
 select a.patid, a.study_id,
        coalesce(av.vis_cnt, 0) as av_cnt,
        coalesce(th.vis_cnt, 0) as th_cnt,
        coalesce(ed.vis_cnt, 0) as ed_cnt,
-       coalesce(ip.vis_cnt, 0) as ip_cnt
+       coalesce(ip.vis_cnt, 0) as ip_cnt,
+       coalesce(payer.payer_type_primary_grp,'other') as payer_type_primary_grp
 from VCCC_BASE_BP_TCOG_SDH a 
 left join av on a.study_id = av.study_id 
 left join th on a.study_id = th.study_id 
 left join ed on a.study_id = ed.study_id 
 left join ip on a.study_id = ip.study_id 
+left join payer on a.study_id = payer.study_id
 ;
 
 create or replace procedure get_anthro_long(
@@ -2008,6 +2033,12 @@ select delta_sbp_by10, count(distinct patid)
 from VCCC_BASELINE_FINAL
 group by delta_sbp_by10
 order by delta_sbp_by10
+;
+
+select race_ethn_str, count(distinct patid)
+from VCCC_BASELINE_FINAL
+group by race_ethn_str
+order by race_ethn_str
 ;
 
 select count(distinct patid), count(distinct study_id), count(*) from VCCC_BASELINE_FINAL;

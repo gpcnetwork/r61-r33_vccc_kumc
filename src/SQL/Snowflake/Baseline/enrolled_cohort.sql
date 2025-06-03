@@ -208,8 +208,8 @@ create or replace table VCCC_UNENR_INDEX as
 with id_index as (
     select  patid, 
             measure_date as index_date,
-            sbp as base_sbp,
-            dbp as base_dbp
+            sbp as elig_sbp,
+            dbp as elig_dbp
     from (
         select patid, measure_date, sbp, dbp,
             row_number() over (partition by patid order by measure_date) as rn
@@ -227,7 +227,7 @@ with id_index as (
     join id_index on a.patid = id_index.patid  
 ), combine_dup as (
     select a.patid, a.prescreen_status, a.site,
-        b.index_date, b.base_sbp, b.base_dbp,
+        b.index_date, b.elig_sbp, b.elig_dbp,
         p.birth_date,
         round(datediff(day,p.birth_date,b.index_date)/365.25) as age,
         p.sex,
@@ -247,6 +247,11 @@ with id_index as (
             WHEN p.hispanic = 'N' THEN 'non-hispanic' 
             ELSE 'NI' 
         END AS ethn_str, 
+        case when p.race = '03' and p.hispanic <> 'Y' then 'nh-black'
+             when p.race = '05' then 'white'
+             when p.hispanic = 'Y' then 'hisp'
+            else 'other'
+       end as race_ethn_str,
         row_number() over (partition by a.patid order by b.index_date) as rn 
     from VCCC_UNENR a 
     join id_index b 
@@ -518,6 +523,11 @@ for(i=0; i<SITES.length; i++){
                 ,enc.FACILITY_LOCATION
                 ,enc.FACILITY_TYPE
                 ,enc.PAYER_TYPE_PRIMARY
+                ,case when enc.PAYER_TYPE_PRIMARY like '1%' then 'medicare'
+                      when enc.PAYER_TYPE_PRIMARY like '5%' then 'commercial'
+                      when enc.PAYER_TYPE_PRIMARY like '82%' then 'selfpay'
+                      else 'other'
+                 end as PAYER_TYPE_PRIMARY_GRP
                 ,enc.RAW_PAYER_TYPE_PRIMARY
                 ,enc.RAW_PAYER_ID_PRIMARY   
                 ,enc.PROVIDERID
@@ -560,6 +570,7 @@ create or replace table VCCC_UNENR_VISITS_LONG (
     ,FACILITY_LOCATION varchar(50)
     ,FACILITY_TYPE varchar(50)
     ,PAYER_TYPE_PRIMARY varchar(50)
+    ,PAYER_TYPE_PRIMARY_GRP varchar(50)
     ,RAW_PAYER_TYPE_PRIMARY varchar(50)
     ,RAW_PAYER_ID_PRIMARY varchar(50)  
     ,PROVIDERID varchar(50)
@@ -618,17 +629,27 @@ with av as (
     from VCCC_UNENR_VISITS_LONG
     where days_since_index between -730 and -1 and ENC_TYPE in ('IP','EI')
     group by patid
+), payer as (
+    select patid, payer_type_primary_grp from 
+    (
+        select a.*, row_number() over (partition by a.patid order by abs(a.days_since_index)) rn
+        from VCCC_UNENR_VISITS_LONG a
+        where a.enc_type = 'AV'
+    )
+    where rn = 1
 )
 select distinct a.patid,
        coalesce(av.vis_cnt, 0) as av_cnt,
        coalesce(th.vis_cnt, 0) as th_cnt,
        coalesce(ed.vis_cnt, 0) as ed_cnt,
-       coalesce(ip.vis_cnt, 0) as ip_cnt
+       coalesce(ip.vis_cnt, 0) as ip_cnt,
+       coalesce(payer.payer_type_primary_grp,'other') as payer_type_primary_grp
 from VCCC_UNENR_INDEX a 
 left join av on a.patid = av.patid 
 left join th on a.patid = th.patid 
 left join ed on a.patid = ed.patid 
 left join ip on a.patid = ip.patid 
+left join payer on a.patid = payer.patid
 ;
 
 select count(distinct patid), count(*) from VCCC_UNENR_VISITS_BASE;
@@ -1714,3 +1735,6 @@ select count(distinct patid), count(*) from VCCC_UNENR_BASELINE_FINAL;
 
 select prescreen_status, count(distinct patid), count(*) from VCCC_UNENR_BASELINE_FINAL
 group by prescreen_status;
+
+select payer_type_primary_grp, count(distinct patid), count(*) from VCCC_UNENR_BASELINE_FINAL
+group by payer_type_primary_grp;
