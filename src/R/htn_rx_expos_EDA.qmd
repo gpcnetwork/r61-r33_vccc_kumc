@@ -1,7 +1,9 @@
 ---
 title: "Exploring potential explanations for eligibility drift"
 author: "Xing Song"
-format: html
+format: 
+  html:
+    self-contained: true
 editor: visual
 execute: 
   echo: false
@@ -24,7 +26,8 @@ pacman::p_load(
   gtsummary,
   devtools,
   tableone,
-  pROC
+  pROC,
+  MASS
 )
 source_url("https://raw.githubusercontent.com/sxinger/utils/master/analysis_util.R")
 source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
@@ -77,7 +80,7 @@ N<-length(unique(baseline_aset$STUDY_ID))
 ggplot(
   baseline_aset %>%
     filter(ELIG_SINCE_INDEX>=-100&ELIG_SINCE_INDEX<=0) %>%
-    select(STUDY_ID,ELIG_SINCE_INDEX) %>%
+    dplyr::select(STUDY_ID,ELIG_SINCE_INDEX) %>%
     unique,
   aes(x=ELIG_SINCE_INDEX)
 )+
@@ -121,7 +124,7 @@ ggplot(
 
 ggplot(
   baseline_aset %>%
-    select(STUDY_ID,ELIG_SINCE_INDEX,DELTA_SBP,DELTA_SBP_GROUP,SITE) %>%
+    dplyr::select(STUDY_ID,ELIG_SINCE_INDEX,DELTA_SBP,DELTA_SBP_GROUP,SITE) %>%
     unique,
   aes(
     x = ELIG_SINCE_INDEX,
@@ -162,7 +165,7 @@ elig_drift<-baseline_aset %>%
       prop = round(cnt/N,3)
     )
   ) %>%
-  select(SITE,DELTA_SBP_GROUP, N, cnt, prop)
+  dplyr::select(SITE,DELTA_SBP_GROUP, N, cnt, prop)
 elig_drift
 ```
 
@@ -243,6 +246,20 @@ CreateTableOne(
   data = baseline_aset, 
   factorVars = c("antihtn_delta_med")
 )
+
+CreateTableOne(
+  vars = c("DELTA_SBP_BY10_GRP"),
+  strata = "antihtn_delta_med" ,
+  data = baseline_aset,
+  factorVars = c("DELTA_SBP_BY10_GRP")
+)
+
+CreateTableOne(
+  vars = c("antihtn_delta_med"), 
+  strata = "DELTA_SBP_BY10_GRP" , 
+  data = baseline_aset, 
+  factorVars = c("antihtn_delta_med")
+)
 ```
 
 #### Univariate filtering
@@ -257,13 +274,18 @@ varsel<-read.csv(file.path(path_to_ref,"metadata.csv"),stringsAsFactors = F) %>%
     "BASE_HR"
   ))
 
-odds_ratio<-data.frame(
+coef_filter<-data.frame(
   var1=as.character(),
   var2=as.character(),
-  odds_ratio=as.numeric(),
-  ci_lower=as.numeric(),
-  ci_upper=as.numeric(),
-  p_value=as.numeric()
+  or_sigdelta=as.numeric(),
+  or_ci_lower=as.numeric(),
+  or_ci_upper=as.numeric(),
+  or_p_value=as.numeric(),
+  coef_delta=as.numeric(),
+  coef_sigdelta=as.numeric(),
+  coef_ci_lower=as.numeric(),
+  coef_ci_upper=as.numeric(),
+  coef_p_value=as.numeric()
 )
 
 for (vari in varsel$VAR){
@@ -277,27 +299,50 @@ for (vari in varsel$VAR){
   summ.fit<-summary(fit)
   ci.fit<-confint(fit)
   
-  odds_ratio<-odds_ratio %>%
+  fit2<-glm(
+    as.formula(paste0("DELTA_SBP ~",vari)),
+    data=baseline_aset %>% filter(!is.na(get(vari))&get(vari)!="Inf"),
+    family=gaussian()
+  )
+  summ.fit2<-summary(fit2)
+  ci.fit2<-confint(fit2)
+  
+  coef_filter<-coef_filter %>%
     add_row(
       var1 = vari,
       var2 = attr(summ.fit$coefficients,"dimnames")[[1]][-1],
-      odds_ratio=exp(summ.fit$coefficients[-1,1]), # note that the coefficient of logistic regression is the log-odds
-      ci_lower = exp(ci.fit[-1,1]),
-      ci_upper = exp(ci.fit[-1,2]),
-      p_value=summ.fit$coefficients[-1,4])
+      or_sigdelta=exp(summ.fit$coefficients[-1,1]), # note that the coefficient of logistic regression is the log-odds
+      or_ci_lower = exp(ci.fit[-1,1]),
+      or_ci_upper = exp(ci.fit[-1,2]),
+      or_p_value=summ.fit$coefficients[-1,4],
+      coef_delta = summ.fit2$coefficients[-1,1],
+      coef_ci_lower=ci.fit2[-1,1],
+      coef_ci_upper=ci.fit2[-1,2],
+      coef_p_value=summ.fit2$coefficients[-1,4]
+    )
 }
-odds_ratio<-odds_ratio %>% 
-  filter(p_value<0.05|var1 %in% c("antihtn_delta_med")) %>%
-  arrange(p_value)
+coef_filter<-coef_filter %>% 
+  filter(
+    or_p_value<0.05 | 
+    coef_p_value<0.05 |
+    var1 %in% c("antihtn_delta_med")) %>%
+  arrange(coef_p_value)
 
-odds_ratio
+coef_filter
 
-var_sel<-unique(c(odds_ratio$var1,"antihtn_delta_med"))
+var_sel<-unique(c(coef_filter$var1,"antihtn_delta_med"))
 facvar_sel<-unique(c(var_sel[var_sel %in% varsel$VAR[varsel$VAR_DTYPE=="cat"]],"antihtn_delta_med"))
 
 CreateTableOne(
   vars = var_sel,
   strata = "sig_decr_ind1" ,
+  data = baseline_aset,
+  factorVars = facvar_sel
+)
+
+CreateTableOne(
+  vars = var_sel,
+  strata = "DELTA_SBP_BY10_GRP",
   data = baseline_aset,
   factorVars = facvar_sel
 )
@@ -324,10 +369,15 @@ sel_aset<-baseline_aset %>%
     list(
       LAB_CR = 1,
       LAB_AST = 22,
-      LAB_HDL = 57
+      LAB_HDL = 57,
+      LAB_SOD = 140,
+      LAB_LDL = 65
     )
   ) %>%
-  filter(!is.na(BMI)&!is.na(WT)&!is.na(HT))
+  filter(!is.na(BMI)&!is.na(WT)&!is.na(HT)) %>%
+  mutate(
+    DELTA_SBP_BY10_GRP = as.factor(DELTA_SBP_BY10_GRP)
+  )
 
 var_sel<-c(
   "SEX_STR",
@@ -339,12 +389,15 @@ var_sel<-c(
   "LAB_AST",
   "LAB_CR",
   "LAB_HDL",
+  "LAB_SOD",
+  "LAB_LDL",
   "EFI_BLID",
   "EFI_CP",
   "EFI_DEP",
   "EFI_DIZ",
   "EFI_OST",
-  "EFI_VALV"
+  "EFI_VALV",
+  "EFI_ARTH"
 )
 
 # Specify a null model with no predictors
@@ -356,9 +409,9 @@ null_model <- glm(
 
 # Specify the full model using all of the potential predictors
 full_model <- glm(
-  formula(paste0("sig_decr_ind1 ~ ",paste(var_sel,collapse = "+"))), 
+  formula(paste0("DELTA_SBP ~ ",paste(var_sel,collapse = "+"))), 
   data = sel_aset, 
-  family = binomial()
+  family = gaussian
 )
 
 # Use a bi-directional stepwise algorithm to build a parsimonious model
@@ -371,12 +424,39 @@ step_model <- step(
 modsumm<-summary(step_model)
 with(modsumm, 1 - deviance/null.deviance)
 
-step_model %>% tbl_regression(exponentiate = TRUE)
+step_model |> 
+  tbl_regression(exponentiate = FALSE) |>
+  modify_header(estimate = "**Coef**")
 
-# pROC::ggroc(pROC::roc(step_model$y, step_model$fitted))+
-#   geom_abline(intercept=1,linetype=2)+
-#   labs(subtitle = paste0("AUC:",round(pROC::auc(step_model$y, step_model$fitted),4)))
 
+# ordinal regression 
+# Specify a null model with no predictors
+null_model <- polr(
+  DELTA_SBP_BY10_GRP ~ 1,
+  data = sel_aset
+)
+
+# Specify the full model using all of the potential predictors
+full_model <- polr(
+  formula(paste0("DELTA_SBP_BY10_GRP ~ ",paste(var_sel,collapse = "+"))), 
+  data = sel_aset, 
+  Hess = TRUE
+)
+
+# Use a bi-directional stepwise algorithm to build a parsimonious model
+step_model <- step(
+  null_model,
+  scope = list(lower = null_model, upper = full_model),
+  direction = "both",
+  
+)
+
+# Extract coefficients and standard errors
+coefs <- summary(step_model)$coefficients
+se <- coefs[, "Std. Error"]
+z <- coefs[, "Value"] / se
+p <- 2 * (1 - pnorm(abs(z)))  # Two-sided p-values
+data.frame(coefs) %>% mutate(pval = p)
 ```
 
 ### CKD Testing
@@ -522,10 +602,10 @@ facvar_enrol<-c(
 )
 
 enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
-  select(!!c("PATID","PRESCREEN_STATUS",var_enrol)) %>%
+  dplyr::select(!!c("PATID","PRESCREEN_STATUS",var_enrol)) %>%
   bind_rows(
-    readRDS(file.path(path_to_data,"unenrol_aset.rda")) %>%
-      select(!!c("PATID","PRESCREEN_STATUS",var_enrol))
+     readRDS(file.path(path_to_data,"unenrol_aset.rda")) %>%
+      dplyr::select(!!c("PATID","PRESCREEN_STATUS",var_enrol))
   ) %>%
   mutate(
     LAB_EGFR2 = pmin(LAB_EGFR2,100)
@@ -636,13 +716,6 @@ facvar_enrol<-c(
   "PU_URPROTCR",
   "ALBU_URALBCR"
 )
-  
-CreateTableOne(
-  data = enrol_aset,
-  vars = var_enrol,
-  factorVars = facvar_enrol,
-  strata = "PRESCREEN_STATUS"
-)
 
 enrol_uni<-univar_analysis_mixed(
   df = enrol_aset,
@@ -656,6 +729,27 @@ enrol_uni %>%
   save_kable(
     file.path(path_to_res,'by_prescreen.html')
   )
+
+CreateTableOne(
+  data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","declin")),
+  vars = var_enrol,
+  factorVars = facvar_enrol,
+  strata = "PRESCREEN_STATUS"
+)
+
+CreateTableOne(
+  data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","inelig")),
+  vars = var_enrol,
+  factorVars = facvar_enrol,
+  strata = "PRESCREEN_STATUS"
+)
+
+CreateTableOne(
+  data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","unreach")),
+  vars = var_enrol,
+  factorVars = facvar_enrol,
+  strata = "PRESCREEN_STATUS"
+)
 
 
 var_pre<-c(

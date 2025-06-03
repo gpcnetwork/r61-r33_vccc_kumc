@@ -42,8 +42,9 @@ path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 # collect final aset
 aset<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_BASELINE_FINAL")) %>% collect() %>%
   # low-freq grouping
-  group_by(STATE) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(STATE_GROUP = case_when(CNT>100 ~ STATE, TRUE ~ 'OT')) %>%
-  group_by(COUNTY) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(COUNTY_GROUP = case_when(CNT>20 ~ COUNTY, TRUE ~ 'OT')) %>%
+  group_by(STATE) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(STATE_GRP = case_when(CNT>100 ~ STATE, TRUE ~ 'OT')) %>%
+  group_by(COUNTY) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(COUNTY_GRP = case_when(CNT>20 ~ COUNTY, TRUE ~ 'OT')) %>%
+  group_by(DELTA_SBP_BY10) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(DELTA_SBP_BY10_GRP = case_when(CNT>100 ~ DELTA_SBP_BY10, DELTA_SBP_BY10<0 ~ -4, TRUE ~ 1)) %>%
   ungroup %>% select(-CNT) %>%
   arrange(ENROLL_DATE)
 #- data

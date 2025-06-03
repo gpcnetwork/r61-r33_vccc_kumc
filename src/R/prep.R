@@ -25,7 +25,6 @@ sdoh_cov<-sdoh_cov[,row.names(sdoh_nzv)[!sdoh_nzv$zeroVar]]
 # sdoh_cov_imputed<-mice(sdoh_cov_ruca, m=1) # default: pmm
 # sdoh_cov_imputed<-complete(sdoh_cov_imputed)
 
-# 
 # base_bp<-readRDS(file.path(path_to_data,"tcog_sdh.rda")) %>% unique
 # meds<-readRDS(file.path(path_to_data,"meds_long.rda"))
 # 
