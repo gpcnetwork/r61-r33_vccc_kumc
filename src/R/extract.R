@@ -23,19 +23,19 @@ path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
 path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 
 # collect clinical bp
-# clinical_bp<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_CLINIC_BP_LONG")) %>% collect()
+# clinical_bp<-tbl(sf_conn,sql("dplyr::select * from SX_VCCC.VCCC_CLINIC_BP_LONG")) %>% collect()
 # saveRDS(clinical_bp,file=file.path(path_to_data,"clinical_bp.rda"))
 
 # collect meds
-# meds<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_MED_LONG")) %>% collect()
+# meds<-tbl(sf_conn,sql("dplyr::select * from SX_VCCC.VCCC_MED_LONG")) %>% collect()
 # saveRDS(meds,file=file.path(path_to_data,"meds_long.rda"))
 
 # collect tcog-sdh cohor
-# tcog_sdh<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_BASE_BP_TCOG_SDH")) %>% collect() %>%
+# tcog_sdh<-tbl(sf_conn,sql("dplyr::select * from SX_VCCC.VCCC_BASE_BP_TCOG_SDH")) %>% collect() %>%
 #   # low-freq grouping
 #   group_by(STATE) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(STATE_GROUP = case_when(CNT>100 ~ STATE, TRUE ~ 'OT')) %>%
 #   group_by(COUNTY) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(COUNTY_GROUP = case_when(CNT>20 ~ COUNTY, TRUE ~ 'OT')) %>%
-#   ungroup %>% select(-CNT) %>%
+#   ungroup %>% dplyr::select(-CNT) %>%
 #   arrange(ENROLL_DATE)
 # saveRDS(tcog_sdh,file=file.path(path_to_data,"tcog_sdh.rda"))
 
@@ -45,11 +45,16 @@ aset<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_BASELINE_FINAL")) %>% collect(
   group_by(STATE) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(STATE_GRP = case_when(CNT>100 ~ STATE, TRUE ~ 'OT')) %>%
   group_by(COUNTY) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(COUNTY_GRP = case_when(CNT>20 ~ COUNTY, TRUE ~ 'OT')) %>%
   group_by(DELTA_SBP_BY10) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(DELTA_SBP_BY10_GRP = case_when(CNT>100 ~ DELTA_SBP_BY10, DELTA_SBP_BY10<0 ~ -4, TRUE ~ 1)) %>%
-  ungroup %>% select(-CNT) %>%
+  ungroup %>% dplyr::select(-CNT) %>%
   # add pre-defined features
   mutate(
     delta_sbp_over10 = case_when(
       abs(DELTA_SBP) > 10 ~ 1, TRUE ~ 0
+    ),
+    delta_sbp_over10_sign = case_when(
+      DELTA_SBP > 10 ~ '+1', 
+      DELTA_SBP < -10 ~ '-1',
+      TRUE ~ '0'
     )
   ) %>%
   arrange(ENROLL_DATE)

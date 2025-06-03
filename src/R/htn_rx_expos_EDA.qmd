@@ -55,7 +55,8 @@ baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda')) %>%
       ETHN_STR == "hispanic" ~ "hispanic",
       TRUE ~ 'non-hispanic'
     ),
-    ETHN_STR = fct_relevel(ETHN_STR,'non-hispanic')
+    ETHN_STR = fct_relevel(ETHN_STR,'non-hispanic'),
+    RACE_ETHN_STR = fct_relevel(RACE_ETHN_STR,'white'),
   )
 
 N<-length(unique(baseline_aset$STUDY_ID))
@@ -301,6 +302,20 @@ CreateTableOne(
   data = baseline_aset, 
   factorVars = c("antihtn_delta_med")
 )
+
+CreateTableOne(
+  vars = c("delta_sbp_over10_sign"),
+  strata = "antihtn_delta_med" ,
+  data = baseline_aset,
+  factorVars = c("delta_sbp_over10_sign")
+)
+
+CreateTableOne(
+  vars = c("antihtn_delta_med"), 
+  strata = "delta_sbp_over10_sign" , 
+  data = baseline_aset, 
+  factorVars = c("antihtn_delta_med")
+)
 ```
 
 
@@ -426,7 +441,7 @@ sel_aset<-baseline_aset %>%
   ) %>%
   filter(!is.na(BMI)&!is.na(WT)&!is.na(HT)) %>%
   mutate(
-    DELTA_SBP_BY10_GRP = as.factor(DELTA_SBP_BY10_GRP)
+    delta_sbp_over10_sign = as.factor(delta_sbp_over10_sign)
   )
 
 var_sel<-c(
@@ -482,13 +497,13 @@ step_model |>
 # ordinal regression 
 # Specify a null model with no predictors
 null_model <- polr(
-  DELTA_SBP_BY10_GRP ~ 1,
+  delta_sbp_over10_sign ~ 1,
   data = sel_aset
 )
 
 # Specify the full model using all of the potential predictors
 full_model <- polr(
-  formula(paste0("DELTA_SBP_BY10_GRP ~ ",paste(var_sel,collapse = "+"))), 
+  formula(paste0("delta_sbp_over10_sign ~ ",paste(var_sel,collapse = "+"))), 
   data = sel_aset, 
   Hess = TRUE
 )
@@ -626,6 +641,7 @@ var_enrol<-c(
   "SEX_STR",
   "RACE_STR",
   "ETHN_STR",
+  "RACE_ETHN_STR",
   "BMI",
   "BASE_DBP",
   "BASE_SBP",
@@ -646,6 +662,7 @@ facvar_enrol<-c(
   "SEX_STR",
   "RACE_STR",
   "ETHN_STR",
+  "RACE_ETHN_STR",
   "SMOKER_IND",
   "EFI_DIA",
   "EFI_STROKE",
@@ -673,6 +690,7 @@ enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
       AGE >= 75 ~ 'agegrp3',
       TRUE ~ NA_character_
     ),
+    SEX_STR = fct_relevel(SEX_STR, "Male"),
     RACE_STR = case_when(
       RACE_STR %in% c('white','black','asian','aian','multi') ~ RACE_STR,
       TRUE ~ 'other'
@@ -692,9 +710,10 @@ enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
       TRUE ~ 'bmigrp9'
     ),
     BASE_SBP_GRP = case_when(
-      BASE_SBP>=140&BASE_SBP<150 ~ 'sbpgrp1',
-      BASE_SBP>=150&BASE_SBP<160 ~ 'sbpgrp2',
-      BASE_SBP>=160 ~ 'sbpgrp3',
+      BASE_SBP<140 ~ 'sbpgrp1',
+      BASE_SBP>=140&BASE_SBP<150 ~ 'sbpgrp2',
+      BASE_SBP>=150&BASE_SBP<160 ~ 'sbpgrp3',
+      BASE_SBP>=160 ~ 'sbpgrp4',
       TRUE ~ NA_character_
     ),
     MED_CNT_IN_GRP = case_when(
@@ -738,7 +757,7 @@ enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
       TRUE ~ 0
     )
   ) %>%
-  filter(!is.na(BASE_SBP_GRP)&!is.na(AGE_GRP))
+  filter(!is.na(BASE_SBP)&!is.na(AGE_GRP))
 
 var_enrol<-c(
   var_enrol,
@@ -806,8 +825,9 @@ CreateTableOne(
 
 var_pre<-c(
   "SEX_STR",
-  "RACE_STR",
-  "ETHN_STR",
+  # "RACE_STR",
+  # "ETHN_STR",
+  "RACE_ETHN_STR",
   "AGE_GRP",
   "BMI_GRP",
   "BASE_SBP_GRP",
