@@ -491,6 +491,7 @@ with(modsumm, 1 - deviance/null.deviance)
 
 step_model |> 
   tbl_regression(exponentiate = FALSE) |>
+  add_global_p() |>
   modify_header(estimate = "**Coef**")
 
 
@@ -701,6 +702,7 @@ enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
       TRUE ~ 'non-hispanic'
     ),
     ETHN_STR = fct_relevel(ETHN_STR,'non-hispanic'),
+    PAYER_TYPE_PRIMARY_GRP  = fct_relevel(PAYER_TYPE_PRIMARY_GRP,'medicare'),
     BMI_GRP = case_when(
       BMI < 25 ~ 'bmigrp1',
       BMI>=25&BMI<30 ~ 'bmigrp2',
@@ -838,7 +840,8 @@ var_pre<-c(
   "EFI_DIA",
   "EFI_STROKE",
   "CCI_TOTAL_GRP",
-  "SMOKER_IND"
+  "SMOKER_IND",
+  "PAYER_TYPE_PRIMARY_GRP"
 )
 
 # Specify a null model with no predictors
@@ -865,8 +868,12 @@ step_model <- step(
 modsumm<-summary(step_model)
 with(modsumm, 1 - deviance/null.deviance)
 
-step_model %>% tbl_regression(exponentiate = TRUE)
+step_model |> 
+  tbl_regression(exponentiate = TRUE) |>
+  add_global_p()
 
-full_model %>% tbl_regression(exponentiate = TRUE)
+full_model |> 
+  tbl_regression(exponentiate = TRUE) |>
+  add_global_p()
 
 ```
