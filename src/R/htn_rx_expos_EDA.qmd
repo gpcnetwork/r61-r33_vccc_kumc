@@ -312,9 +312,16 @@ CreateTableOne(
 
 CreateTableOne(
   vars = c("antihtn_delta_med"), 
-  strata = "delta_sbp_over10_sign" , 
+  strata = "delta_sbp_over10by10" , 
   data = baseline_aset, 
   factorVars = c("antihtn_delta_med")
+)
+
+CreateTableOne(
+  vars = c("delta_sbp_over10by10"), 
+  strata = "antihtn_delta_med" , 
+  data = baseline_aset, 
+  factorVars = c("delta_sbp_over10by10")
 )
 ```
 
@@ -339,7 +346,6 @@ coef_filter<-data.frame(
   or_ci_upper=as.numeric(),
   or_p_value=as.numeric(),
   coef_delta=as.numeric(),
-  coef_sigdelta=as.numeric(),
   coef_ci_lower=as.numeric(),
   coef_ci_upper=as.numeric(),
   coef_p_value=as.numeric()
@@ -385,30 +391,53 @@ coef_filter<-coef_filter %>%
     var1 %in% c("antihtn_delta_med")) %>%
   arrange(coef_p_value)
 
-coef_filter
+kable(coef_filter)
 
 var_sel<-unique(c(coef_filter$var1,"antihtn_delta_med"))
 facvar_sel<-unique(c(var_sel[var_sel %in% varsel$VAR[varsel$VAR_DTYPE=="cat"]],"antihtn_delta_med"))
 
-CreateTableOne(
+tbl2a<-CreateTableOne(
   vars = var_sel,
   strata = "sig_decr_ind1" ,
   data = baseline_aset,
   factorVars = facvar_sel
 )
+kable(
+  print(tbl2a, printToggle = FALSE), 
+  caption = "Table 2a: Relevant Features stratified by BP Variability Grouping 1"
+)
 
-CreateTableOne(
+tbl2b<-CreateTableOne(
   vars = var_sel,
   strata = "DELTA_SBP_BY10_GRP",
   data = baseline_aset,
   factorVars = facvar_sel
 )
+kable(
+  print(tbl2b, printToggle = FALSE), 
+  caption = "Table 2b: Relevant Features stratified by BP Variability Grouping 2"
+)
 
-CreateTableOne(
+tbl2c<-CreateTableOne(
   vars = var_sel,
   strata = "delta_sbp_over10",
   data = baseline_aset,
   factorVars = facvar_sel
+)
+kable(
+  print(tbl2c, printToggle = FALSE), 
+  caption = "Table 2c: Relevant Features stratified by BP Variability Grouping 3"
+)
+
+tbl2d<-CreateTableOne(
+  vars = var_sel,
+  strata = "delta_sbp_over10by10",
+  data = baseline_aset,
+  factorVars = facvar_sel
+)
+kable(
+  print(tbl2d, printToggle = FALSE), 
+  caption = "Table 2d: Relevant Features stratified by BP Variability Grouping 4"
 )
 
 # base_uni<-univar_analysis_mixed(
@@ -441,7 +470,8 @@ sel_aset<-baseline_aset %>%
   ) %>%
   filter(!is.na(BMI)&!is.na(WT)&!is.na(HT)) %>%
   mutate(
-    delta_sbp_over10_sign = as.factor(delta_sbp_over10_sign)
+    delta_sbp_over10_sign = as.factor(delta_sbp_over10_sign),
+    delta_sbp_over10by10 = as.factor(delta_sbp_over10by10)
   )
 
 var_sel<-c(
@@ -491,20 +521,20 @@ with(modsumm, 1 - deviance/null.deviance)
 
 step_model |> 
   tbl_regression(exponentiate = FALSE) |>
-  add_global_p() |>
+  # add_global_p() |>
   modify_header(estimate = "**Coef**")
 
 
 # ordinal regression 
 # Specify a null model with no predictors
 null_model <- polr(
-  delta_sbp_over10_sign ~ 1,
+  delta_sbp_over10by10 ~ 1,
   data = sel_aset
 )
 
 # Specify the full model using all of the potential predictors
 full_model <- polr(
-  formula(paste0("delta_sbp_over10_sign ~ ",paste(var_sel,collapse = "+"))), 
+  formula(paste0("delta_sbp_over10by10 ~ ",paste(var_sel,collapse = "+"))), 
   data = sel_aset, 
   Hess = TRUE
 )
@@ -522,7 +552,18 @@ coefs <- summary(step_model)$coefficients
 se <- coefs[, "Std. Error"]
 z <- coefs[, "Value"] / se
 p <- 2 * (1 - pnorm(abs(z)))  # Two-sided p-values
-data.frame(coefs) %>% mutate(pval = p)
+ordreg<-data.frame(coefs) %>%
+  rename(
+    std = `Std..Error`,
+    coef = Value
+  ) %>%
+  mutate(
+    or = round(exp(coef),3),
+    or_lower = round(exp(coef - 1.96*std),3),
+    or_upper = round(exp(coef + 1.96*std),3),
+    pval = round(p,4)
+  )
+kable(ordreg)
 ```
 
 ### CKD Testing
@@ -567,24 +608,36 @@ facvar_ckd<-var_ckd[!var_ckd %in% c(
   "CCI_TOTAL"
 )]
 
-CreateTableOne(
+tbl3a<-CreateTableOne(
   data = baseline_aset,
   vars = var_ckd,
   factorVars = facvar_ckd
 )
+kable(
+  print(tbl3a, printToggle = FALSE), 
+  caption = "Table 3a: For All VCCC enrolled patients"
+)
 
-CreateTableOne(
+tbl3b<-CreateTableOne(
   data = baseline_aset,
   vars = var_ckd,
   factorVars = facvar_ckd,
   strata = "CKD_TS_EITHER"
 )
+kable(
+  print(tbl3b, printToggle = FALSE), 
+  caption = "Table 3b: W/ vs. Wo/ CKD Testing"
+)
 
-CreateTableOne(
+tbl3c<-CreateTableOne(
   data = baseline_aset,
   vars = var_ckd,
   factorVars = facvar_ckd,
   strata = "CKD_TS_GRP"
+)
+kable(
+  print(tbl3c, printToggle = FALSE), 
+  caption = "Table 3c: Type of CKD Testing"
 )
 ```
 
@@ -616,21 +669,29 @@ var_outcome<-c(
 )
 facvar_outcome<-var_outcome[grepl("^(EFI_)+",var_outcome)]
 
-CreateTableOne(
+tbl4a<-CreateTableOne(
   data = baseline_aset,
   vars = var_outcome,
   factorVars = facvar_outcome,
   strata = "ADI_STATERANK_GRP"
 )
+kable(
+  print(tbl4a, printToggle = FALSE), 
+  caption = "Table 4a: Clinical Characteristics by ADI"
+)
 
-CreateTableOne(
+tbl4b<-CreateTableOne(
   data = baseline_aset,
   vars = var_outcome,
   factorVars = facvar_outcome,
   strata = "RUCA_PRIMARY_NONMETRO_IND"
 )
-
+kable(
+  print(tbl4b, printToggle = FALSE), 
+  caption = "Table 4b: Clinical Characteristics by Rurality"
+)
 ```
+
 
 #### Enrollment descriptives
 
@@ -804,25 +865,37 @@ enrol_uni %>%
     file.path(path_to_res,'by_prescreen.html')
   )
 
-CreateTableOne(
+tbl5a<-CreateTableOne(
   data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","declin")),
   vars = var_enrol,
   factorVars = facvar_enrol,
   strata = "PRESCREEN_STATUS"
 )
+kable(
+  print(tbl5a, printToggle = FALSE), 
+  caption = "Table 5a: Cohort Characteristics of Enrolled vs. Declined"
+)
 
-CreateTableOne(
+tbl5b<-CreateTableOne(
   data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","inelig")),
   vars = var_enrol,
   factorVars = facvar_enrol,
   strata = "PRESCREEN_STATUS"
 )
+kable(
+  print(tbl5b, printToggle = FALSE), 
+  caption = "Table 5b: Cohort Characteristics of Enrolled vs. Ineligible"
+)
 
-CreateTableOne(
+tbl5c<-CreateTableOne(
   data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","unreach")),
   vars = var_enrol,
   factorVars = facvar_enrol,
   strata = "PRESCREEN_STATUS"
+)
+kable(
+  print(tbl5c, printToggle = FALSE), 
+  caption = "Table 5c: Cohort Characteristics of Enrolled vs. Unreachable"
 )
 
 
