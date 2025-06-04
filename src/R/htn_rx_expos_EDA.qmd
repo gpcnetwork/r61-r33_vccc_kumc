@@ -497,16 +497,16 @@ var_sel<-c(
 
 # Specify a null model with no predictors
 null_model <- glm(
-  sig_decr_ind1 ~ 1,
+  DELTA_SBP ~ 1,
   data = sel_aset, 
-  family = binomial()
+  family = gaussian()
 )
 
 # Specify the full model using all of the potential predictors
 full_model <- glm(
   formula(paste0("DELTA_SBP ~ ",paste(var_sel,collapse = "+"))), 
   data = sel_aset, 
-  family = gaussian
+  family = gaussian()
 )
 
 # Use a bi-directional stepwise algorithm to build a parsimonious model
