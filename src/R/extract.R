@@ -49,7 +49,7 @@ aset<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_BASELINE_FINAL")) %>% collect(
   # add pre-defined features
   mutate(
     delta_sbp_over10 = case_when(
-      abs(DELTA_SBP) >=0 & abs(DELTA_SBP) <= 10 ~ 1, 
+      abs(DELTA_SBP) > 10 ~ 1, 
       TRUE ~ 0
     ),
     delta_sbp_over10_sign = case_when(
