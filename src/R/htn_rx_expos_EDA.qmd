@@ -1,5 +1,5 @@
 ---
-title: "Exploring potential explanations for eligibility drift"
+title: "Exploring potential explanations for BP variability"
 author: "Xing Song"
 format: 
   html:
@@ -197,9 +197,9 @@ ggplot(
 # elig_drift
 ```
 
-## Investigation: How much of the eligibility drift can be explained by anti-hypertensive medication use during the run-in period?
+## Investigation: How much of the BP variabilities can be explained by anti-hypertensive medication use during the run-in period?
 
-We set out to investigate what could be some legitimate reasons occured during the run-in period (i.e., the time period between eligibility and recruitment/randomization) to explain this eligibility drift. For this investigation, we also collected all prescription data from CDM PRESCRIBING table provided by KUMC team and identified the following anti-HTN medications (using VA classifications) as well as their timings (start before eligibility visit or during the run-in period):
+For this investigation, we collected all prescription data following anti-HTN medications (using VA classifications) as well as their timings (start before eligibility visit or during the run-in period):
 
 -   CV100: beta blockers/related
 
@@ -227,7 +227,8 @@ We set out to investigate what could be some legitimate reasons occured during t
 
 -   CV806: direct renin inhibitor
 
-### Analysis I: Using systematic explanatory feature screening to investigate what are the explanatory factors for significant BP drop
+
+### Analysis I: Using systematic explanatory feature screening to investigate what are the explanatory factors for BP variabilities
 
 ```{r}
 #| label: med-use-segment
@@ -565,6 +566,7 @@ ordreg<-data.frame(coefs) %>%
   )
 kable(ordreg)
 ```
+
 
 ### CKD Testing
 
