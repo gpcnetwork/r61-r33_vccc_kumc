@@ -8,60 +8,190 @@ Key CDM tables from KUMC and
 5. PCORNET_TRIAL
 
 Auxillary tables: 
-1. BYOD_BL2EBP_20241120
-2. BASE_BP_REDCAP_20241120
-3. Z_MED_RXCUI_REF (ref/med_rxcui_ref.csv)
-4. PAT_TABLE1 (denom_cdm.sql)
-5. Z_CCI_REF (ref/cci_icd_ref.csv)
-6. VCCC_PID_ADDRID
-7. VCCC_UNIQUE_ADDR_GEOCODED
+1. Prescreening tables
+  - BYOD_BL5ENR
+  - BYOD_BL5ENR_KUMC
+  - BYOD_BL5ENR_UU
+2. refernce tables: 
+  - Z_MED_RXCUI_REF (ref/med_rxcui_ref.csv)
+3. CDM tables: 
+  - PAT_TABLE1 (denom_pat_cdm.sql)
+  - Z_CCI_REF (ref/cci_icd_ref.csv)
 =============================
 */ 
+select * from byod_bl5enr limit 5;
 select * from byod_bl5enr_kumc limit 5;
 select * from byod_bl5enr_uu limit 5;
 
+select substr(RECORD_ID,1,4) as site, 
+    --    substr(STUDY_ID,1,2) as site2,
+       count(distinct record_id) as pat_cnt 
+from byod_bl5enr
+group by substr(RECORD_ID,1,4)
+    --    ,substr(STUDY_ID,1,2)
+;
+-- 4422,      6322, KU
+-- 4423-4424, 4204  UT
+
+select count(distinct record_id), count(distinct patid)
+from byod_bl5enr_kumc 
+where patid is not null
+;
+-- 6265, 5726
+
+create or replace temporary view recordid_dup as
+select patid, count(distinct record_id) as record_cnt
+from byod_bl5enr_kumc
+group by patid
+having count(distinct record_id) > 1
+order by count(distinct record_id) desc
+;
+
+select count(distinct patid)
+from recordid_dup
+;
+
+select count(distinct record_id), count(distinct patid)
+from byod_bl5enr_uu 
+where patid is not null
+;
+-- 4138, 3749
+
+/* multiple enrollment status */
+select a.* 
+from byod_bl5enr a 
+join byod_bl5enr_kumc b
+on a.record_id = b.record_id
+where b.patid = 'a123ebba6df1cc8f'
+;
+
+select * from VCCC_BASE_BP_TCOG_SDH limit 5;
+
 create or replace table VCCC_ENR_ALL as 
 with enr_stk as (
-    select distinct k.patid, 'KUMC' as site,
-            case when a.patid is not null then 'enrol' 
-                    when k.prescreen_status = '2' then 'declin'
-                    when k.prescreen_status = '3' then 'inelig'
-                    when k.prescreen_status = '1' then 'unreach'
-                    else 'other'
-            end as prescreen_status
+    select distinct k.patid, 'KUMC' as site, a.pcp_visit_date,
+            case when a.study_id is not null then 'enrol'
+                 when k.prescreen_status = '2' then 'declin'
+                 when k.prescreen_status = '3' then 'inelig'
+                 when k.prescreen_status = '1' then 'unreach'
+                 else 'other'
+            end as prescreen_status,
+            row_number() over (partition by k.patid order by a.pcp_visit_date desc) as rn
         from byod_bl5enr_kumc k 
-        left join VCCC_UNENR_INDEX a on a.patid = k.patid
+        join byod_bl5enr a 
+        on a.record_id = k.record_id
         union
-        select distinct k.patid, 'Utah' as site,
-            case when a.patid is not null then 'enrol' 
-                    when k.prescreen_status = '2' then 'declin'
-                    when k.prescreen_status = '3' then 'inelig'
-                    when k.prescreen_status = '1' then 'unreach'
-                    else 'other'
-            end as prescreen_status
+        select distinct k.patid, 'Utah' as site, a.pcp_visit_date,
+            case when a.study_id is not null then 'enrol'
+                 when k.prescreen_status = '2' then 'declin'
+                 when k.prescreen_status = '3' then 'inelig'
+                 when k.prescreen_status = '1' then 'unreach'
+                 else 'other'
+            end as prescreen_status,
+            row_number() over (partition by k.patid order by a.pcp_visit_date desc) as rn
         from byod_bl5enr_uu k 
-        left join VCCC_UNENR_INDEX a on a.patid = k.patid
+        join byod_bl5enr a 
+        on a.record_id = k.record_id
 )
-select * from enr_stk
+select patid, site, prescreen_status, pcp_visit_date as index_date
+from enr_stk 
+where patid is not null and rn = 1
 union
-select a.patid, site, 'enrol'
-from VCCC_UNENR_INDEX a 
-where not exists (select 1 from VCCC_ENR_ALL b where a.patid = b.patid)
+select a.patid, a.site, 'enrol', max(a.enroll_date) as index_date
+from VCCC_BASE_BP_TCOG_SDH a 
+where not exists (
+    select 1 from enr_stk b 
+    where a.patid = b.patid
+) and a.patid is not null
+group by a.patid, a.site
 ;
 
-select prescreen_status, site, count(distinct patid)
+select prescreen_status, count(distinct patid)
 from VCCC_ENR_ALL
-group by prescreen_status, site
-order by prescreen_status, site
+group by prescreen_status
+order by prescreen_status
 ;
+-- declin	3107
+-- enrol	1082
+-- inelig	3530
+-- other	182
+-- unreach	1580
 
-create or replace table VCCC_UNENR as 
-select * from VCCC_ENR_ALL
-where prescreen_status <> 'enrol' and patid is not null
+select site, count(distinct patid)
+from VCCC_ENR_ALL
+group by site
 ;
-select * from VCCC_UNENR limit 5;
+-- Utah	3749
+-- KUMC	5732
 
-select count(distinct patid), count(*) from VCCC_UNENR;
+create or replace table VCCC_UNENR_INDEX as 
+with unenrol as (
+    select * from VCCC_ENR_ALL
+    where prescreen_status <> 'enrol' and patid is not null
+), demo_stk as (
+    select a.patid, a.birth_date, a.sex, a.race, a.hispanic 
+    from GROUSE_DB_DEV_CDM.PCORNET_CDM_KUMC.DEMOGRAPHIC a 
+    join unenrol on a.patid = unenrol.patid 
+    union 
+    select a.patid, a.birth_date, a.sex, a.race, a.hispanic 
+    from GROUSE_DB_DEV_CDM.PCORNET_CDM_UU.DEMOGRAPHIC a 
+    join unenrol on a.patid = unenrol.patid  
+), combine_dup as (
+    select a.patid, 
+        a.prescreen_status, 
+        a.site,
+        b.index_date,
+        p.birth_date,
+        round(datediff(day,p.birth_date,b.index_date)/365.25) as age,
+        p.sex,
+        case when p.sex = 'F' then 'Female' else 'Male' end as sex_str,
+        p.race,
+        CASE WHEN p.race IN ('05') THEN 'white' 
+             WHEN p.race IN ('03') THEN 'black'
+             WHEN p.race IN ('02') THEN 'asian'
+             WHEN p.race IN ('01') THEN 'aian'
+             WHEN p.race IN ('04') THEN 'nhopi'
+             WHEN p.race IN ('06') THEN 'multi'
+             WHEN p.race IN ('OT') THEN 'other'
+             ELSE 'NI' 
+        END AS race_str, 
+        p.hispanic as ethnicity,
+        CASE WHEN p.hispanic = 'Y' THEN 'hispanic' 
+            WHEN p.hispanic = 'N' THEN 'non-hispanic' 
+            ELSE 'NI' 
+        END AS ethn_str, 
+        case when p.race = '03' and p.hispanic <> 'Y' then 'nh-black'
+             when p.race = '05' then 'white'
+             when p.hispanic = 'Y' then 'hisp'
+            else 'other'
+       end as race_ethn_str,
+        row_number() over (partition by a.patid order by b.index_date) as rn 
+    from VCCC_UNENR a 
+    join unenrol b 
+    on a.patid = b.patid
+    join demo_stk p 
+    on a.patid = p.patid
+)
+select combine_dup.* exclude rn
+from combine_dup
+where rn = 1
+
+;
+select * from VCCC_UNENR_INDEX limit 5;
+
+select count(distinct patid), count(*) 
+from VCCC_UNENR_INDEX;
+-- 8387	8387
+
+select prescreen_status, count(distinct patid)
+from VCCC_UNENR_INDEX
+group by prescreen_status
+order by prescreen_status
+;
+-- declin	3105
+-- inelig	3522
+-- other	182
+-- unreach	1578
 
 create or replace procedure get_clinic_bp_long2(
     TRIAL_REF string,
@@ -180,7 +310,7 @@ create or replace table VCCC_UNENR_CLINIC_BP_LONG (
 
 /*test*/
 -- call get_clinic_bp_long2(
---     'VCCC_UNENR',
+--     'VCCC_UNENR_INDEX',
 --     array_construct(
 --          'KUMC'
 --         ,'UU'
@@ -193,7 +323,7 @@ create or replace table VCCC_UNENR_CLINIC_BP_LONG (
 
 
 call get_clinic_bp_long2(
-    'VCCC_UNENR',
+    'VCCC_UNENR_INDEX',
     array_construct(
          'KUMC'
         ,'UU'
@@ -204,72 +334,6 @@ call get_clinic_bp_long2(
 
 select * from VCCC_UNENR_CLINIC_BP_LONG limit 5;
 
-create or replace table VCCC_UNENR_INDEX as 
-with id_index as (
-    select  patid, 
-            measure_date as index_date,
-            sbp as elig_sbp,
-            dbp as elig_dbp
-    from (
-        select patid, measure_date, sbp, dbp,
-            row_number() over (partition by patid order by measure_date) as rn
-        from VCCC_UNENR_CLINIC_BP_LONG
-        where sbp > 140 and measure_date >= '2022-01-01'
-    )
-    where rn = 1
-), demo_stk as (
-    select a.patid, a.birth_date, a.sex, a.race, a.hispanic 
-    from GROUSE_DB_DEV_CDM.PCORNET_CDM_KUMC.DEMOGRAPHIC a 
-    join id_index on a.patid = id_index.patid 
-    union 
-    select a.patid, a.birth_date, a.sex, a.race, a.hispanic 
-    from GROUSE_DB_DEV_CDM.PCORNET_CDM_UU.DEMOGRAPHIC a 
-    join id_index on a.patid = id_index.patid  
-), combine_dup as (
-    select a.patid, a.prescreen_status, a.site,
-        b.index_date, b.elig_sbp, b.elig_dbp,
-        p.birth_date,
-        round(datediff(day,p.birth_date,b.index_date)/365.25) as age,
-        p.sex,
-        case when p.sex = 'F' then 'Female' else 'Male' end as sex_str,
-        p.race,
-        CASE WHEN p.race IN ('05') THEN 'white' 
-             WHEN p.race IN ('03') THEN 'black'
-             WHEN p.race IN ('02') THEN 'asian'
-             WHEN p.race IN ('01') THEN 'aian'
-             WHEN p.race IN ('04') THEN 'nhopi'
-             WHEN p.race IN ('06') THEN 'multi'
-             WHEN p.race IN ('OT') THEN 'other'
-             ELSE 'NI' 
-        END AS race_str, 
-        p.hispanic as ethnicity,
-        CASE WHEN p.hispanic = 'Y' THEN 'hispanic' 
-            WHEN p.hispanic = 'N' THEN 'non-hispanic' 
-            ELSE 'NI' 
-        END AS ethn_str, 
-        case when p.race = '03' and p.hispanic <> 'Y' then 'nh-black'
-             when p.race = '05' then 'white'
-             when p.hispanic = 'Y' then 'hisp'
-            else 'other'
-       end as race_ethn_str,
-        row_number() over (partition by a.patid order by b.index_date) as rn 
-    from VCCC_UNENR a 
-    join id_index b 
-    on a.patid = b.patid
-    join demo_stk p 
-    on a.patid = p.patid
-)
-select combine_dup.* exclude rn
-from combine_dup
-where rn = 1
-;
-
-select * from VCCC_UNENR_INDEX 
-limit 5
-;
-
-select count(distinct patid), count(*) from VCCC_UNENR_INDEX;
--- 8441	8441
 
 create or replace table Z_MED_RXCUI_REF_AH as 
 with cte as (
@@ -473,6 +537,9 @@ select polyrx_in_grp, count(distinct patid), count(*)
 from VCCC_UNENR_BASE_MED
 group by polyrx_in_grp
 ;
+-- polyrx_in_grp1	4432	4432
+-- polyrx_in_grp2	139	139
+-- polyrx_in_grp0	3816	3816
 
 
 /* healthcare visits */
@@ -652,8 +719,9 @@ left join ip on a.patid = ip.patid
 left join payer on a.patid = payer.patid
 ;
 
-select count(distinct patid), count(*) from VCCC_UNENR_VISITS_BASE;
--- 8441	8441
+select count(distinct patid), count(*) 
+from VCCC_UNENR_VISITS_BASE;
+-- 8387	8387
 
 create or replace procedure get_anthro_long2(
     TRIAL_REF string,
@@ -850,7 +918,7 @@ on a.patid = b.patid
 select count(distinct patid), count(distinct patid), count(*)
 from VCCC_UNENR_ANTRO_BASE_SEL
 ;
--- 8441	8441 8441
+-- 8387	8387	8387
 
 -- labs
 create or replace procedure get_labs_long2(
@@ -1210,8 +1278,9 @@ left join uracid on a.patid = uracid.patid and uracid.rn = 1
 select * from VCCC_UNENR_LAB_BASE_SEL
 where lab_egfr is null and lab_egfr2 is not null;
 
-select count(distinct patid), count(*) from VCCC_UNENR_LAB_BASE_SEL;
--- 8441	8441
+select count(distinct patid), count(*) 
+from VCCC_UNENR_LAB_BASE_SEL;
+-- 8387	8387
 
 create or replace procedure get_sdoh_long2(
     TRIAL_REF string,
@@ -1345,7 +1414,7 @@ on a.patid = s.patid
 ; 
 
 select count(distinct patid), count(*) from VCCC_UNENR_SMOKING_BASE;
--- 8441	8441
+-- 8387	8387
 
 create or replace procedure get_vccc_cci_long2(
     TRIAL_REF string,
@@ -1451,7 +1520,7 @@ call get_vccc_cci_long2(
 select * from CCI_UNENR_DX_LONG limit 5;
 
 select count(distinct patid) from CCI_UNENR_DX_LONG;
--- 6551
+-- 6777
 
 create or replace table VCCC_UNENR_BASE_CCI as
 with cci_uni as (
@@ -1482,7 +1551,7 @@ on a.patid = b.patid
 select * from VCCC_UNENR_BASE_CCI limit 5;
 
 select count(distinct patid), count(*) from VCCC_UNENR_BASE_CCI;
---8441	8441
+--8387	8387
 
 create or replace procedure get_vccc_efi_long2(
     TRIAL_REF string,
@@ -1590,7 +1659,7 @@ call get_vccc_efi_long2(
 select * from EFI_UNENR_DX_LONG limit 5;
 
 select count(distinct patid) from EFI_UNENR_DX_LONG;
--- 8339
+-- 8355
 
 create or replace table VCCC_UNENR_BASE_EFI as
 with efi_uni as (
@@ -1706,7 +1775,7 @@ on a.patid = b.patid
 select * from VCCC_UNENR_BASE_EFI limit 5;
 
 select count(distinct patid), count(*) from VCCC_UNENR_BASE_EFI;
--- 8441	8441
+-- 8387	8387
 
  
 create or replace table VCCC_UNENR_BASELINE_FINAL as
@@ -1731,7 +1800,7 @@ join VCCC_UNENR_BASE_MED med on a.patid = med.patid
 select * from VCCC_UNENR_BASELINE_FINAL limit 5;
 
 select count(distinct patid), count(*) from VCCC_UNENR_BASELINE_FINAL;
--- 8441	8441
+-- 8387	8387
 
 select prescreen_status, count(distinct patid), count(*) from VCCC_UNENR_BASELINE_FINAL
 group by prescreen_status;

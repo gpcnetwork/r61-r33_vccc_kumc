@@ -1,0 +1,74 @@
+﻿SDOH_DOMAIN,SDOH_VAR,SDOH_LBL,LOINC
+Alcohol Use,Alcohol Use Disorder Identification Test - Consumption [AUDIT-C],How often do you have a drink containing alcohol?,68518-0
+Alcohol Use,Alcohol Use Disorder Identification Test - Consumption [AUDIT-C],How many drinks containing alcohol do you have on a typical day when you are drinking?,68519-8
+Alcohol Use,Alcohol Use Disorder Identification Test - Consumption [AUDIT-C],How often do you have six or more drinks on one occasion?,68520-6
+Financial Resource Strain,AHC HRSN Financial Strain,"How hard is it for you to pay for the very basics like food, housing, medical care, and heating?",76513‐1
+Food Insecurity,U.S. Food Security Survey,Within the past 12 months we worried whether our food would run out before we got money to buy more [U.S. Food Security Survey],88122-7
+Food Insecurity,U.S. Food Security Survey,Within the past 12 months the food we bought just didn't last and we didn't have money to get more [U.S. Food Security Survey],88123-5
+Health Literacy,Single Item Literacy Screener,"How often do you need to have someone help you when you read instructions, pamphlets, or other written material from your doctor or pharmacy?",93157-6
+Housing Stability,Children's Health Watch Housing Stability Vital Signs,"In the last 12 months, was there a time when you were not able to pay the mortgage or rent on time?",98976-4
+Housing Stability,Children's Health Watch Housing Stability Vital Signs,"In the last 12 months, how many places have you lived? (Original version)  ",98977-2
+Housing Stability,Children's Health Watch Housing Stability Vital Signs,"In the past 12 months, how many times have you moved where you were living? (Revised version)",98977-2
+Housing Stability,Children's Health Watch Housing Stability Vital Signs,"In the last 12 months, was there a time when you did not have a steady place to sleep or slept in a shelter (including now)? (Original version)",98978-0
+Housing Stability,Children's Health Watch Housing Stability Vital Signs,"At any time in the past 12 months, were you homeless or living in a shelter (including now)? (Revised version)",98978-0
+Housing Stability,AHC HRSN Living Situation,What is your living situation today?,71802-3
+Housing Stability,AHC HRSN Living Situation,Think about the place you live. Do you have problems with any of the following?,96778-6
+Intimate Partner Violence,"Humiliation, Afraid, Rape, and Kick questionnaire [HARK]","Within the last year, have you been humiliated or emotionally abused in other ways by your partner or ex-partner?",76500-8
+Intimate Partner Violence,"Humiliation, Afraid, Rape, and Kick questionnaire [HARK]","Within the last year, have you been afraid of your partner or ex-partner?",76501-6
+Intimate Partner Violence,"Humiliation, Afraid, Rape, and Kick questionnaire [HARK]","Within the last year, have you been raped or forced to have any kind of sexual activity by your partner or ex-partner?",76502-4
+Intimate Partner Violence,"Humiliation, Afraid, Rape, and Kick questionnaire [HARK]","Within the last year, have you been kicked, hit, slapped, or otherwise physically hurt by your partner or ex-partner?",76503-2
+Physical Activity,Exercise Vital Sign,"On average, how many days per week do you engage in moderate to strenuous exercise (like a brisk walk)?",89555-7
+Physical Activity,Exercise Vital Sign,"On average, how many minutes do you engage in exercise at this level?",68516-4
+Physical Activity,AHC HRSN Physical Activity,"In the last 30 days, other than the activities you did for work, on average, how many days per week did you engage in moderate exercise (like walking fast, running, jogging, dancing, swimming, biking, or other similar activities)?",89555-7
+Physical Activity,AHC HRSN Physical Activity,"On average, how many minutes did you usually spend exercising at this level on one of those days?",68516-4
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, I have been able to laugh and see the funny side of things.",71344-6
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, I have looked forward with enjoyment to things.",71345-3
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, I have blamed myself unnecessarily when things went wrong.",71346-1
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, I have been anxious or worried for no good reason.",71347-9
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, I have felt scared or panicky for no good reason.",71348-7
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, things have been getting on top of me.",71349-5
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, I have been so unhappy that I have had difficulty sleeping",71350-3
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, I have felt sad or miserable.",71351-1
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, I have been so unhappy that I have been crying.",71352-9
+Postpartum Depression,Edinburgh Postnatal Depression Screen,"In the past 7 days, the thought of harming myself has occurred to me.",71353-7
+Postpartum Depression,Edinburgh Postnatal Depression Screen,Edinburgh Postnatal Depression Scale Total,99046-5
+Stress,OSQ,"Do you feel stress - tense, restless nervous, or anxious, or unable to sleep at night because your mind is troubled all the time - these days?",76542-0
+Utilities,AHC HRSN Utilities,"In the past 12 months has the electric, gas, oil, or water company threatened to shut off services in your home?",96779-4
+Depression,"PHQ-9, PHQ-8, PHQ-2",Little interest or pleasure in doing things,44250-9
+Depression,"PHQ-9, PHQ-8, PHQ-2","Feeling down, depressed or hopeless",44255-8 
+Depression,"PHQ-9, PHQ-8","Trouble falling or staying asleep, or sleeping too much",44259-0 
+Depression,"PHQ-9, PHQ-8",Feeling tired or having little energy ,44254-1 
+Depression,"PHQ-9, PHQ-8",Poor appetite or overeating ,44251-7 
+Depression,"PHQ-9, PHQ-8",Feeling bad about yourself - or that you are a failure or have let yourself or your family down,44258-2 
+Depression,"PHQ-9, PHQ-8","Trouble concentrating on things, such as reading the newspaper or watching television",44252-5 
+Depression,"PHQ-9, PHQ-8",Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual,44253-3 
+Depression,PHQ-9,"Thoughts that you would be better off dead, or of hurting yourself in some way",44260-8 
+Depression,PHQ-9,"How difficult have these problems made it for you to do your work, take care of things at home, or get along with other people? ",69722-7
+Depression,PHQ-8,Patient Health Questionnaire 8 item (PHQ-8) total score,94328-2
+Depression,PHQ-9,Patient Health Questionnaire 9 item (PHQ-9) total score,44261-6
+Depression,PHQ-9 for teens,Patient Health Questionnaire-9: Modified for Teens total score,89204-2
+Depression,PHQ-2,Patient Health Questionnaire 2 item (PHQ-2) total score,55758-7
+Education,AHC HRSN Education,Do you speak a language other than English at home?,97027-7
+Education,AHC HRSN Education,"Do you want help with school or training? For example, starting or completing job training or getting a high school diploma, GED or equivalent.",96782-8
+Employment Status,AHC HRSN Employment,Do you want help finding or keeping work or a job?,96780-2
+Personal Safety,AHC HRSN Personal Safety,"How often does anyone, including family and friends, physically hurt you?",95618-5
+Personal Safety,AHC HRSN Personal Safety,"How often does anyone, including family and friends, insult or talk down to you?",95617-7
+Personal Safety,AHC HRSN Personal Safety,"How often does anyone, including family and friends, threaten you with harm?",95616-9
+Personal Safety,AHC HRSN Personal Safety,"How often does anyone, including family and friends, scream or curse at you?",95615-1
+Self-Management,AHC HRSN Self-Management,"Because of a physical, mental, or emotional condition, do you have serious difficulty concentrating, remembering, or making decisions? (5 years old or older)",69858-9
+Self-Management,AHC HRSN Self-Management,"Because of a physical, mental, or emotional condition, do you have difficulty doing errands alone such as visiting a doctor's office or shopping? (15 years old or older)",69861-3
+Social Connections,Social Connections and Isolation Panel (NHANES),"In a typical week, how many times do you talk on the phone with family, friends, or neighbors?",76508-1
+Social Connections,Social Connections and Isolation Panel (NHANES),How often do you get together with friends or relatives?,76509-9
+Social Connections,Social Connections and Isolation Panel (NHANES),How often do you attend church or religious services?,76510-7
+Social Connections,NHANES III,"Do you belong to any clubs or organizations such as church groups, unions, fraternal or athletic groups, or school groups?",76511-5
+Social Connections,Social Connections and Isolation Panel (NHANES),How often do you attend meetings of the clubs or organizations that you belong to?,99106-7
+Social Connections,Social Connections and Isolation Panel (NHANES),"Are you married, widowed, divorced, separated, never married, or living with a partner?",63503-7
+Social Connections,AHC HRSN Social Connections,"If for any reason you need help with day-to-day activities such as bathing, preparing meals, shopping, managing finances, etc., do you get the help you need?",96781-0
+Social Connections,AHC HRSN Social Connections,How often do you feel lonely or isolated from those around you?,93159-2
+Substance Use,AHC HRSN Substance Use,"How many times in the past 12 months have you had 5 or more drinks in a day (males) or 4 or more drinks in a day (females)? One drink is 12 ounces of beer, 5 ounces of wine, or 1.5 ounces of 80-proof spirits.",68517-2
+Substance Use,AHC HRSN Substance Use,"How many times in the past 12 months have you used tobacco products (like cigarettes, cigars, snuff, chew, electronic cigarettes)?",96842-0
+Substance Use,AHC HRSN Substance Use,How many times in the past year have you used prescription drugs for non-medical reasons?,95530-2
+Substance Use,AHC HRSN Substance Use,How many times in the past year have you used illegal drugs?,68524-8
+Transportation Needs,PRAPARE – Transportation,Has the lack of transportation kept you from medical appointments or from getting medications?,93030-3
+Transportation Needs,PRAPARE – Transportation,"Has the lack of transportation kept you from meetings, work, or from getting things needed for daily living?",93030-4
+Transportation Needs,AHC HRSN Transportation,"In the past 12 months, has lack of reliable transportation kept you from medical appointments, meetings, work or from getting things needed for daily living?",93030-5

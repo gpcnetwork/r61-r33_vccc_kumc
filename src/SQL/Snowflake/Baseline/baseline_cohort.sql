@@ -84,6 +84,7 @@ select participantid, patid, trial_enroll_date, trial_end_date, trial_withdraw_d
 from GROUSE_DB_DEV_CDM.PCORNET_CDM_UU.PCORNET_TRIAL where lower(TRIALID) = 'vccc'
 ;
 
+
 create or replace table VCCC_UNMAPPED as 
 select a.*, b.patid, b.site 
 from BYOD_BL2EBP_20241120 a
@@ -98,6 +99,7 @@ group by substr(study_id,1,2)
 ;
 -- KU	8
 
+select * from VCCC_UNMAPPED;
 
 create or replace table OC_TCOG as 
 with clean_cte as (
@@ -732,6 +734,37 @@ group by substr(study_id,1,2)
 -- 989
 -- UT	266
 -- KU	723 -> 734
+
+with per_pat_cnt as (
+    select patid, study_id, count(distinct days_since_index) as repeat_bp
+    from VCCC_CLINIC_BP_LONG 
+    where days_since_index between -365 and 0
+    group by patid, study_id
+)
+select substr(study_id,1,2), count(distinct patid) 
+from per_pat_cnt
+where repeat_bp > 1
+group by substr(study_id,1,2)
+;
+
+-- calculate natural 
+create or replace table NAT_SBP_VARI as
+with sbp_m as (
+    select patid, study_id, avg(SBP) as SBP_m, avg(DBP) as DBP_m 
+    from VCCC_CLINIC_BP_LONG
+    group by patid, study_id
+    wher days_since_index between -365 and 0
+),  sbp_sd as (
+    select patid, study_id, stddev(SBP) as SBP_m, stddev(DBP) as DBP_m 
+    from VCCC_CLINIC_BP_LONG
+    group by patid, study_id
+    wher days_since_index between -365 and 0
+),  sbp_cv as (
+
+),  sbp_arv as (
+
+)
+;
 
 
 /* healthcare visits */
@@ -1491,6 +1524,55 @@ where lab_egfr2 is not null
 order by lab_egfr2 desc
 ;
 
+create or replace table SDOH_KUMC_FEAS as 
+select a.patid, 
+       b.obsgen_start_date,
+       b.obsgen_result_text,
+       ref.SDOH_DOMAIN, 
+       ref.SDOH_VAR, 
+       ref.SDOH_TEXT, 
+       ref.LOINC,
+       case when 
+from VCCC_BASE_BP_TCOG_SDH a
+join GROUSE_DB_DEV_CDM.PCORNET_CDM_KUMC.OBS_GEN b on a.patid = b.patid
+join Z_SDOH_REF ref on b.OBSGEN_CODE = ref.LOINC 
+;
+select count(distinct patid) from SDOH_KUMC_FEAS; -- 726
+select SDOH_TEXT, count(distinct patid) from SDOH_KUMC_FEAS
+group by SDOH_TEXT
+order by SDOH_TEXT;
+select SDOH_TEXT, obsgen_result_text, count(distinct patid) from SDOH_KUMC_FEAS
+group by SDOH_TEXT, obsgen_result_text
+order by SDOH_TEXT, obsgen_result_text;
+
+create or replace table SDOH_UU_FEAS as 
+select a.patid, 
+       b.pro_date,
+       b.pro_name,
+       b.pro_response_text,
+       ref.SDOH_DOMAIN, 
+       ref.SDOH_VAR, 
+       ref.SDOH_TEXT, 
+       ref.LOINC
+from VCCC_BASE_BP_TCOG_SDH a
+join GROUSE_DB_DEV_CDM.PCORNET_CDM_UU.PRO_CM b on a.patid = b.patid
+join Z_SDOH_REF ref on b.PRO_CODE = ref.LOINC 
+;
+select count(distinct patid) from SDOH_UU_FEAS; -- 264
+select SDOH_TEXT, count(distinct patid) from SDOH_UU_FEAS
+group by SDOH_TEXT
+order by SDOH_TEXT;
+select SDOH_TEXT, pro_response_text, count(distinct patid) from SDOH_UU_FEAS
+group by SDOH_TEXT, pro_response_text
+order by SDOH_TEXT, pro_response_text;
+
+select distinct a.sdoh_text 
+from SDOH_UU_FEAS a 
+join SDOH_KUMC_FEAS b 
+on a.loinc = b.loinc
+;
+
+
 create or replace procedure get_sdoh_long(
     TRIAL_REF string,
     SITES array,
@@ -1521,8 +1603,8 @@ for(i=0; i<SITES.length; i++){
     // parameter
     var site = SITES[i].toString();
     var site_cdm = `GROUSE_DB_DEV_CDM.PCORNET_CDM_`+ site +``;
-    
-    // dynamic query
+     
+    // smoking status
     var sqlstmt_par = `
         INSERT INTO `+ TGT_LONG_TBL +`
             -- SMOKING from VITAL table
@@ -2041,5 +2123,13 @@ group by race_ethn_str
 order by race_ethn_str
 ;
 
-select count(distinct patid), count(distinct study_id), count(*) from VCCC_BASELINE_FINAL;
+select count(distinct patid), count(distinct study_id), count(*) 
+from VCCC_BASELINE_FINAL
+;
+
+select ruca_primary_nonmetro_ind,site,
+       count(distinct patid), count(distinct study_id), count(*) 
+from VCCC_BASELINE_FINAL
+group by ruca_primary_nonmetro_ind,site
+;
 
