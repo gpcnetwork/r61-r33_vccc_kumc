@@ -21,6 +21,9 @@ path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda'))
 # unenrl_aset<-readRDS(file.path(path_to_data,'unenrol_aset.rda'))
 
+#==== Enrollment Analysis
+
+
 #==== CKD testing ====
 var_ckd<-c(
   # "CKD_TS_NO",

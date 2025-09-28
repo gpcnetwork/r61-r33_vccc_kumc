@@ -14,9 +14,9 @@ pacman::p_load(
 # make db connection
 sf_conn <- DBI::dbConnect(
   drv = odbc::odbc(),
-  dsn = Sys.getenv("ODBC_DSN_NAME"),
-  uid = Sys.getenv("SNOWFLAKE_USER"),
-  pwd = Sys.getenv("SNOWFLAKE_PWD")
+  dsn = 'snowflake_id',
+  uid = 'xsm7f@umsystem.edu',
+  pwd = ''
 )
 
 path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
@@ -30,7 +30,7 @@ path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 # meds<-tbl(sf_conn,sql("dplyr::select * from SX_VCCC.VCCC_MED_LONG")) %>% collect()
 # saveRDS(meds,file=file.path(path_to_data,"meds_long.rda"))
 
-# collect tcog-sdh cohor
+# collect tcog-sdh cohort
 # tcog_sdh<-tbl(sf_conn,sql("dplyr::select * from SX_VCCC.VCCC_BASE_BP_TCOG_SDH")) %>% collect() %>%
 #   # low-freq grouping
 #   group_by(STATE) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(STATE_GROUP = case_when(CNT>100 ~ STATE, TRUE ~ 'OT')) %>%
@@ -66,19 +66,9 @@ aset<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_BASELINE_FINAL")) %>% collect(
   arrange(ENROLL_DATE)
 #- data
 saveRDS(aset,file=file.path(path_to_data,"baseline_aset.rda"))
-#- meta
-# write.csv(
-#   data.frame(VAR = colnames(baseline_aset),stringsAsFactors=F),
-#   file = file.path(path_to_ref,"metadata.csv")
-# )
-
 
 # collect final aset
 unenr_aset<-tbl(sf_conn,sql("select * from SX_VCCC.VCCC_UNENR_BASELINE_FINAL")) %>% collect()
 #- data
 saveRDS(unenr_aset,file=file.path(path_to_data,"unenrol_aset.rda"))
-#- meta
-# write.csv(
-#   data.frame(VAR = colnames(baseline_aset),stringsAsFactors=F),
-#   file = file.path(path_to_ref,"metadata.csv")
-# )
+

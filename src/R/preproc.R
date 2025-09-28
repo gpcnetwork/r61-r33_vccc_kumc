@@ -11,9 +11,152 @@ pacman::p_load(
 path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
 path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 
+# preprocess enrolled set
+baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda')) %>%
+  mutate(
+    RACE_STR = case_when(
+      RACE_STR %in% c('white','black','asian','aian','multi') ~ RACE_STR,
+      TRUE ~ 'other'
+    ),
+    RACE_STR = fct_relevel(RACE_STR,'white'),
+    ETHN_STR = case_when(
+      ETHN_STR == "hispanic" ~ "hispanic",
+      TRUE ~ 'non-hispanic'
+    ),
+    ETHN_STR = fct_relevel(ETHN_STR,'non-hispanic'),
+    RACE_ETHN_STR = fct_relevel(RACE_ETHN_STR,'white'),
+  )
+
+saveRDS(baseline_aset,file=file.path(path_to_data,"baseline_aset_preproc.rda"))
+
+
+# full pre-screened set
+var_enrol<-c(
+  "AGE",
+  "SEX_STR",
+  "RACE_STR",
+  "ETHN_STR",
+  "RACE_ETHN_STR",
+  "BMI",
+  "ELIG_DBP",
+  "ELIG_SBP",
+  "MED_CNT_IN",
+  "SMOKER_IND",
+  "LAB_EGFR2",
+  "LAB_URALBCR2",
+  "LAB_URPROTCR2",
+  "EFI_DIA",
+  "LAB_HBA1C",
+  "EFI_STROKE",
+  "CCI_TOTAL",
+  "CCI_TOTAL_GRP",
+  "PAYER_TYPE_PRIMARY_GRP",
+  "EFI_CAD",
+  "SITE"
+)
+full_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
+  dplyr::select(!!c("PATID","PRESCREEN_STATUS",var_enrol)) %>%
+  bind_rows(
+    readRDS(file.path(path_to_data,"unenrol_aset.rda")) %>%
+      dplyr::select(!!c("PATID","PRESCREEN_STATUS",var_enrol))
+  ) %>%
+  mutate(
+    LAB_EGFR2 = pmin(LAB_EGFR2,100)
+  ) %>%
+  mutate(
+    AGE_75UP = case_when(
+      AGE >= 75 ~ 1,
+      TRUE ~ 0
+    ),
+    AGE_GRP = case_when(
+      AGE < 70 & AGE>=65 ~ 'agegrp1',
+      AGE < 75 & AGE>=70 ~ 'agegrp2',
+      AGE >= 75 ~ 'agegrp3',
+      TRUE ~ NA_character_
+    ),
+    SEX_STR = fct_relevel(SEX_STR, "Male"),
+    RACE_STR = case_when(
+      RACE_STR %in% c('white','black','asian','aian','multi') ~ RACE_STR,
+      TRUE ~ 'other'
+    ),
+    RACE_STR = fct_relevel(RACE_STR,'white'),
+    ETHN_STR = case_when(
+      ETHN_STR == "hispanic" ~ "hispanic",
+      TRUE ~ 'non-hispanic'
+    ),
+    ETHN_STR = fct_relevel(ETHN_STR,'non-hispanic'),
+    RACE_ETHN_STR = fct_relevel(RACE_ETHN_STR,'white'),
+    PAYER_TYPE_PRIMARY_GRP = case_when(PAYER_TYPE_PRIMARY_GRP=="other" ~ "medicare", TRUE ~ PAYER_TYPE_PRIMARY_GRP),
+    PAYER_TYPE_PRIMARY_GRP  = fct_relevel(PAYER_TYPE_PRIMARY_GRP,'medicare'),
+    BMI_GRP = case_when(
+      BMI < 25 ~ 'bmigrp1',
+      BMI>=25&BMI<30 ~ 'bmigrp2',
+      BMI>=30&BMI<35 ~ 'bmigrp3',
+      BMI>=35&BMI<40 ~ 'bmigrp4',
+      BMI>=40 ~ 'bmigrp5',
+      TRUE ~ 'bmigrp9'
+    ),
+    ELIG_SBP_GRP = case_when(
+      ELIG_SBP>=140&ELIG_SBP<150 ~ 'sbpgrp1',
+      ELIG_SBP>=150&ELIG_SBP<160 ~ 'sbpgrp2',
+      ELIG_SBP>=160 ~ 'sbpgrp3',
+      TRUE ~ NA_character_
+    ),
+    ELIG_DBP_GRP = case_when(
+      ELIG_DBP<80 ~ 'dbpgrp1',
+      ELIG_DBP>=90&ELIG_DBP<90 ~ 'dbpgrp2',
+      ELIG_DBP>90 ~ 'dbpgrp3',
+      TRUE ~ NA_character_
+    ),
+    MED_CNT_IN_GRP = case_when(
+      MED_CNT_IN<3 ~ 'ahtcntgrp1',
+      TRUE ~ 'ahtcntgrp2'
+    ),
+    LAB_EGFR2_GRP = case_when(
+      LAB_EGFR2>=60 ~ 'egfrgrp1',
+      LAB_EGFR2>=45&LAB_EGFR2<60 ~ 'egfrgrp2',
+      LAB_EGFR2>=30&LAB_EGFR2<45 ~ 'egfrgrp3',
+      LAB_EGFR2>=15&LAB_EGFR2<30 ~ 'egfrgrp4',
+      LAB_EGFR2<15 ~ 'egfrgrp5',
+      TRUE ~ 'egfrgrp9'
+    ),
+    LAB_URALBCR2_GRP = case_when(
+      LAB_URALBCR2<30 ~ 'uralbcrgrp1',
+      LAB_URALBCR2>=30&LAB_URALBCR2<300 ~ 'uralbcrgrp2',
+      LAB_URALBCR2>=300 ~ 'uralbcrgrp3',
+      TRUE ~ 'uralbcrgrp9'
+    ),
+    LAB_URPROTCR2_GRP = case_when(
+      LAB_URPROTCR2<150 ~ 'urprotcrgrp1',
+      LAB_URPROTCR2>=150&LAB_URPROTCR2<500 ~ 'urprotcrgrp2',
+      LAB_URPROTCR2>=500 ~ 'urprotcrgrp3',
+      TRUE ~ 'urprotcrgrp9'
+    ),
+    CKD_EGFR = case_when(
+      LAB_EGFR2 < 60 ~ 1,
+      TRUE ~ 0
+    ),
+    PU_URPROTCR = case_when(
+      LAB_URPROTCR2 > 150 ~ 1,
+      TRUE ~ 0
+    ),
+    ALBU_URALBCR = case_when(
+      LAB_URALBCR2 > 30 ~ 1,
+      TRUE ~ 0
+    ),
+    ENROL_IND = case_when(
+      PRESCREEN_STATUS=="study" ~ 1,
+      TRUE ~ 0
+    )
+  ) %>%
+  filter(!is.na(ELIG_SBP)&!is.na(AGE_GRP))
+
+saveRDS(full_aset,file=file.path(path_to_data,"full_aset_preproc.rda"))
+
+
 # remove invariant metrics
-sdoh_nzv<- nearZeroVar(sdoh_cov, saveMetrics = TRUE)
-sdoh_cov<-sdoh_cov[,row.names(sdoh_nzv)[!sdoh_nzv$zeroVar]]
+# sdoh_nzv<- nearZeroVar(sdoh_cov, saveMetrics = TRUE)
+# sdoh_cov<-sdoh_cov[,row.names(sdoh_nzv)[!sdoh_nzv$zeroVar]]
 
 # # quick imputation
 # sdoh_cov_ruca<-sdoh_ruca %>%

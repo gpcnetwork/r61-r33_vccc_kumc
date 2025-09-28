@@ -39,7 +39,7 @@ path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 
 ## Clinic BP vs. Home BP at Baseline
 
-Run-in period is defined as the time gap between eligibility clinic visit and baseline visit. 
+Run-in period is defined as the time gap between eligibility clinic visit and baseline visit.
 
 ```{r, warning=F}
 #| label: bp-baseline-plot
@@ -227,7 +227,6 @@ For this investigation, we collected all prescription data following anti-HTN me
 
 -   CV806: direct renin inhibitor
 
-
 ### Analysis I: Using systematic explanatory feature screening to investigate what are the explanatory factors for BP variabilities
 
 ```{r}
@@ -325,7 +324,6 @@ CreateTableOne(
   factorVars = c("delta_sbp_over10by10")
 )
 ```
-
 
 #### Univariate filtering
 
@@ -567,8 +565,7 @@ ordreg<-data.frame(coefs) %>%
 kable(ordreg)
 ```
 
-
-### CKD Testing
+# CKD Testing
 
 ```{r}
 #| label: ckd-testing-descr
@@ -643,7 +640,7 @@ kable(
 )
 ```
 
-### SDH Outcome-wide
+# SDH Outcome-wide
 
 ```{r, warning=F}
 #| label: sdh-outcome-wide
@@ -692,262 +689,4 @@ kable(
   print(tbl4b, printToggle = FALSE), 
   caption = "Table 4b: Clinical Characteristics by Rurality"
 )
-```
-
-
-#### Enrollment descriptives
-
-```{r, warning=F}
-#| label: enrol-descr
-
-var_enrol<-c(
-  "AGE",
-  "SEX_STR",
-  "RACE_STR",
-  "ETHN_STR",
-  "RACE_ETHN_STR",
-  "BMI",
-  "ELIG_DBP",
-  "ELIG_SBP",
-  "MED_CNT_IN",
-  "SMOKER_IND",
-  "LAB_EGFR2",
-  "LAB_URALBCR2",
-  "LAB_URPROTCR2",
-  "EFI_DIA",
-  "LAB_HBA1C",
-  "EFI_STROKE",
-  "CCI_TOTAL",
-  "CCI_TOTAL_GRP",
-  "PAYER_TYPE_PRIMARY_GRP"
-)
-
-facvar_enrol<-c(
-  "SEX_STR",
-  "RACE_STR",
-  "ETHN_STR",
-  "RACE_ETHN_STR",
-  "SMOKER_IND",
-  "EFI_DIA",
-  "EFI_STROKE",
-  "CCI_TOTAL_GRP",
-  "PAYER_TYPE_PRIMARY_GRP"
-)
-
-enrol_aset<-baseline_aset %>% mutate(PRESCREEN_STATUS = "study") %>%
-  dplyr::select(!!c("PATID","PRESCREEN_STATUS",var_enrol)) %>%
-  bind_rows(
-     readRDS(file.path(path_to_data,"unenrol_aset.rda")) %>%
-      dplyr::select(!!c("PATID","PRESCREEN_STATUS",var_enrol))
-  ) %>%
-  mutate(
-    LAB_EGFR2 = pmin(LAB_EGFR2,100)
-  ) %>%
-  mutate(
-    AGE_75UP = case_when(
-      AGE >= 75 ~ 1,
-      TRUE ~ 0
-    ),
-    AGE_GRP = case_when(
-      AGE < 70 & AGE>=65 ~ 'agegrp1',
-      AGE < 75 & AGE>=70 ~ 'agegrp2',
-      AGE >= 75 ~ 'agegrp3',
-      TRUE ~ NA_character_
-    ),
-    SEX_STR = fct_relevel(SEX_STR, "Male"),
-    RACE_STR = case_when(
-      RACE_STR %in% c('white','black','asian','aian','multi') ~ RACE_STR,
-      TRUE ~ 'other'
-    ),
-    RACE_STR = fct_relevel(RACE_STR,'white'),
-    ETHN_STR = case_when(
-      ETHN_STR == "hispanic" ~ "hispanic",
-      TRUE ~ 'non-hispanic'
-    ),
-    ETHN_STR = fct_relevel(ETHN_STR,'non-hispanic'),
-    RACE_ETHN_STR = fct_relevel(RACE_ETHN_STR,'white'),
-    PAYER_TYPE_PRIMARY_GRP = case_when(PAYER_TYPE_PRIMARY_GRP=="other" ~ "medicare", TRUE ~ PAYER_TYPE_PRIMARY_GRP),
-    PAYER_TYPE_PRIMARY_GRP  = fct_relevel(PAYER_TYPE_PRIMARY_GRP,'medicare'),
-    BMI_GRP = case_when(
-      BMI < 25 ~ 'bmigrp1',
-      BMI>=25&BMI<30 ~ 'bmigrp2',
-      BMI>=30&BMI<35 ~ 'bmigrp3',
-      BMI>=35&BMI<40 ~ 'bmigrp4',
-      BMI>=40 ~ 'bmigrp5',
-      TRUE ~ 'bmigrp9'
-    ),
-    ELIG_SBP_GRP = case_when(
-      ELIG_SBP>=140&ELIG_SBP<150 ~ 'sbpgrp1',
-      ELIG_SBP>=150&ELIG_SBP<160 ~ 'sbpgrp2',
-      ELIG_SBP>=160 ~ 'sbpgrp3',
-      TRUE ~ NA_character_
-    ),
-    MED_CNT_IN_GRP = case_when(
-      MED_CNT_IN<3 ~ 'ahtcntgrp1',
-      TRUE ~ 'ahtcntgrp2'
-    ),
-    LAB_EGFR2_GRP = case_when(
-      LAB_EGFR2>=60 ~ 'egfrgrp1',
-      LAB_EGFR2>=45&LAB_EGFR2<60 ~ 'egfrgrp2',
-      LAB_EGFR2>=30&LAB_EGFR2<45 ~ 'egfrgrp3',
-      LAB_EGFR2>=15&LAB_EGFR2<30 ~ 'egfrgrp4',
-      LAB_EGFR2<15 ~ 'egfrgrp5',
-      TRUE ~ 'egfrgrp9'
-    ),
-    LAB_URALBCR2_GRP = case_when(
-      LAB_URALBCR2<30 ~ 'uralbcrgrp1',
-      LAB_URALBCR2>=30&LAB_URALBCR2<300 ~ 'uralbcrgrp2',
-      LAB_URALBCR2>=300 ~ 'uralbcrgrp3',
-      TRUE ~ 'uralbcrgrp9'
-    ),
-    LAB_URPROTCR2_GRP = case_when(
-      LAB_URPROTCR2<150 ~ 'urprotcrgrp1',
-      LAB_URPROTCR2>=150&LAB_URPROTCR2<500 ~ 'urprotcrgrp2',
-      LAB_URPROTCR2>=500 ~ 'urprotcrgrp3',
-      TRUE ~ 'urprotcrgrp9'
-    ),
-    CKD_EGFR = case_when(
-      LAB_EGFR2 < 60 ~ 1,
-      TRUE ~ 0
-    ),
-    PU_URPROTCR = case_when(
-      LAB_URPROTCR2 > 150 ~ 1,
-      TRUE ~ 0
-    ),
-    ALBU_URALBCR = case_when(
-      LAB_URALBCR2 > 30 ~ 1,
-      TRUE ~ 0
-    ),
-    ENROL_IND = case_when(
-      PRESCREEN_STATUS=="study" ~ 1,
-      TRUE ~ 0
-    )
-  ) %>%
-  filter(!is.na(ELIG_SBP)&!is.na(AGE_GRP))
-
-var_enrol<-c(
-  var_enrol,
-  "AGE_75UP",
-  "AGE_GRP",
-  "BMI_GRP",
-  "ELIG_SBP_GRP",
-  "MED_CNT_IN_GRP",
-  "LAB_EGFR2_GRP",
-  "LAB_URALBCR2_GRP",
-  "LAB_URPROTCR2_GRP",
-  "CKD_EGFR",
-  "PU_URPROTCR",
-  "ALBU_URALBCR"
-)
-facvar_enrol<-c(
-  facvar_enrol,
-  "AGE_75UP",
-  "AGE_GRP",
-  "BMI_GRP",
-  "ELIG_SBP_GRP",
-  "MED_CNT_IN_GRP",
-  "LAB_EGFR2_GRP",
-  "LAB_URALBCR2_GRP",
-  "LAB_URPROTCR2_GRP",
-  "CKD_EGFR",
-  "PU_URPROTCR",
-  "ALBU_URALBCR"
-)
-
-enrol_uni<-univar_analysis_mixed(
-  df = enrol_aset,
-  id_col ="PATID",
-  var_lst = var_enrol,
-  grp = enrol_aset$PRESCREEN_STATUS,
-  facvar_lst  = facvar_enrol,
-  pretty = T
-)
-enrol_uni %>%
-  save_kable(
-    file.path(path_to_res,'by_prescreen.html')
-  )
-
-tbl5a<-CreateTableOne(
-  data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","declin")),
-  vars = var_enrol,
-  factorVars = facvar_enrol,
-  strata = "PRESCREEN_STATUS"
-)
-kable(
-  print(tbl5a, printToggle = FALSE), 
-  caption = "Table 5a: Cohort Characteristics of Enrolled vs. Declined"
-)
-
-tbl5b<-CreateTableOne(
-  data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","inelig")),
-  vars = var_enrol,
-  factorVars = facvar_enrol,
-  strata = "PRESCREEN_STATUS"
-)
-kable(
-  print(tbl5b, printToggle = FALSE), 
-  caption = "Table 5b: Cohort Characteristics of Enrolled vs. Ineligible"
-)
-
-tbl5c<-CreateTableOne(
-  data = enrol_aset %>% filter(PRESCREEN_STATUS %in% c("study","unreach")),
-  vars = var_enrol,
-  factorVars = facvar_enrol,
-  strata = "PRESCREEN_STATUS"
-)
-kable(
-  print(tbl5c, printToggle = FALSE), 
-  caption = "Table 5c: Cohort Characteristics of Enrolled vs. Unreachable"
-)
-
-
-var_pre<-c(
-  "SEX_STR",
-  # "RACE_STR",
-  # "ETHN_STR",
-  "RACE_ETHN_STR",
-  "AGE_GRP",
-  "BMI_GRP",
-  "ELIG_SBP_GRP",
-  "MED_CNT_IN_GRP",
-  "LAB_EGFR2_GRP",
-  "LAB_URALBCR2_GRP",
-  "LAB_URPROTCR2_GRP",
-  "EFI_DIA",
-  "EFI_STROKE",
-  "CCI_TOTAL_GRP",
-  "SMOKER_IND",
-  "PAYER_TYPE_PRIMARY_GRP"
-)
-
-# Specify a null model with no predictors
-null_model <- glm(
-  ENROL_IND ~ 1,
-  data = enrol_aset,
-  family = binomial()
-)
-
-# Specify the full model using all of the potential predictors
-full_model <- glm(
-  formula(paste0("ENROL_IND ~ ",paste(var_pre,collapse = "+"))), 
-  data = enrol_aset, 
-  family = binomial()
-)
-
-# Use a bi-directional stepwise algorithm to build a parsimonious model
-step_model <- step(
-  null_model,
-  scope = list(lower = null_model, upper = full_model),
-  direction = "both"
-)
-
-modsumm<-summary(step_model)
-with(modsumm, 1 - deviance/null.deviance)
-
-step_model |> 
-  tbl_regression(exponentiate = TRUE)
-
-full_model |> 
-  tbl_regression(exponentiate = TRUE)
-
 ```

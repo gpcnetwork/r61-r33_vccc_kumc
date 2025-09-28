@@ -1,0 +1,256 @@
+---
+title: "Enrollment Analysis"
+author: "Xing Song"
+format: 
+  html:
+    self-contained: true
+editor: visual
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+#| label: load-pkg
+
+# rm(list=ls())
+pacman::p_load(
+  tidyverse,
+  magrittr,
+  stringr,
+  broom,
+  cowplot,
+  ggrepel,
+  kableExtra,
+  gtsummary,
+  devtools,
+  tableone,
+  pROC,
+  MASS
+)
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/analysis_util.R")
+source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
+
+path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
+path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
+path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
+```
+
+
+```{r}
+#| label: load_data
+full_aset<-readRDS(file.path(path_to_data,"full_aset_preproc.rda"))
+```
+
+
+## Descriptive Statistics
+
+```{r}
+#| label: descr
+
+vars<-c(
+  "AGE",
+  "AGE_75UP",
+  "SEX_STR",
+  "RACE_ETHN_STR",
+  "BMI",
+  "BMI_GRP",
+  "ELIG_SBP",
+  "ELIG_SBP_GRP",
+  "ELIG_DBP",
+  "ELIG_DBP_GRP",
+  "MED_CNT_IN",
+  "MED_CNT_IN_GRP",
+  "SMOKER_IND",
+  "LAB_EGFR2",
+  "LAB_EGFR2_GRP",
+  "CKD_EGFR",
+  "LAB_URALBCR2",
+  "LAB_URALBCR2_GRP",
+  "ALBU_URALBCR",
+  "LAB_URPROTCR2",
+  "LAB_URPROTCR2_GRP",
+  "PU_URPROTCR",
+  "EFI_DIA",
+  "EFI_CAD",
+  "EFI_STROKE",
+  "CCI_TOTAL",
+  "CCI_TOTAL_GRP",
+  "PAYER_TYPE_PRIMARY_GRP",
+  "ENROL_IND",
+  "SITE"
+)
+
+facvars<-c(
+  "SEX_STR",
+  "RACE_ETHN_STR",
+  "BMI_GRP",
+  "MED_CNT_IN_GRP",
+  "SMOKER_IND",
+  "ELIG_SBP_GRP",
+  "ELIG_DBP_GRP",
+  "LAB_EGFR2_GRP",
+  "CKD_EGFR",
+  "LAB_URALBCR2_GRP",
+  "ALBU_URALBCR",
+  "LAB_URPROTCR2_GRP",
+  "PU_URPROTCR",
+  "EFI_DIA",
+  "EFI_CAD",
+  "EFI_STROKE",
+  "CCI_TOTAL_GRP",
+  "PAYER_TYPE_PRIMARY_GRP",
+  "ENROL_IND"
+)
+
+# enrol_uni<-univar_analysis_mixed(
+#   df = full_aset,
+#   id_col ="PATID",
+#   var_lst = vars,
+#   grp = full_aset$PRESCREEN_STATUS,
+#   facvar_lst  = facvars,
+#   pretty = T
+# )
+# enrol_uni %>%
+#   save_kable(
+#     file.path(path_to_res,'by_prescreen.html')
+#   )
+
+tbl2<-CreateTableOne(
+  data = full_aset %>% 
+    filter(PRESCREEN_STATUS %in% c("study","declin","unreach")),
+  vars = vars,
+  factorVars = facvars,
+  strata = "SITE"
+)
+kable(
+  print(tbl2, printToggle = FALSE), 
+  caption = "Table 2: Cohort Characteristics of KU vs. UU"
+)
+
+tbl3a<-CreateTableOne(
+  data = full_aset %>% filter(PRESCREEN_STATUS %in% c("study","declin","unreach")),
+  vars = vars,
+  factorVars = facvars,
+  strata = "ENROL_IND"
+)
+kable(
+  print(tbl3a, printToggle = FALSE), 
+  caption = "Table 3a: Cohort Characteristics of Enrolled vs. Unenrolled (Declined, Unreachable)"
+)
+
+tbl3b<-CreateTableOne(
+  data = full_aset %>% filter(PRESCREEN_STATUS %in% c("declin","unreach")),
+  vars = vars,
+  factorVars = facvars,
+  strata = "PRESCREEN_STATUS"
+)
+kable(
+  print(tbl3b, printToggle = FALSE), 
+  caption = "Table 3b: Cohort Characteristics of Declined vs. Unreachable"
+)
+```
+
+
+## Univariate Analysis
+
+```{r}
+#| label: univar
+
+var_pre<-c(
+  "AGE_GRP",
+  "SEX_STR",
+  # "RACE_STR",
+  # "ETHN_STR",
+  "RACE_ETHN_STR",
+  "BMI_GRP",
+  "ELIG_SBP_GRP",
+  "MED_CNT_IN_GRP",
+  "SMOKER_IND",
+  "LAB_EGFR2_GRP",
+  "LAB_URALBCR2_GRP",
+  "LAB_URPROTCR2_GRP",
+  "EFI_DIA",
+  "EFI_STROKE",
+  "CCI_TOTAL_GRP",
+  "PAYER_TYPE_PRIMARY_GRP"
+)
+
+fit_uni <- map(var_pre, ~ glm(as.formula(paste("ENROL_IND ~", .x)), 
+                          data = full_aset, family = binomial))
+tbls <- map(fit_uni, ~ tbl_regression(.x, exponentiate = TRUE))
+tbl_stack(tbls)
+```
+
+
+## Multivariate Analysis
+
+```{r}
+#| label: multivar
+
+var_pre<-c(
+  "SEX_STR",
+  # "RACE_STR",
+  # "ETHN_STR",
+  "RACE_ETHN_STR",
+  "AGE_GRP",
+  "BMI_GRP",
+  "ELIG_SBP_GRP",
+  "MED_CNT_IN_GRP",
+  "LAB_EGFR2_GRP",
+  "LAB_URALBCR2_GRP",
+  "LAB_URPROTCR2_GRP",
+  "EFI_DIA",
+  "EFI_STROKE",
+  "CCI_TOTAL_GRP",
+  "SMOKER_IND",
+  "PAYER_TYPE_PRIMARY_GRP"
+)
+
+aset_complt<-full_aset %>%
+  filter(if_all(!!var_pre, ~ !is.na(.)))
+
+# Specify a null model with no predictors
+null_model <- glm(
+  ENROL_IND ~ 1,
+  data = aset_complt,
+  family = binomial()
+)
+
+# Specify the full model using all of the potential predictors
+full_model <- glm(
+  formula(paste0("ENROL_IND ~ ",paste(var_pre,collapse = "+"))), 
+  data = aset_complt, 
+  family = binomial()
+)
+
+# Use a bi-directional stepwise algorithm to build a parsimonious model
+step_model <- step(
+  null_model,
+  scope = list(lower = null_model, upper = full_model),
+  direction = "both"
+)
+
+modsumm<-summary(step_model)
+r2<-with(modsumm, 1 - deviance/null.deviance)
+fitted_val<-predict(step_model,type="response")
+brier<-mean((aset_complt$ENROL_IND - fitted_val)^2)
+roc_obj<-roc(aset_complt$ENROL_IND, fitted_val)
+cidx<-as.numeric(auc(roc_obj))
+
+step_model |> 
+  tbl_regression(exponentiate = TRUE) |>
+  modify_caption("**Logistic Regression Results**") |>
+  modify_footnote(
+    estimate ~ paste0(
+      "McFadden R-sq = ", round(r2, 3),
+   "; Brier Score = ", round(brier, 3),
+   "; C Index = ", round(cidx, 3)
+    )
+  )
+
+# full_model |> 
+#   tbl_regression(exponentiate = TRUE)
+```
+
