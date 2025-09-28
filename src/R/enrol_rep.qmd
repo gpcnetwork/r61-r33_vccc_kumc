@@ -34,7 +34,6 @@ source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
 
 path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
 path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
-path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 ```
 
 
@@ -77,9 +76,7 @@ vars<-c(
   "EFI_STROKE",
   "CCI_TOTAL",
   "CCI_TOTAL_GRP",
-  "PAYER_TYPE_PRIMARY_GRP",
-  "ENROL_IND",
-  "SITE"
+  "PAYER_TYPE_PRIMARY_GRP"
 )
 
 facvars<-c(
@@ -100,8 +97,7 @@ facvars<-c(
   "EFI_CAD",
   "EFI_STROKE",
   "CCI_TOTAL_GRP",
-  "PAYER_TYPE_PRIMARY_GRP",
-  "ENROL_IND"
+  "PAYER_TYPE_PRIMARY_GRP"
 )
 
 # enrol_uni<-univar_analysis_mixed(
@@ -143,7 +139,7 @@ kable(
 tbl3b<-CreateTableOne(
   data = full_aset %>% filter(PRESCREEN_STATUS %in% c("declin","unreach")),
   vars = vars,
-  factorVars = facvars,
+  factorVars = facvars[!vars %in% c("ENROL_IND")],
   strata = "PRESCREEN_STATUS"
 )
 kable(

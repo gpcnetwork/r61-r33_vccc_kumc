@@ -1,5 +1,5 @@
 ---
-title: "Enrollment Analysis"
+title: "CKD Testing Analysis"
 author: "Xing Song"
 format: 
   html:
@@ -34,7 +34,6 @@ source_url("https://raw.githubusercontent.com/sxinger/utils/master/plot_util.R")
 
 path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
 path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
-path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 ```
 
 
@@ -42,7 +41,6 @@ path_to_ref<-"C:/repos/r61-r33_vccc_kumc/ref"
 #| label: load_data
 full_aset<-readRDS(file.path(path_to_data,"full_aset_preproc.rda"))
 ```
-
 
 ## Descriptive Statistics
 
@@ -53,6 +51,8 @@ vars<-c(
   "AGE",
   "AGE_75UP",
   "SEX_STR",
+  "RACE_STR",
+  "ETHN_STR",
   "RACE_ETHN_STR",
   "BMI",
   "BMI_GRP",
@@ -79,7 +79,8 @@ vars<-c(
   "CCI_TOTAL_GRP",
   "PAYER_TYPE_PRIMARY_GRP",
   "ENROL_IND",
-  "SITE"
+  "SITE",
+  "CKD_TEST_GRP"
 )
 
 facvars<-c(
@@ -101,7 +102,9 @@ facvars<-c(
   "EFI_STROKE",
   "CCI_TOTAL_GRP",
   "PAYER_TYPE_PRIMARY_GRP",
-  "ENROL_IND"
+  "ENROL_IND",
+  "SITE",
+  "CKD_TEST_GRP"
 )
 
 # enrol_uni<-univar_analysis_mixed(
@@ -117,16 +120,15 @@ facvars<-c(
 #     file.path(path_to_res,'by_prescreen.html')
 #   )
 
-tbl2<-CreateTableOne(
-  data = full_aset %>% 
-    filter(PRESCREEN_STATUS %in% c("study","declin","unreach")),
+tbl1<-CreateTableOne(
+  data = full_aset,
   vars = vars,
   factorVars = facvars,
   strata = "SITE"
 )
 kable(
-  print(tbl2, printToggle = FALSE), 
-  caption = "Table 2: Cohort Characteristics of KU vs. UU"
+  print(tbl1, printToggle = FALSE), 
+  caption = "Table 1: Baseline Characteristics of Study Population"
 )
 
 tbl3a<-CreateTableOne(
@@ -151,7 +153,6 @@ kable(
   caption = "Table 3b: Cohort Characteristics of Declined vs. Unreachable"
 )
 ```
-
 
 ## Univariate Analysis
 
@@ -182,7 +183,6 @@ fit_uni <- map(var_pre, ~ glm(as.formula(paste("ENROL_IND ~", .x)),
 tbls <- map(fit_uni, ~ tbl_regression(.x, exponentiate = TRUE))
 tbl_stack(tbls)
 ```
-
 
 ## Multivariate Analysis
 
@@ -253,4 +253,3 @@ step_model |>
 # full_model |> 
 #   tbl_regression(exponentiate = TRUE)
 ```
-
