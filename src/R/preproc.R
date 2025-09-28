@@ -13,6 +13,28 @@ path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 
 # preprocess enrolled set
 baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda')) %>%
+  # low-freq grouping
+  group_by(STATE) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(STATE_GRP = case_when(CNT>100 ~ STATE, TRUE ~ 'OT')) %>%
+  group_by(COUNTY) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(COUNTY_GRP = case_when(CNT>20 ~ COUNTY, TRUE ~ 'OT')) %>%
+  group_by(DELTA_SBP_BY10) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(DELTA_SBP_BY10_GRP = case_when(CNT>100 ~ DELTA_SBP_BY10, DELTA_SBP_BY10<0 ~ -4, TRUE ~ 1)) %>%
+  ungroup %>% dplyr::select(-CNT) %>%
+  # add pre-defined features
+  mutate(
+    delta_sbp_over10 = case_when(
+      abs(DELTA_SBP) > 10 ~ 1, 
+      TRUE ~ 0
+    ),
+    delta_sbp_over10_sign = case_when(
+      DELTA_SBP > 10 ~ '+1', 
+      DELTA_SBP < -10 ~ '-1',
+      TRUE ~ '0'
+    ),
+    delta_sbp_over10by10 = case_when(
+      abs(DELTA_SBP) >10 & abs(DELTA_SBP) <= 20 ~ '2',
+      abs(DELTA_SBP) >20 ~ '3',
+      TRUE ~ '1'
+    )
+  ) %>%
   mutate(
     RACE_STR = case_when(
       RACE_STR %in% c('white','black','asian','aian','multi') ~ RACE_STR,

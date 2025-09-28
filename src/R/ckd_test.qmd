@@ -49,11 +49,10 @@ full_aset<-readRDS(file.path(path_to_data,"full_aset_preproc.rda"))
 
 vars<-c(
   "AGE",
-  "AGE_75UP",
+  "AGE_GRP",
   "SEX_STR",
   "RACE_STR",
   "ETHN_STR",
-  "RACE_ETHN_STR",
   "BMI",
   "BMI_GRP",
   "ELIG_SBP",
@@ -62,6 +61,7 @@ vars<-c(
   "ELIG_DBP_GRP",
   "MED_CNT_IN",
   "MED_CNT_IN_GRP",
+  "LAB_HBA1C",
   "SMOKER_IND",
   "LAB_EGFR2",
   "LAB_EGFR2_GRP",
@@ -73,14 +73,10 @@ vars<-c(
   "LAB_URPROTCR2_GRP",
   "PU_URPROTCR",
   "EFI_DIA",
-  "EFI_CAD",
-  "EFI_STROKE",
+  "EFI_CKD",
   "CCI_TOTAL",
   "CCI_TOTAL_GRP",
-  "PAYER_TYPE_PRIMARY_GRP",
-  "ENROL_IND",
-  "SITE",
-  "CKD_TEST_GRP"
+  "PAYER_TYPE_PRIMARY_GRP"
 )
 
 facvars<-c(
@@ -98,13 +94,9 @@ facvars<-c(
   "LAB_URPROTCR2_GRP",
   "PU_URPROTCR",
   "EFI_DIA",
-  "EFI_CAD",
-  "EFI_STROKE",
+  "EFI_CKD",
   "CCI_TOTAL_GRP",
-  "PAYER_TYPE_PRIMARY_GRP",
-  "ENROL_IND",
-  "SITE",
-  "CKD_TEST_GRP"
+  "PAYER_TYPE_PRIMARY_GRP"
 )
 
 # enrol_uni<-univar_analysis_mixed(
@@ -123,8 +115,7 @@ facvars<-c(
 tbl1<-CreateTableOne(
   data = full_aset,
   vars = vars,
-  factorVars = facvars,
-  strata = "SITE"
+  factorVars = facvars
 )
 kable(
   print(tbl1, printToggle = FALSE), 
@@ -135,22 +126,11 @@ tbl3a<-CreateTableOne(
   data = full_aset %>% filter(PRESCREEN_STATUS %in% c("study","declin","unreach")),
   vars = vars,
   factorVars = facvars,
-  strata = "ENROL_IND"
+  strata = "CKD_TEST_GRP"
 )
 kable(
-  print(tbl3a, printToggle = FALSE), 
-  caption = "Table 3a: Cohort Characteristics of Enrolled vs. Unenrolled (Declined, Unreachable)"
-)
-
-tbl3b<-CreateTableOne(
-  data = full_aset %>% filter(PRESCREEN_STATUS %in% c("declin","unreach")),
-  vars = vars,
-  factorVars = facvars,
-  strata = "PRESCREEN_STATUS"
-)
-kable(
-  print(tbl3b, printToggle = FALSE), 
-  caption = "Table 3b: Cohort Characteristics of Declined vs. Unreachable"
+  print(tbl2, printToggle = FALSE), 
+  caption = "Table 2: Cohort Characteristics on CKD Testing)"
 )
 ```
 
@@ -170,10 +150,8 @@ var_pre<-c(
   "MED_CNT_IN_GRP",
   "SMOKER_IND",
   "LAB_EGFR2_GRP",
-  "LAB_URALBCR2_GRP",
-  "LAB_URPROTCR2_GRP",
   "EFI_DIA",
-  "EFI_STROKE",
+  "EFI_CKD",
   "CCI_TOTAL_GRP",
   "PAYER_TYPE_PRIMARY_GRP"
 )
@@ -184,27 +162,26 @@ tbls <- map(fit_uni, ~ tbl_regression(.x, exponentiate = TRUE))
 tbl_stack(tbls)
 ```
 
+
 ## Multivariate Analysis
 
 ```{r}
 #| label: multivar
 
 var_pre<-c(
+  "AGE_GRP",
   "SEX_STR",
   # "RACE_STR",
   # "ETHN_STR",
   "RACE_ETHN_STR",
-  "AGE_GRP",
   "BMI_GRP",
   "ELIG_SBP_GRP",
   "MED_CNT_IN_GRP",
-  "LAB_EGFR2_GRP",
-  "LAB_URALBCR2_GRP",
-  "LAB_URPROTCR2_GRP",
-  "EFI_DIA",
-  "EFI_STROKE",
-  "CCI_TOTAL_GRP",
   "SMOKER_IND",
+  "LAB_EGFR2_GRP",
+  "EFI_DIA",
+  "EFI_CKD",
+  "CCI_TOTAL_GRP",
   "PAYER_TYPE_PRIMARY_GRP"
 )
 
