@@ -23,6 +23,7 @@ Auxillary tables:
    - VCCC_UNIQUE_ADDR_GEOCODED
 =============================
 */ 
+select * from VCCC_UNIQUE_ADDR_GEOCODED limit 5;
 create or replace table ELIG_BP as 
 with stk as (
     select study_id, elig_sbp1 as elig_sbp, elig_dbp1 as elig_dbp, elig_sbp1_date as elig_date
@@ -49,6 +50,7 @@ create or replace table BASE_BP as
 with cte as (
     select upper(study_id) as study_id, 
            bp_date as base_date,
+           case when redcap_event_name = 'baseline_arm_1' then 1 else 0 end as
            measure,
            result
     from (
@@ -1532,18 +1534,28 @@ select a.patid,
        ref.SDOH_VAR, 
        ref.SDOH_TEXT, 
        ref.LOINC,
-       case when 
+       case when b.obsgen_result_text in ('LA33-6','LA28397-0','LA6729-3') then 1 else 0 end as SDOH_POS_IND
 from VCCC_BASE_BP_TCOG_SDH a
 join GROUSE_DB_DEV_CDM.PCORNET_CDM_KUMC.OBS_GEN b on a.patid = b.patid
 join Z_SDOH_REF ref on b.OBSGEN_CODE = ref.LOINC 
 ;
 select count(distinct patid) from SDOH_KUMC_FEAS; -- 726
-select SDOH_TEXT, count(distinct patid) from SDOH_KUMC_FEAS
-group by SDOH_TEXT
-order by SDOH_TEXT;
-select SDOH_TEXT, obsgen_result_text, count(distinct patid) from SDOH_KUMC_FEAS
-group by SDOH_TEXT, obsgen_result_text
-order by SDOH_TEXT, obsgen_result_text;
+with qcnt as (
+    select SDOH_TEXT, count(distinct patid) as pat_cnt, sum(SDOH_POS_IND) as pos_cnt
+    from SDOH_KUMC_FEAS
+    group by SDOH_TEXT
+), acnt as (
+    select SDOH_TEXT, count(distinct patid) as pat_cnt
+    from SDOH_KUMC_FEAS
+    where SDOH_POS_IND = 1
+    group by SDOH_TEXT
+)
+select a.*, b.pat_cnt as pat_pos_cnt
+from qcnt a
+join acnt b
+on a.SDOH_TEXT= b.SDOH_TEXT
+order by a.pat_cnt desc
+;
 
 create or replace table SDOH_UU_FEAS as 
 select a.patid, 
@@ -1553,25 +1565,29 @@ select a.patid,
        ref.SDOH_DOMAIN, 
        ref.SDOH_VAR, 
        ref.SDOH_TEXT, 
-       ref.LOINC
+       ref.LOINC,
+       case when b.pro_response_text in ('Never','Never true','No','Not at all','Not difficult at all','Declined') or b.pro_response_text is null then 0 else 1 end as SDOH_POS_IND
 from VCCC_BASE_BP_TCOG_SDH a
 join GROUSE_DB_DEV_CDM.PCORNET_CDM_UU.PRO_CM b on a.patid = b.patid
 join Z_SDOH_REF ref on b.PRO_CODE = ref.LOINC 
 ;
 select count(distinct patid) from SDOH_UU_FEAS; -- 264
-select SDOH_TEXT, count(distinct patid) from SDOH_UU_FEAS
-group by SDOH_TEXT
-order by SDOH_TEXT;
-select SDOH_TEXT, pro_response_text, count(distinct patid) from SDOH_UU_FEAS
-group by SDOH_TEXT, pro_response_text
-order by SDOH_TEXT, pro_response_text;
-
-select distinct a.sdoh_text 
-from SDOH_UU_FEAS a 
-join SDOH_KUMC_FEAS b 
-on a.loinc = b.loinc
+with qcnt as (
+    select SDOH_TEXT, count(distinct patid) as pat_cnt, sum(SDOH_POS_IND) as pos_cnt
+    from SDOH_UU_FEAS
+    group by SDOH_TEXT
+), acnt as (
+    select SDOH_TEXT, count(distinct patid) as pat_cnt
+    from SDOH_UU_FEAS
+    where SDOH_POS_IND = 1
+    group by SDOH_TEXT
+)
+select a.*, b.pat_cnt as pat_pos_cnt
+from qcnt a
+join acnt b
+on a.SDOH_TEXT= b.SDOH_TEXT
+order by a.pat_cnt desc
 ;
-
 
 create or replace procedure get_sdoh_long(
     TRIAL_REF string,
@@ -2108,7 +2124,7 @@ join VCCC_RUNIN_MED runin on a.study_id = runin.study_id
 ;
 
 select * from VCCC_BASELINE_FINAL 
-where DELTA_SBP_BY10 <-3
+-- where DELTA_SBP_BY10 <-3
 limit 5;
 
 select delta_sbp_by10, count(distinct patid)

@@ -17,11 +17,16 @@ Auxillary tables:
 3. CDM tables: 
   - PAT_TABLE1 (denom_pat_cdm.sql)
   - Z_CCI_REF (ref/cci_icd_ref.csv)
+4. Geocoded tables: 
+  - VCCC_ENR_UU_GEOCODED
 =============================
 */ 
 select * from byod_bl5enr limit 5;
 select * from byod_bl5enr_kumc limit 5;
 select * from byod_bl5enr_uu limit 5;
+select * from VCCC_ENR_UU_GEOCODED 
+-- where census_block_group_id_2020 <> 'NA'
+limit 5;
 
 select substr(RECORD_ID,1,4) as site, 
     --    substr(STUDY_ID,1,2) as site2,
@@ -56,16 +61,6 @@ from byod_bl5enr_uu
 where patid is not null
 ;
 -- 4138, 3749
-
-/* multiple enrollment status */
-select a.* 
-from byod_bl5enr a 
-join byod_bl5enr_kumc b
-on a.record_id = b.record_id
-where b.patid = 'a123ebba6df1cc8f'
-;
-
-select * from VCCC_BASE_BP_TCOG_SDH limit 5;
 
 create or replace table VCCC_ENR_ALL as 
 with enr_stk as (
@@ -123,6 +118,9 @@ group by site
 ;
 -- Utah	3749
 -- KUMC	5732
+
+select * from VCCC_ENR_ALL 
+limit 5;
 
 create or replace table VCCC_UNENR_INDEX as 
 with unenrol as (
@@ -334,7 +332,27 @@ call get_clinic_bp_long2(
 
 select * from VCCC_UNENR_CLINIC_BP_LONG limit 5;
 
+create or replace table VCCC_UNENR_ELIG_BP as 
+with bp_bef_idx as (
+    select a.patid,
+           a.measure_date,
+           b.index_date,
+           a.sbp as elig_sbp,
+           a.dbp as elig_dbp, 
+           row_number() over (partition by a.patid order by abs(datediff(day,b.index_date,a.measure_date))) as rn 
+    from VCCC_UNENR_CLINIC_BP_LONG a 
+    join VCCC_UNENR_INDEX b 
+    on a.patid = b.patid
+)
+select * exclude rn
+from bp_bef_idx 
+where rn = 1
+;
 
+select * from VCCC_UNENR_ELIG_BP limit 5;
+
+select count(distinct patid), count(*) from VCCC_UNENR_ELIG_BP;
+-- 8387	8387
 create or replace table Z_MED_RXCUI_REF_AH as 
 with cte as (
 select RXNORM_CUI, 
@@ -508,7 +526,7 @@ where antihtn_ind = 1
 limit 5;
 
 select count(distinct patid) from VCCC_UNENR_MED_LONG;
--- 8436
+-- 8385
 
 create or replace table VCCC_UNENR_BASE_MED as 
 with med_1yr as (
@@ -537,9 +555,9 @@ select polyrx_in_grp, count(distinct patid), count(*)
 from VCCC_UNENR_BASE_MED
 group by polyrx_in_grp
 ;
--- polyrx_in_grp1	4432	4432
--- polyrx_in_grp2	139	139
--- polyrx_in_grp0	3816	3816
+-- polyrx_in_grp0	3548	3548
+-- polyrx_in_grp1	4644	4644
+-- polyrx_in_grp2	195	    195
 
 
 /* healthcare visits */
@@ -1780,6 +1798,8 @@ select count(distinct patid), count(*) from VCCC_UNENR_BASE_EFI;
  
 create or replace table VCCC_UNENR_BASELINE_FINAL as
 select  a.*
+       ,bp.elig_sbp
+       ,bp.elig_dbp
        ,smk.* exclude (PATID)
        ,vis.* exclude (PATID)
        ,ant.* exclude (PATID)
@@ -1788,6 +1808,7 @@ select  a.*
        ,lab.* exclude (PATID)
        ,med.* exclude (PATID)
 from VCCC_UNENR_INDEX a 
+join VCCC_UNENR_ELIG_BP bp on a.patid = bp.patid
 join VCCC_UNENR_VISITS_BASE vis on a.patid = vis.patid
 join VCCC_UNENR_SMOKING_BASE smk on a.patid = smk.patid
 join VCCC_UNENR_ANTRO_BASE_SEL ant on a.patid = ant.patid
