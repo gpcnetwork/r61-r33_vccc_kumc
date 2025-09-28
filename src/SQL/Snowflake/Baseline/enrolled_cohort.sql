@@ -611,7 +611,7 @@ for(i=0; i<SITES.length; i++){
                 ,case when enc.PAYER_TYPE_PRIMARY like '1%' then 'medicare'
                       when enc.PAYER_TYPE_PRIMARY like '5%' then 'commercial'
                       when enc.PAYER_TYPE_PRIMARY like '82%' then 'selfpay'
-                      else 'other'
+                      when enc.PAYER_TYPE_PRIMARY is NULL or trim(enc.PAYER_TYPE_PRIMARY) = '' or enc.PAYER_TYPE_PRIMARY in ('NI','UN') then 'NI'
                  end as PAYER_TYPE_PRIMARY_GRP
                 ,enc.RAW_PAYER_TYPE_PRIMARY
                 ,enc.RAW_PAYER_ID_PRIMARY   
@@ -719,7 +719,7 @@ with av as (
     (
         select a.*, row_number() over (partition by a.patid order by abs(a.days_since_index)) rn
         from VCCC_UNENR_VISITS_LONG a
-        where a.enc_type = 'AV'
+        where a.enc_type = 'AV' and payer_type_primary_grp <> 'NI'
     )
     where rn = 1
 )
@@ -728,7 +728,7 @@ select distinct a.patid,
        coalesce(th.vis_cnt, 0) as th_cnt,
        coalesce(ed.vis_cnt, 0) as ed_cnt,
        coalesce(ip.vis_cnt, 0) as ip_cnt,
-       coalesce(payer.payer_type_primary_grp,'other') as payer_type_primary_grp
+       coalesce(payer.payer_type_primary_grp,'NI') as payer_type_primary_grp
 from VCCC_UNENR_INDEX a 
 left join av on a.patid = av.patid 
 left join th on a.patid = th.patid 
@@ -740,6 +740,11 @@ left join payer on a.patid = payer.patid
 select count(distinct patid), count(*) 
 from VCCC_UNENR_VISITS_BASE;
 -- 8387	8387
+
+select payer_type_primary_grp, count(distinct patid)
+from VCCC_UNENR_VISITS_BASE
+group by payer_type_primary_grp
+;
 
 create or replace procedure get_anthro_long2(
     TRIAL_REF string,

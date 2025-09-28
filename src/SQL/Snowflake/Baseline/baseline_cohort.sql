@@ -821,6 +821,7 @@ for(i=0; i<SITES.length; i++){
                 ,case when enc.PAYER_TYPE_PRIMARY like '1%' then 'medicare'
                       when enc.PAYER_TYPE_PRIMARY like '5%' then 'commercial'
                       when enc.PAYER_TYPE_PRIMARY like '82%' then 'selfpay'
+                      when enc.PAYER_TYPE_PRIMARY is NULL or trim(enc.PAYER_TYPE_PRIMARY) = '' or enc.PAYER_TYPE_PRIMARY in ('NI','UN') then 'NI'
                       else 'other'
                  end as PAYER_TYPE_PRIMARY_GRP
                 ,enc.RAW_PAYER_TYPE_PRIMARY
@@ -933,7 +934,7 @@ with av as (
     (
         select a.*, row_number() over (partition by a.study_id order by abs(a.days_since_index)) rn
         from VCCC_VISITS_LONG a
-        where a.enc_type = 'AV'
+        where a.enc_type = 'AV' and payer_type_primary_grp <> 'NI'
     )
     where rn = 1
 )
@@ -942,7 +943,7 @@ select a.patid, a.study_id,
        coalesce(th.vis_cnt, 0) as th_cnt,
        coalesce(ed.vis_cnt, 0) as ed_cnt,
        coalesce(ip.vis_cnt, 0) as ip_cnt,
-       coalesce(payer.payer_type_primary_grp,'other') as payer_type_primary_grp
+       coalesce(payer.payer_type_primary_grp,'NI') as payer_type_primary_grp
 from VCCC_BASE_BP_TCOG_SDH a 
 left join av on a.study_id = av.study_id 
 left join th on a.study_id = th.study_id 
@@ -950,6 +951,9 @@ left join ed on a.study_id = ed.study_id
 left join ip on a.study_id = ip.study_id 
 left join payer on a.study_id = payer.study_id
 ;
+
+select PAYER_TYPE_PRIMARY_GRP, count(distinct patid) from VCCC_VISITS_BASE 
+group by PAYER_TYPE_PRIMARY_GRP;
 
 create or replace procedure get_anthro_long(
     TRIAL_REF string,
