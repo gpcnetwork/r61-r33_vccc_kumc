@@ -92,7 +92,7 @@ baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda')) %>%
     ),
     ELIG_DBP_GRP = case_when(
       ELIG_DBP<80 ~ 'dbpgrp1',
-      ELIG_DBP>=90&ELIG_DBP<90 ~ 'dbpgrp2',
+      ELIG_DBP>=80&ELIG_DBP<90 ~ 'dbpgrp2',
       ELIG_DBP>90 ~ 'dbpgrp3',
       TRUE ~ NA_character_
     ),
@@ -226,7 +226,7 @@ full_aset<-readRDS(file.path(path_to_data,"unenrol_aset.rda")) %>%
     ),
     ELIG_DBP_GRP = case_when(
       ELIG_DBP<80 ~ 'dbpgrp1',
-      ELIG_DBP>=90&ELIG_DBP<90 ~ 'dbpgrp2',
+      ELIG_DBP>=80&ELIG_DBP<90 ~ 'dbpgrp2',
       ELIG_DBP>90 ~ 'dbpgrp3',
       TRUE ~ NA_character_
     ),
