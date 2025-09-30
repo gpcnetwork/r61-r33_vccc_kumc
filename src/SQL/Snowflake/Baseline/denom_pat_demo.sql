@@ -1,24 +1,6 @@
 /*
-# Copyright (c) 2021-2025 University of Missouri                   
-# Author: Xing Song, xsm7f@umsystem.edu                            
-# File: denom_pat_demo.sql
-# Description: create PAT_TABLE1 and generate summary statistics  
+identify study-specific denominator cohort 
 */
-
-create or replace table PAT_DEMO_LONG (
-    PATID varchar(50) NOT NULL,
-    BIRTH_DATE date,
-    INDEX_DATE date,  
-    INDEX_ENC_TYPE varchar(3),
-    AGE_AT_INDEX integer, 
-    AGEGRP_AT_INDEX varchar(10),
-    SEX varchar(3),
-    RACE varchar(6),
-    HISPANIC varchar(20),
-    CENSOR_DATE date,
---     STATUS number,
-    INDEX_SRC varchar(20)
-);
 
 create or replace procedure get_pat_demo(
     SITES ARRAY,
@@ -55,6 +37,9 @@ for(i=0; i<SITES.length; i++){
                     d.birth_date,
                     e.admit_date::date as index_date,
                     e.enc_type as index_enc_type,
+                    e.facility_type,
+                    e.facilityid,
+                    e.facility_location,
                     round(datediff(day,d.birth_date::date,e.admit_date::date)/365.25) AS age_at_index,
                     d.sex, 
                     CASE WHEN d.race IN ('05') THEN 'white' 
@@ -68,17 +53,21 @@ for(i=0; i<SITES.length; i++){
                             ELSE 'ot' END AS hispanic,
                     '`+ site +`' as index_src,
                     max(coalesce(e.discharge_date::date,e.admit_date::date)) over (partition by d.patid) as censor_date,
-                  --   max(case when dth.death_date is not null then 1 else 0 end) over (partition by d.patid) as status,
+                    max(case when dth.death_date is not null then 1 else 0 end) over (partition by d.patid) as status,
                     row_number() over (partition by e.patid order by coalesce(e.admit_date::date,current_date)) rn
-                FROM GROUSE_DB_DEV.`+ site_cdm +`.DEMOGRAPHIC d 
-                LEFT JOIN GROUSE_DB_DEV.`+ site_cdm +`.ENCOUNTER e ON d.PATID = e.PATID
-            --     LEFT JOIN GROUSE_DB_DEV.`+ site_cdm +`.DEATH dth ON d.PATID = dth.PATID
+                FROM GROUSE_DB_DEV_CDM.`+ site_cdm +`.DEMOGRAPHIC d 
+                LEFT JOIN GROUSE_DB_DEV_CDM.`+ site_cdm +`.ENCOUNTER e ON d.PATID = e.PATID
+                LEFT JOIN GROUSE_DB_DEV_CDM.`+ site_cdm +`.DEATH dth ON d.PATID = dth.PATID
+                WHERE e.ENC_TYPE in ('AV','OA') and e.ADMIT_DATE between '2022-01-01' and '2024-12-31'
                 )
                 SELECT DISTINCT
                      cte.patid
                     ,cte.birth_date
                     ,cte.index_date
                     ,cte.index_enc_type
+                    -- ,cte.facility_type as index_fac_type
+                    ,cte.facilityid as index_fac_id
+                    ,cte.facility_location as index_fac_loc 
                     ,cte.age_at_index
                     ,case when cte.age_at_index is null then 'unk'
                           when cte.age_at_index < 19 then 'agegrp1'
@@ -89,7 +78,7 @@ for(i=0; i<SITES.length; i++){
                     ,cte.race
                     ,cte.hispanic
                     ,cte.censor_date
-                  --   ,cte.status
+                    ,cte.status
                     ,cte.index_src
                 FROM cte_enc_age cte
                 WHERE cte.rn = 1;
@@ -118,7 +107,23 @@ $$
 -- );
 -- select * from TMP_SP_OUTPUT;
 
-truncate PAT_DEMO_LONG;
+create or replace table PAT_DEMO_LONG (
+    PATID varchar(50) NOT NULL,
+    BIRTH_DATE date,
+    INDEX_DATE date,  
+    INDEX_ENC_TYPE varchar(3),
+    -- INDEX_FAC_TYPE varchar(20), 
+    INDEX_FAC_ID varchar(20), 
+    INDEX_FAC_LOC varchar(8), 
+    AGE_AT_INDEX integer, 
+    AGEGRP_AT_INDEX varchar(10),
+    SEX varchar(3),
+    RACE varchar(6),
+    HISPANIC varchar(20),
+    CENSOR_DATE date,
+    STATUS number,
+    INDEX_SRC varchar(20)
+);
 call get_pat_demo(
     array_construct(
        'KUMC'
@@ -126,6 +131,14 @@ call get_pat_demo(
     ), False, NULL
 );
 
+select * from PAT_DEMO_LONG limit 5;
+select count(distinct patid) 
+from PAT_DEMO_LONG 
+-- where trim(index_fac_loc) <> ''
+;
+-- 1,683,212
+-- 1,593,686 (facid)
+-- 800,891 (fac_loc)
 
 create or replace table PAT_TABLE1 as 
 with cte_ord as(
@@ -133,7 +146,7 @@ with cte_ord as(
       --      max(case when b.chart = 'Y' then 1 else 0 end) over (partition by a.patid) as xwalk_ind,
            row_number() over (partition by a.patid order by coalesce(a.index_date,current_date)) as rn
     from PAT_DEMO_LONG a
---     left join GROUSE_DB_DEV.CMS_PCORNET_CDM.V_DEID_ENROLLMENT b on a.patid = b.patid
+--     left join GROUSE_DB_DEV_CDM.CMS_PCORNET_CDM.V_DEID_ENROLLMENT b on a.patid = b.patid
 )
 select patid
       ,birth_date
@@ -144,82 +157,14 @@ select patid
       ,race
       ,hispanic
       ,index_enc_type
+      ,index_fac_id
+      ,index_fac_loc
       ,index_src
       ,censor_date
       -- ,xwalk_ind
 from cte_ord
-where rn = 1
+where rn = 1 and age_at_index >= 65
 ;
 
 select count(distinct patid), count(*) from PAT_TABLE1;
--- 3,290,425
-
-
-/*collect all patients with at least 1 SBP record and calculate age at measurement*/
-create or replace table BP_Cohort as
--- SBP and DBP from VITAL table
-with multi_cte as (
-    select * from
-    (select p.PATID
-           ,v.ENCOUNTERID
-           ,v.SYSTOLIC
-           ,v.DIASTOLIC
-           ,v.MEASURE_DATE
-           ,round((v.MEASURE_DATE - p.BIRTH_DATE)/365.25) as AGE_AT_MEASURE
-           ,'VITAL' as SRC_TABLE
-     from identifier($VITAL) v 
-     join identifier($DEMOGRAPHIC) p on v.PATID = p.PATID 
-     where v.SYSTOLIC is not null
-    )
-    unpivot (
-       VITAL_VAL for VITAL_TYPE in (SYSTOLIC, DIASTOLIC)
-    )
-    union all
-    -- SBP from OBS_CLIN table
-    select p.PATID
-          ,os.ENCOUNTERID
-          ,os.OBSCLIN_START_DATE
-          ,round((os.OBSCLIN_START_DATE - p.BIRTH_DATE)/365.25) as AGE_AT_MEASURE
-          ,'OBS_CLIN' as SRC_TABLE
-          ,'SYSTOLIC' as VITAL_TYPE
-          ,os.OBSCLIN_RESULT_NUM as VITAL_VAL
-    from identifier($OBS_CLIN) os
-    join identifier($DEMOGRAPHIC) p on os.PATID = p.PATID and
-         -- os.OBSCLIN_TYPE = 'LC' and 
-         os.OBSCLIN_CODE in ( '8460-8' --standing
-                             ,'8459-0' --sitting
-                             ,'8461-6' --supine
-                             ,'8479-8' --palpation
-                             ,'8480-6' --general
-                            )
-    union all
-    -- DBP from OBS_CLIN table
-    select p.PATID
-          ,os.ENCOUNTERID
-          ,os.OBSCLIN_START_DATE
-          ,round((os.OBSCLIN_START_DATE - p.BIRTH_DATE)/365.25) as AGE_AT_MEASURE
-          ,'OBS_CLIN' as SRC_TABLE
-          ,'DIASTOLIC' as VITAL_TYPE
-          ,os.OBSCLIN_RESULT_NUM as VITAL_VAL
-    from identifier($OBS_CLIN) os
-    join identifier($DEMOGRAPHIC) p on os.PATID = p.PATID and
-         -- os.OBSCLIN_TYPE = 'LC' and 
-         os.OBSCLIN_CODE in ( '8454-1' --standing
-                             ,'8453-3' --sitting
-                             ,'8455-8' --supine
-                             ,'8462-4' --general
-                            )
-)
-select distinct 
-       PATID,
-       ENCOUNTERID,
-       AGE_AT_MEASURE,
-       MEASURE_DATE,
-       "'SYSTOLIC'" as SYSTOLIC,
-       "'DIASTOLIC'" as DIASTOLIC
-from multi_cte
-    pivot (max(VITAL_VAL) for VITAL_TYPE in ('SYSTOLIC','DIASTOLIC'))
-        as p
-where AGE_AT_MEASURE >= 65
-;
-
+-- 361,005

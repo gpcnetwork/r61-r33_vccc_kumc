@@ -28,6 +28,8 @@ select * from VCCC_ENR_UU_GEOCODED
 -- where census_block_group_id_2020 <> 'NA'
 limit 5;
 
+
+
 select substr(RECORD_ID,1,4) as site, 
     --    substr(STUDY_ID,1,2) as site2,
        count(distinct record_id) as pat_cnt 
@@ -393,6 +395,8 @@ where rn = 1
 
 select * from Z_MED_RXCUI_REF_AH;
 
+
+
 create or replace table VCCC_UNENR_MED_LONG_RAW as 
 select  a.patid,
         a.prescribingid,
@@ -486,6 +490,13 @@ where vccc.site = 'Utah'
 ;         
 
 select * from VCCC_UNENR_MED_LONG_RAW limit 5;
+
+select split_part(raw_rx_med_name,' ', 1) as ingre, count(distinct patid)
+from VCCC_UNENR_MED_LONG_RAW 
+where ING is null
+group by split_part(raw_rx_med_name,' ', 1)
+order by count(distinct patid) desc
+;
 
 create or replace table VCCC_UNENR_MED_LONG as
 with dur_calc as(

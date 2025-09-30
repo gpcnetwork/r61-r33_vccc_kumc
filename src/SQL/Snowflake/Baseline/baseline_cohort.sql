@@ -281,8 +281,8 @@ create or replace table Z_MED_RXCUI_REF_AH as
 with cte as (
 select RXNORM_CUI, 
        ING,
-       VA_CLS, 
-       VA_CLS_CD, 
+       VA_CLS as CLS, 
+       VA_CLS_CD as CLS_CD, 
        case when VA_CLS_CD in (
         'CV100', -- beta blockers/related
         'CV150', -- alpha blockers/related
@@ -306,8 +306,8 @@ from Z_MED_RXCUI_REF
 )
 select RXNORM_CUI, 
        ING,
-       VA_CLS, 
-       VA_CLS_CD,
+       CLS, 
+       CLS_CD,
        ANTIHTN_IND,
        STR as REF_STR,
        UNIT as REF_UNIT
@@ -317,6 +317,142 @@ where rn = 1
 
 select * from Z_MED_RXCUI_REF_AH;
 
+create or replace procedure get_meds_long(
+    TRIAL_REF string,
+    SITES array,
+    RX_REF string,
+    ADD_RX_GRP string,
+    TGT_LONG_TBL string,
+    DRY_RUN boolean,
+    DRY_RUN_AT string
+)
+returns variant
+language javascript
+as
+$$
+/**
+ * @param {string} TRIAL_REF: name of trial participant id list (1 pat/row, key = PATID)
+ * @param {array} SITES: an array of site acronyms (matching schema name suffix)
+ * @param {string} RX_REF: name of the rx reference table, at least include columns: RXNORM_CUI, ING, CLS, CLS_CD
+ * @param {string} ADD_RX_GRP: column name from RX_REF for additional RX grouping (e.g., indicator of AH)
+ * @param {string} TGT_LONG_TBL: target long table with clinical BP records 
+ * @param {boolean} DRY_RUN: dry run indicator. If true, only sql script will be created and stored in dev.sp_out table
+ * @param {boolean} DRY_RUN_AT: A temporary location to store the generated sql query for debugging purpose. 
+                                When DRY_RUN = True, provide absolute path to the table; when DRY_RUN = False, provide NULL 
+**/
+if (DRY_RUN) {
+    var log_stmt = snowflake.createStatement({
+        sqlText: `CREATE OR REPLACE TEMPORARY TABLE `+ DRY_RUN_AT +`(QRY VARCHAR);`});
+    log_stmt.execute(); 
+}
+
+var i;
+for(i=0; i<SITES.length; i++){
+    // parameter
+    var site = SITES[i].toString();
+    var site_cdm = `GROUSE_DB_DEV_CDM.PCORNET_CDM_`+ site +``;
+    var labname_incld = '';
+    
+    // dynamic query
+    var sqlstmt_tmp = `
+        CREATE TEMPORARY TABLE RX_STACK as 
+            select  a.patid,
+                    vccc.study_id,
+                    vccc.enroll_date,
+                    vccc.elig_date,
+                    datediff(day,vccc.enroll_date,vccc.elig_date) as elig_since_index,
+                    a.prescribingid,
+                    try_to_number(a.RXNORM_CUI) as RXNORM_CUI, 
+                    a.raw_rx_med_name,
+                    a.rx_order_date,
+                    a.rx_start_date, 
+                    a.rx_end_date,
+                    a.rx_dose_ordered,
+                    a.rx_dose_ordered_unit,
+                    a.rx_quantity,
+                    a.rx_dose_form, 
+                    a.rx_route,
+                    a.rx_frequency, 
+                    case when rx_frequency in ('01','05','06','10') then 1 
+                        when rx_frequency in ('02') then 2 
+                        when rx_frequency in ('03','07','08') then 3
+                        when rx_frequency in ('04') then 4
+                        else 1 
+                    end as rx_freq_num,
+                    a.rx_refills,
+                    coalesce(a.rx_start_date,a.rx_order_date) as rx_start_date_imp,
+                    m.ING,
+                    m.VA_CLS,
+                    m.VA_CLS_CD,
+                    m.ANTIHTN_IND,
+                    m.REF_STR,
+                    m.REF_UNIT,
+                    coalesce(e.enc_type,'NI') as enc_type,
+                    e.admit_date::date as admit_date,
+                    e.raw_enc_type,
+                    e.admitting_source,
+                    e.DRG,
+                    e.payer_type_primary,
+                    e.raw_payer_name_primary,
+                    e.discharge_date::date as discharge_date,
+                    e.discharge_disposition,
+                    e.discharge_status,
+                    vccc.enroll_date as index_date,
+                    datediff(day,vccc.enroll_date,coalesce(a.rx_start_date,a.rx_order_date)) as rx_start_since_index        
+            from `+ TRIAL_REF +` r 
+            join `+ site_cdm +`.PRESCRIBING vccc on a.patid = vccc.patid
+            left join GROUSE_DB_DEV_CDM.PCORNET_CDM_KUMC.ENCOUNTER e on a.patid = e.patid 
+            left join Z_MED_RXCUI_REF_AH m on try_to_number(a.RXNORM_CUI) = m.RXNORM_CUI 
+            where vccc.site = 'KUMC'
+    `
+    var sqlstmt_par = `
+        INSERT INTO `+ TGT_LONG_TBL +`
+           select distinct
+                 r.PATID
+                ,enc.ENC_TYPE
+                ,enc.ADMIT_DATE
+                ,enc.DISCHARGE_DATE
+                ,enc.DISCHARGE_STATUS
+                ,enc.DISCHARGE_DISPOSITION
+                ,enc.DRG
+                ,enc.FACILITYID
+                ,enc.FACILITY_LOCATION
+                ,enc.FACILITY_TYPE
+                ,enc.PAYER_TYPE_PRIMARY
+                ,case when enc.PAYER_TYPE_PRIMARY like '1%' then 'medicare'
+                      when enc.PAYER_TYPE_PRIMARY like '5%' then 'commercial'
+                      when enc.PAYER_TYPE_PRIMARY like '82%' then 'selfpay'
+                      when enc.PAYER_TYPE_PRIMARY is NULL or trim(enc.PAYER_TYPE_PRIMARY) = '' or enc.PAYER_TYPE_PRIMARY in ('NI','UN') then 'NI'
+                 end as PAYER_TYPE_PRIMARY_GRP
+                ,enc.RAW_PAYER_TYPE_PRIMARY
+                ,enc.RAW_PAYER_ID_PRIMARY   
+                ,enc.PROVIDERID
+                ,prov.PROVIDER_SPECIALTY_PRIMARY
+                ,prov.PROVIDER_NPI
+                ,prov.RAW_PROVIDER_SPECIALTY_PRIMARY
+                -- ,prov.RAW_PROV_NAME
+                -- ,prov.RAW_PROV_TYPE            
+                ,datediff(day,r.index_date,enc.admit_date) as DAYS_SINCE_INDEX
+            from `+ TRIAL_REF +` r 
+            join `+ site_cdm +`.ENCOUNTER enc on r.patid = enc.patid
+            left join `+ site_cdm +`.PROVIDER prov on enc.providerid = prov.providerid
+            ;`;
+
+    if (DRY_RUN) {
+        // preview of the generated dynamic SQL scripts - comment it out when perform actual execution
+        var log_stmt = snowflake.createStatement({
+                        sqlText: `INSERT INTO `+ DRY_RUN_AT +` (qry) values (:1);`,
+                        binds: [sqlstmt_par]});
+        log_stmt.execute(); 
+    } else {
+        // run dynamic dml query
+        var run_sqlstmt_par = snowflake.createStatement({sqlText: sqlstmt_par}); run_sqlstmt_par.execute();
+        var commit_txn = snowflake.createStatement({sqlText: `commit;`}); 
+        commit_txn.execute();
+    }
+}
+$$
+;
 create or replace table VCCC_MED_LONG_RAW as 
 select  a.patid,
         vccc.study_id,
@@ -415,7 +551,16 @@ join VCCC_BASE_BP_TCOG_SDH vccc on a.patid = vccc.patid
 left join GROUSE_DB_DEV_CDM.PCORNET_CDM_UU.ENCOUNTER e on a.patid = e.patid 
 left join Z_MED_RXCUI_REF_AH m on a.RXNORM_CUI = m.RXNORM_CUI 
 where vccc.site = 'Utah'
-;         
+;
+
+select split_part(raw_rx_med_name,' ', 1) as ingre, count(distinct patid)
+from VCCC_MED_LONG_RAW 
+where ING is null
+group by split_part(raw_rx_med_name,' ', 1)
+order by count(distinct patid) desc
+;
+
+
 
 create or replace table VCCC_MED_LONG as
 with dur_calc as(
