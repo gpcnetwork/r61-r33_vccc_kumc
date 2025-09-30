@@ -39,7 +39,11 @@ path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 
 ```{r}
 #| label: load_data
-full_aset<-readRDS(file.path(path_to_data,"full_aset_preproc.rda"))
+full_aset<-readRDS(file.path(path_to_data,"full_aset_preproc.rda")) %>%
+  mutate(CKD_TEST_IND = case_when(
+    CKD_TEST_GRP == 'Both' ~ 1,
+    TRUE ~ 0
+  ))
 ```
 
 ## Descriptive Statistics
@@ -122,7 +126,7 @@ kable(
   caption = "Table 1: Baseline Characteristics of Study Population"
 )
 
-tbl3a<-CreateTableOne(
+tbl2<-CreateTableOne(
   data = full_aset %>% filter(PRESCREEN_STATUS %in% c("study","declin","unreach")),
   vars = vars,
   factorVars = facvars,
@@ -156,7 +160,7 @@ var_pre<-c(
   "PAYER_TYPE_PRIMARY_GRP"
 )
 
-fit_uni <- map(var_pre, ~ glm(as.formula(paste("ENROL_IND ~", .x)), 
+fit_uni <- map(var_pre, ~ glm(as.formula(paste("CKD_TEST_IND ~", .x)), 
                           data = full_aset, family = binomial))
 tbls <- map(fit_uni, ~ tbl_regression(.x, exponentiate = TRUE))
 tbl_stack(tbls)
@@ -197,7 +201,7 @@ null_model <- glm(
 
 # Specify the full model using all of the potential predictors
 full_model <- glm(
-  formula(paste0("ENROL_IND ~ ",paste(var_pre,collapse = "+"))), 
+  formula(paste0("CKD_TEST_IND ~ ",paste(var_pre,collapse = "+"))), 
   data = aset_complt, 
   family = binomial()
 )

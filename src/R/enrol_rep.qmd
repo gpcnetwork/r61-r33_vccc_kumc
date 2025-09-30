@@ -36,12 +36,10 @@ path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
 path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 ```
 
-
 ```{r}
 #| label: load_data
 full_aset<-readRDS(file.path(path_to_data,"full_aset_preproc.rda"))
 ```
-
 
 ## Descriptive Statistics
 
@@ -80,6 +78,7 @@ vars<-c(
 )
 
 facvars<-c(
+  "AGE_75UP",
   "SEX_STR",
   "RACE_ETHN_STR",
   "BMI_GRP",
@@ -148,7 +147,6 @@ kable(
 )
 ```
 
-
 ## Univariate Analysis
 
 ```{r}
@@ -178,7 +176,6 @@ fit_uni <- map(var_pre, ~ glm(as.formula(paste("ENROL_IND ~", .x)),
 tbls <- map(fit_uni, ~ tbl_regression(.x, exponentiate = TRUE))
 tbl_stack(tbls)
 ```
-
 
 ## Multivariate Analysis
 
@@ -249,4 +246,3 @@ step_model |>
 # full_model |> 
 #   tbl_regression(exponentiate = TRUE)
 ```
-

@@ -11,7 +11,7 @@ pacman::p_load(
 path_to_data<-"C:/repos/r61-r33_vccc_kumc/data"
 path_to_res<-"C:/repos/r61-r33_vccc_kumc/res"
 
-# preprocess enrolled set
+#==== enrolled set ====
 baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda')) %>%
   # low-freq grouping
   group_by(STATE) %>% mutate(CNT = length(unique(STUDY_ID))) %>% mutate(STATE_GRP = case_when(CNT>100 ~ STATE, TRUE ~ 'OT')) %>%
@@ -143,7 +143,7 @@ baseline_aset<-readRDS(file.path(path_to_data,'baseline_aset.rda')) %>%
 saveRDS(baseline_aset,file=file.path(path_to_data,"baseline_aset_preproc.rda"))
 
 
-# full pre-screened set
+#==== full pre-screened set =====
 var_enrol<-c(
   "AGE",
   "AGE_75UP",
