@@ -114,7 +114,7 @@ facvars<-c(
 
 tbl2<-CreateTableOne(
   data = full_aset %>% 
-    filter(PRESCREEN_STATUS %in% c("study","declin","unreach")),
+    filter(PRESCREEN_STATUS %in% c("study")),
   vars = vars,
   factorVars = facvars,
   strata = "SITE"
